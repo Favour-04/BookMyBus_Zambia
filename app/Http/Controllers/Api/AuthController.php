@@ -13,7 +13,7 @@ use Illuminate\Validation\Rules\Password;
 
 class AuthController extends Controller
 {
-    // ─── Traveler Registration ────────────────────────────────────────
+    // traveller registration
 
     public function register(Request $request): JsonResponse
     {
@@ -34,7 +34,7 @@ class AuthController extends Controller
         ], 201);
     }
 
-    // ─── Traveler Login ───────────────────────────────────────────────
+    // login for travellers
 
     public function login(Request $request): JsonResponse
     {
@@ -57,7 +57,7 @@ class AuthController extends Controller
         ]);
     }
 
-    // ─── Operator Registration ────────────────────────────────────────
+    // operator registration
 
     public function registerOperator(Request $request): JsonResponse
     {
@@ -78,7 +78,7 @@ class AuthController extends Controller
         ], 201);
     }
 
-    // ─── Operator Login ───────────────────────────────────────────────
+    // login for operators
 
     public function loginOperator(Request $request): JsonResponse
     {
@@ -106,7 +106,7 @@ class AuthController extends Controller
         ]);
     }
 
-    // ─── Logout ───────────────────────────────────────────────────────
+    // logout for both travellers and operators
 
     public function logout(Request $request): JsonResponse
     {
@@ -115,7 +115,7 @@ class AuthController extends Controller
         return response()->json(['message' => 'Logged out successfully.']);
     }
 
-    // ─── Get Authenticated User ───────────────────────────────────────
+    // get authenticated user details
 
     public function me(Request $request): JsonResponse
     {

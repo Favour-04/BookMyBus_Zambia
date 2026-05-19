@@ -24,20 +24,20 @@ class Booking extends Model
         'held_until' => 'datetime',
     ];
 
-    // ─── Boot ────────────────────────────────────────────────────────
+    // boot
 
     protected static function boot()
     {
         parent::boot();
 
-        // Auto-generate a unique reference ID on creation (e.g. BMZ-A3F9K2)
+        // Function to auto generate a unique reference ID on creation (e.g. BMZ-A3F9K2)
         static::creating(function ($booking) {
             $booking->reference_id = 'BMZ-' . strtoupper(Str::random(6));
             $booking->held_until   = now()->addMinutes(10);
         });
     }
 
-    // ─── Relationships ───────────────────────────────────────────────
+    // relationship definitions
 
     public function user()
     {
@@ -59,7 +59,7 @@ class Booking extends Model
         return $this->hasOne(Ticket::class);
     }
 
-    // ─── Helpers ─────────────────────────────────────────────────────
+    // function helpers
 
     public function isExpired(): bool
     {

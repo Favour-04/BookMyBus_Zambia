@@ -9,9 +9,8 @@ use Illuminate\Http\JsonResponse;
 
 class BusController extends Controller
 {
-    /**
-     * List all buses for the authenticated operator.
-     */
+    // List all buses for the authenticated operator.
+     
     public function index(Request $request): JsonResponse
     {
         $buses = Bus::where('operator_id', $request->user()->id)
@@ -21,9 +20,8 @@ class BusController extends Controller
         return response()->json(['buses' => $buses]);
     }
 
-    /**
-     * Add a new bus to the operator's fleet.
-     */
+    //Add a new bus to the operator's fleet.
+     
     public function store(Request $request): JsonResponse
     {
         $data = $request->validate([
@@ -45,9 +43,7 @@ class BusController extends Controller
         ], 201);
     }
 
-    /**
-     * Update bus details.
-     */
+    // Update bus details.
     public function update(Request $request, int $id): JsonResponse
     {
         $bus = Bus::where('id', $id)
@@ -71,9 +67,7 @@ class BusController extends Controller
         ]);
     }
 
-    /**
-     * Remove a bus from the fleet (only if no active routes).
-     */
+    // Remove a bus from the fleet (only if no active routes).
     public function destroy(Request $request, int $id): JsonResponse
     {
         $bus = Bus::where('id', $id)

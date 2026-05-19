@@ -35,7 +35,7 @@ class Operator extends Authenticatable
         'verified_at' => 'datetime',
     ];
 
-    // ─── Relationships ───────────────────────────────────────────────
+    // relationship definitions
 
     public function buses()
     {
@@ -52,7 +52,7 @@ class Operator extends Authenticatable
         return $this->belongsTo(User::class, 'verified_by');
     }
 
-    // ─── Helpers ─────────────────────────────────────────────────────
+    // function helpers
 
     public function isVerified(): bool
     {

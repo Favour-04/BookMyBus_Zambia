@@ -10,10 +10,9 @@ use Illuminate\Http\JsonResponse;
 
 class BookingController extends Controller
 {
-    /**
-     * Hold a seat for 10 minutes pending payment.
-     * Traveler only.
-     */
+    
+     // Hold a seat for 10 minutes pending payment. Traveler only.
+
     public function hold(Request $request): JsonResponse
     {
         $data = $request->validate([
@@ -23,12 +22,12 @@ class BookingController extends Controller
 
         $route = Route::with('bus')->findOrFail($data['route_id']);
 
-        // Check seat is within bus capacity
+        // Check if seat is within bus capacity
         if ($data['seat_number'] > $route->bus->seat_capacity) {
             return response()->json(['message' => 'Invalid seat number for this bus.'], 422);
         }
 
-        // Check seat is not already taken
+        // Check if seat is not already taken
         $alreadyBooked = Booking::where('route_id', $data['route_id'])
             ->where('seat_number', $data['seat_number'])
             ->whereIn('status', ['pending', 'confirmed'])
@@ -57,9 +56,8 @@ class BookingController extends Controller
         ], 201);
     }
 
-    /**
-     * List all bookings for the authenticated traveler.
-     */
+    //List all bookings for the authenticated traveler.
+
     public function index(Request $request): JsonResponse
     {
         $bookings = Booking::with(['route.operator', 'route.bus', 'payment', 'ticket'])
@@ -70,9 +68,8 @@ class BookingController extends Controller
         return response()->json(['bookings' => $bookings]);
     }
 
-    /**
-     * Get a single booking by reference ID.
-     */
+    // Get a single booking by reference ID.
+
     public function show(Request $request, string $referenceId): JsonResponse
     {
         $booking = Booking::with(['route.operator', 'route.bus', 'payment', 'ticket'])
@@ -83,9 +80,7 @@ class BookingController extends Controller
         return response()->json(['booking' => $booking]);
     }
 
-    /**
-     * Cancel a booking (traveler cancels their own pending booking).
-     */
+    //Cancel a booking (traveler cancels their own pending booking).
     public function cancel(Request $request, int $id): JsonResponse
     {
         $booking = Booking::where('id', $id)
@@ -103,9 +98,8 @@ class BookingController extends Controller
         return response()->json(['message' => 'Booking cancelled successfully.']);
     }
 
-    /**
-     * List bookings for a specific route (operator dashboard).
-     */
+    //List bookings for a specific route (operator dashboard).
+     
     public function routeManifest(Request $request, int $routeId): JsonResponse
     {
         $route = Route::where('id', $routeId)

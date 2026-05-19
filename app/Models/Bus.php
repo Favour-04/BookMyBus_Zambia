@@ -25,7 +25,7 @@ class Bus extends Model
         'is_active' => 'boolean',
     ];
 
-    // ─── Relationships ───────────────────────────────────────────────
+    // relationship definitions
 
     public function operator()
     {
@@ -37,7 +37,7 @@ class Bus extends Model
         return $this->hasMany(Route::class);
     }
 
-    // ─── Helpers ─────────────────────────────────────────────────────
+    // function helpers
 
     public function hasAmenity(string $amenity): bool
     {

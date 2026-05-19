@@ -10,18 +10,17 @@ use App\Http\Controllers\Api\TicketController;
 use Illuminate\Support\Facades\Route;
 
 /*
-|--------------------------------------------------------------------------
-| BookMyBus Zambia — API Routes
-|--------------------------------------------------------------------------
-|
-| Guards:
-|   auth:sanctum          → Traveler (User model)
-|   auth:operator_api     → Operator (Operator model)  *custom guard*
-|   admin                 → Traveler with role = admin
-|
+ BookMyBus Zambia — API Routes
+
+
+Guards:
+auth:sanctum          → Traveler (User model)
+auth:operator_api     → Operator (Operator model)  *custom guard*
+admin                 → Traveler with role = admin
+
 */
 
-// ── Public Routes (no auth required) ─────────────────────────────────────
+//Public Routes (no auth required)
 
 Route::prefix('auth')->group(function () {
     // Traveler auth
@@ -41,7 +40,7 @@ Route::get('/routes/{id}',            [RouteController::class, 'show']);
 Route::post('/payments/callback',     [PaymentController::class, 'callback']);
 
 
-// ── Authenticated Traveler Routes ─────────────────────────────────────────
+// Authenticated Traveler Routes 
 
 Route::middleware('auth:sanctum')->group(function () {
     // Auth
@@ -64,7 +63,7 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 
-// ── Operator Routes ───────────────────────────────────────────────────────
+//  Operator Routes 
 // Uses a custom 'operator' guard — see config/auth.php
 
 Route::middleware('auth:operator_api')->prefix('operator')->group(function () {
@@ -88,7 +87,7 @@ Route::middleware('auth:operator_api')->prefix('operator')->group(function () {
 });
 
 
-// ── Admin Routes ──────────────────────────────────────────────────────────
+// Admin Routes 
 
 Route::middleware(['auth:sanctum', 'role:admin'])->prefix('admin')->group(function () {
     Route::get('/dashboard',                      [AdminController::class, 'dashboard']);

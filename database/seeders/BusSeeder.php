@@ -14,7 +14,7 @@ class BusSeeder extends Seeder
         $shalom     = Operator::where('email', 'shalom@bookmybus.zm')->first();
 
         $buses = [
-            // Power Tools fleet
+            // Power Tools buses
             [
                 'operator_id'         => $powerTools->id,
                 'registration_number' => 'ABB 1234 CP',
@@ -34,7 +34,7 @@ class BusSeeder extends Seeder
                 'is_active'           => true,
             ],
 
-            // Shalom fleet
+            // Shalom buses
             [
                 'operator_id'         => $shalom->id,
                 'registration_number' => 'ABA 9012 LS',

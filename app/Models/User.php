@@ -30,7 +30,7 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
-    // ─── Relationships ───────────────────────────────────────────────
+    // relationship definitions
 
     public function bookings()
     {
@@ -42,7 +42,7 @@ class User extends Authenticatable
         return $this->hasMany(Ticket::class);
     }
 
-    // ─── Helpers ─────────────────────────────────────────────────────
+    // helper methods
 
     public function isAdmin(): bool
     {

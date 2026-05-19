@@ -38,7 +38,6 @@ class BookingSeeder extends Seeder
                 'status'      => 'confirmed',
                 'with_ticket' => true,
             ],
-            // Confirmed booking + payment + ticket
             [
                 'user'        => $mutale,
                 'route'       => $kitweRoute,

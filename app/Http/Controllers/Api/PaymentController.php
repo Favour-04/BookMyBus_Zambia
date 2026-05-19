@@ -12,10 +12,8 @@ use Illuminate\Support\Facades\DB;
 
 class PaymentController extends Controller
 {
-    /**
-     * Initiate a payment for a pending booking.
-     * In production this would call the MTN/Airtel API.
-     */
+    // Initiate a payment for a pending booking. In actual production this would call the MTN/Airtel API.
+     
     public function initiate(Request $request): JsonResponse
     {
         $data = $request->validate([
@@ -62,10 +60,8 @@ class PaymentController extends Controller
         ], 201);
     }
 
-    /**
-     * Callback endpoint hit by the payment gateway after transaction.
-     * Confirms or fails the payment and issues a ticket on success.
-     */
+    // Callback endpoint hit by the payment gateway after transaction.
+    // Confirms or fails the payment and issues a ticket on success.
     public function callback(Request $request): JsonResponse
     {
         $data = $request->validate([
@@ -105,9 +101,8 @@ class PaymentController extends Controller
         ]);
     }
 
-    /**
-     * Get payment status for a booking.
-     */
+    // Get payment status for a booking.
+     
     public function status(Request $request, int $bookingId): JsonResponse
     {
         $booking = Booking::where('id', $bookingId)

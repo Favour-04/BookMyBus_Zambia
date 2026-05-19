@@ -9,10 +9,8 @@ use Illuminate\Http\JsonResponse;
 
 class RouteController extends Controller
 {
-    /**
-     * Search routes by origin, destination, and date.
-     * Accessible by guests and travelers.
-     */
+    // Search routes by origin, destination, and date. Accessible by guests and travelers.
+     
     public function search(Request $request): JsonResponse
     {
         $data = $request->validate([
@@ -49,10 +47,8 @@ class RouteController extends Controller
         ]);
     }
 
-    /**
-     * Get full route details including seat map.
-     * Used when a traveler clicks on a route to select a seat.
-     */
+    // Get full route details including seat map.
+    // Used when a traveler clicks on a route to select a seat.
     public function show(int $id): JsonResponse
     {
         $route = Route::with(['operator', 'bus'])->findOrFail($id);
@@ -71,9 +67,7 @@ class RouteController extends Controller
         ]);
     }
 
-    /**
-     * List all routes for a specific operator (operator dashboard).
-     */
+    // List all routes for a specific operator (operator dashboard).
     public function operatorRoutes(Request $request): JsonResponse
     {
         $routes = Route::with('bus')
@@ -84,9 +78,8 @@ class RouteController extends Controller
         return response()->json(['routes' => $routes]);
     }
 
-    /**
-     * Create a new route (operator only).
-     */
+    // Create a new route (operator only).
+     
     public function store(Request $request): JsonResponse
     {
         $data = $request->validate([
@@ -109,9 +102,8 @@ class RouteController extends Controller
         ], 201);
     }
 
-    /**
-     * Update fare or times for a route (operator only).
-     */
+    // Update fare or times for a route (operator only).
+     
     public function update(Request $request, int $id): JsonResponse
     {
         $route = Route::where('id', $id)
@@ -133,9 +125,7 @@ class RouteController extends Controller
         ]);
     }
 
-    /**
-     * Delete a route (operator only, if no confirmed bookings).
-     */
+    // Delete a route (operator only, if no confirmed bookings).
     public function destroy(Request $request, int $id): JsonResponse
     {
         $route = Route::where('id', $id)

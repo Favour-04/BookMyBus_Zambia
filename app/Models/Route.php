@@ -28,7 +28,7 @@ class Route extends Model
         'is_active'   => 'boolean',
     ];
 
-    // ─── Relationships ───────────────────────────────────────────────
+    // relationships definitions
 
     public function operator()
     {
@@ -45,11 +45,10 @@ class Route extends Model
         return $this->hasMany(Booking::class);
     }
 
-    // ─── Helpers ─────────────────────────────────────────────────────
+    // helper methods
 
-    /**
-     * Get seat numbers already booked on this route (confirmed or pending).
-     */
+    // Get seat numbers already booked on this route (confirmed or pending).
+     
     public function bookedSeats(): array
     {
         return $this->bookings()
@@ -58,9 +57,8 @@ class Route extends Model
             ->toArray();
     }
 
-    /**
-     * Get all available seat numbers for this route.
-     */
+    // Get all available seat numbers for this route.
+     
     public function availableSeats(): array
     {
         $total  = range(1, $this->bus->seat_capacity);

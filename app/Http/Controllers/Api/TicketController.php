@@ -9,9 +9,8 @@ use Illuminate\Http\JsonResponse;
 
 class TicketController extends Controller
 {
-    /**
-     * Get all tickets for the authenticated traveler.
-     */
+    //Get all tickets for the authenticated traveler.
+     
     public function index(Request $request): JsonResponse
     {
         $tickets = Ticket::with(['booking.route.operator', 'booking.route.bus'])
@@ -23,10 +22,8 @@ class TicketController extends Controller
         return response()->json(['tickets' => $tickets]);
     }
 
-    /**
-     * Get a single ticket by QR code string.
-     * Used by traveler to view their ticket.
-     */
+    // Get a single ticket by QR code string.
+    // Used by traveler to view their ticket.
     public function show(Request $request, string $qrCode): JsonResponse
     {
         $ticket = Ticket::with(['booking.route.operator', 'booking.route.bus', 'user'])
@@ -37,10 +34,9 @@ class TicketController extends Controller
         return response()->json(['ticket' => $this->formatTicket($ticket)]);
     }
 
-    /**
-     * Verify a ticket at the bus station (operator only).
-     * Marks the ticket as used if valid.
-     */
+    // Verify a ticket at the bus station (operator only).
+    // Marks the ticket as used if valid.
+     
     public function verify(Request $request): JsonResponse
     {
         $data = $request->validate([
@@ -71,7 +67,7 @@ class TicketController extends Controller
         ]);
     }
 
-    // ─── Private Helpers ──────────────────────────────────────────────
+    // private helpers
 
     private function formatTicket(Ticket $ticket): array
     {

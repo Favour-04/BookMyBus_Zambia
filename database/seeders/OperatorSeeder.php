@@ -43,7 +43,7 @@ class OperatorSeeder extends Seeder
                 'password'     => Hash::make('Operator@1234'),
                 'tpin'         => 'ZM-TPIN-10003',
                 'address'      => 'Chachacha Road, Lusaka',
-                'is_verified'  => false, // pending — to test admin verify flow
+                'is_verified'  => false, // pending — to test admin verification flow
             ],
         ];
 

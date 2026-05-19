@@ -12,8 +12,8 @@ use Illuminate\Http\JsonResponse;
 
 class AdminController extends Controller
 {
-    /**
-     * System overview dashboard stats.
+    /*
+      System overview dashboard stats.
      */
     public function dashboard(): JsonResponse
     {
@@ -27,12 +27,12 @@ class AdminController extends Controller
         ]);
     }
 
-    /**
-     * List all operators (verified and pending).
+    /*
+      List of all operators (whether verified and pending).
      */
     public function operators(Request $request): JsonResponse
     {
-        $status    = $request->query('status', 'all'); // all | pending | verified
+        $status    = $request->query('status', 'all');
         $query     = Operator::withCount(['buses', 'routes']);
 
         if ($status === 'pending') {
@@ -44,8 +44,8 @@ class AdminController extends Controller
         return response()->json(['operators' => $query->get()]);
     }
 
-    /**
-     * Approve / verify a bus operator.
+    /*
+     Function for approving and verifying a bus operator.
      */
     public function verifyOperator(Request $request, int $id): JsonResponse
     {
@@ -67,8 +67,8 @@ class AdminController extends Controller
         ]);
     }
 
-    /**
-     * Suspend / unverify an operator.
+    /*
+     Suspend / unverify an operator.
      */
     public function suspendOperator(int $id): JsonResponse
     {
@@ -83,9 +83,9 @@ class AdminController extends Controller
         return response()->json(['message' => 'Operator suspended successfully.']);
     }
 
-    /**
-     * List all travelers.
-     */
+   
+     // List all travelers.
+     
     public function users(): JsonResponse
     {
         $users = User::where('role', 'traveler')
@@ -96,9 +96,8 @@ class AdminController extends Controller
         return response()->json(['users' => $users]);
     }
 
-    /**
-     * List all bookings system-wide.
-     */
+    //List all bookings system-wide.
+     
     public function bookings(Request $request): JsonResponse
     {
         $status   = $request->query('status');

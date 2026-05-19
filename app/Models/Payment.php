@@ -26,23 +26,22 @@ class Payment extends Model
         'paid_at'          => 'datetime',
     ];
 
-    // ─── Relationships ───────────────────────────────────────────────
+    // relationship definitions
 
     public function booking()
     {
         return $this->belongsTo(Booking::class);
     }
 
-    // ─── Helpers ─────────────────────────────────────────────────────
+    // helper methods
 
     public function isSuccessful(): bool
     {
         return $this->status === 'successful';
     }
 
-    /**
-     * Mark payment as successful and confirm the linked booking.
-     */
+    // Mark payment as successful and confirm the linked booking.
+    
     public function markSuccessful(string $transactionRef, array $gatewayResponse = []): void
     {
         $this->update([
@@ -55,9 +54,7 @@ class Payment extends Model
         $this->booking->update(['status' => 'confirmed']);
     }
 
-    /**
-     * Mark payment as failed.
-     */
+    // Mark payment as failed.
     public function markFailed(array $gatewayResponse = []): void
     {
         $this->update([

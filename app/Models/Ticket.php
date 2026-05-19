@@ -24,20 +24,20 @@ class Ticket extends Model
         'used_at'   => 'datetime',
     ];
 
-    // ─── Boot ────────────────────────────────────────────────────────
+    // Boot
 
     protected static function boot()
     {
         parent::boot();
 
-        // Auto-generate a unique QR code string on creation
+        // function to auto generate a unique QR code string on creation
         static::creating(function ($ticket) {
             $ticket->qr_code   = 'BMZ-QR-' . strtoupper(Str::uuid());
             $ticket->issued_at = now();
         });
     }
 
-    // ─── Relationships ───────────────────────────────────────────────
+    // relationship definitions
 
     public function booking()
     {
@@ -49,7 +49,7 @@ class Ticket extends Model
         return $this->belongsTo(User::class);
     }
 
-    // ─── Helpers ─────────────────────────────────────────────────────
+    // function helpers
 
     public function markAsUsed(): void
     {

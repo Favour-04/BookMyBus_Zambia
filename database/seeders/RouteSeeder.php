@@ -24,7 +24,7 @@ class RouteSeeder extends Seeder
         $dayAfter = now()->addDays(2)->toDateString();
 
         $routes = [
-            // ── Power Tools ─────────────────────────────────────────
+            // Power tools bus services
             [
                 'operator_id'    => $powerTools->id,
                 'bus_id'         => $ptEconomy->id,
@@ -70,7 +70,7 @@ class RouteSeeder extends Seeder
                 'is_active'      => true,
             ],
 
-            // ── Shalom Express ───────────────────────────────────────
+            // Shalom express
             [
                 'operator_id'    => $shalom->id,
                 'bus_id'         => $shEconomy->id,
