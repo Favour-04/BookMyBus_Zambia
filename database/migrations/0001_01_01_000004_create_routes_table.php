@@ -12,8 +12,9 @@ return new class extends Migration
             $table->id();
             $table->foreignId('operator_id')->constrained('operators')->cascadeOnDelete();
             $table->foreignId('bus_id')->constrained('buses')->cascadeOnDelete();
-            $table->string('origin');
-            $table->string('destination');
+            $table->string('origin')->comment('Origin town/city');
+            $table->string('destination')->comment('Destination town/city');
+            $table->decimal('distance_km', 8, 2)->nullable()->index()->comment('Distance in kilometers');
             $table->time('departure_time');
             $table->time('arrival_time')->nullable();
             $table->decimal('fare', 10, 2);
@@ -23,6 +24,8 @@ return new class extends Migration
             $table->softDeletes();
 
             $table->index(['origin', 'destination']);
+            $table->index('origin');
+            $table->index('destination');
             $table->index('travel_date');
         });
     }

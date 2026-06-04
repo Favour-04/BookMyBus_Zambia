@@ -15,6 +15,7 @@ class Booking extends Model
         'user_id',
         'route_id',
         'seat_number',
+        'amount',
         'status',
         'held_until',
         'reference_id',
@@ -22,6 +23,7 @@ class Booking extends Model
 
     protected $casts = [
         'held_until' => 'datetime',
+        'amount' => 'decimal:2',
     ];
 
     // boot

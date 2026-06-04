@@ -15,6 +15,7 @@ class Route extends Model
         'bus_id',
         'origin',
         'destination',
+        'distance_km',
         'departure_time',
         'arrival_time',
         'fare',
@@ -24,9 +25,17 @@ class Route extends Model
 
     protected $casts = [
         'fare'        => 'decimal:2',
+        'distance_km' => 'decimal:2',
         'travel_date' => 'date',
         'is_active'   => 'boolean',
     ];
+
+    // Query scopes
+    public function scopeSearch($query, $origin, $destination)
+    {
+        return $query->where('origin', 'ilike', '%' . $origin . '%')
+                     ->where('destination', 'ilike', '%' . $destination . '%');
+    }
 
     // relationships definitions
 

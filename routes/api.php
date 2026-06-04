@@ -12,7 +12,6 @@ use Illuminate\Support\Facades\Route;
 /*
  BookMyBus Zambia — API Routes
 
-
 Guards:
 auth:sanctum          → Traveler (User model)
 auth:operator_api     → Operator (Operator model)  *custom guard*
