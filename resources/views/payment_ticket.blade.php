@@ -76,7 +76,7 @@
                     "body": ["Inter"],
                     "label": ["Inter"]
             }
-          },
+        },
         },
       }
     </script>
@@ -116,6 +116,8 @@
 <h1 class="text-4xl font-black font-headline tracking-tight text-on-surface mb-2">Secure Checkout</h1>
 <p class="text-on-surface-variant font-medium">Finalize your booking to {{ $destination ?? 'Lusaka' }} securely.</p>
 </header>
+<form method="POST" action="{{ route('payment.process', $booking->id) }}">
+@csrf
 <section class="space-y-4">
 <h2 class="text-sm font-bold uppercase tracking-widest text-secondary font-label">Mobile Money Wallets</h2>
 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -131,7 +133,7 @@
 <p class="text-xs text-on-surface-variant mb-4">Pay instantly using your Airtel number</p>
 <span class="text-xs font-bold text-primary flex items-center gap-1">
 <span class="material-symbols-outlined text-sm">verified_user</span> Secure Network
-                    </span>
+                </span>
 </div>
 <!-- MTN Money Option -->
 <div class="group relative bg-surface-container-lowest p-6 rounded-xl shadow-sm cursor-pointer hover:shadow-md transition-all border-2 border-primary">
@@ -145,7 +147,7 @@
 <p class="text-xs text-on-surface-variant mb-4">Confirm on your phone via USSD prompt</p>
 <span class="text-xs font-bold text-primary flex items-center gap-1">
 <span class="material-symbols-outlined text-sm">verified_user</span> Recommended
-                    </span>
+                </span>
 </div>
 </div>
 </section>
@@ -153,15 +155,16 @@
 <div class="flex items-center gap-4">
 <span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">phone_iphone</span>
 <div class="flex-1">
-<label class="block text-xs font-bold uppercase text-on-surface-variant tracking-wider mb-1">MTN Phone Number</label>
+<label class="block text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-1">MTN Phone Number</label>
 <input class="w-full bg-surface-container-lowest border-none rounded-lg p-4 font-headline font-bold text-lg focus:ring-2 focus:ring-primary/30 transition-shadow outline-none" placeholder="096 XXX XXXX" type="text"/>
 </div>
 </div>
-<button class="w-full py-4 rounded-xl bg-gradient-to-br from-primary to-primary-container text-white font-headline font-bold text-lg shadow-lg hover:shadow-primary/20 transition-all active:scale-[0.98]">
+<button type="submit" class="w-full py-4 rounded-xl bg-gradient-to-br from-primary to-primary-container text-white font-headline font-bold text-lg shadow-lg hover:shadow-primary/20 transition-all active:scale-[0.98]">
                         Pay with MTN/Airtel Money • ZMW{{ number_format($total_fare, 2) }}
                     </button>
 <p class="text-center text-xs text-on-surface-variant">By clicking authorize, you will receive a prompt on your phone to enter your PIN.</p>
 </section>
+</form>
 </div>
 <!-- Right Column: Digital Ticket & Summary -->
 <div class="lg:col-span-5">
@@ -246,7 +249,7 @@
 <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
 <div class="space-y-4">
 <div class="font-manrope font-bold text-zinc-900 dark:text-zinc-100">BookMyBus Zambia</div>
-<p class="font-inter text-xs text-zinc-500 dark:text-zinc-400">© 2024 BookMyBus Zambia. Premium Travel Excellence.</p>
+<div class="font-inter text-xs text-zinc-500 dark:text-zinc-400">© 2024 BookMyBus Zambia. Premium Travel Excellence.</div>
 </div>
 <div class="flex flex-wrap gap-6 md:justify-end">
 <a class="font-inter text-xs text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 underline underline-offset-4 transition-opacity hover:opacity-80" href="#">Privacy Policy</a>

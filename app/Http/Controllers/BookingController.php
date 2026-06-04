@@ -69,4 +69,30 @@ class BookingController extends Controller
             'booking_id' => $booking->reference_id,
         ]);
     }
+
+    /*
+     * Process the payment for a booking.
+     * Updates status from 'pending' to 'confirmed'.
+     */
+    public function processPayment(Booking $booking)
+    {
+        // Update booking status from pending to confirmed
+        $booking->update([
+            'status' => 'confirmed',
+        ]);
+
+        // Redirect to success page
+        return redirect()->route('booking.success', $booking->id);
+    }
+
+    /**
+     * Display the success page (digital ticket).
+     */
+    public function success(Booking $booking)
+    {
+        // Load relationships for the ticket display
+        $booking->load(['route.bus', 'route.operator']);
+        
+        return view('history_page', compact('booking'));
+    }
 }

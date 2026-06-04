@@ -1,5 +1,5 @@
 <!-- TODO: This view should extend layouts.app when a layout is available -->
-<!-- TODO: Loop through 'bookings' from database to display travel history -->
+<!-- Digital Ticket View - Displays a single confirmed booking -->
 
 <!doctype html>
 
@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>Travel History | BookMyBus Zambia</title>
+    <title>Digital Ticket | BookMyBus Zambia</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link
       href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=Inter:wght@400;500;600&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
@@ -148,259 +148,126 @@
     </nav>
 
     <main class="pt-24 pb-16">
-      <section class="relative overflow-hidden px-6">
-        <div
-          class="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(0,96,31,0.18),_transparent_30%),radial-gradient(circle_at_bottom_left,_rgba(255,141,33,0.16),_transparent_30%)]"
-        ></div>
-        <div
-          class="relative max-w-7xl mx-auto grid gap-10 lg:grid-cols-[1.3fr,_0.9fr] items-center"
-        >
-          <div class="space-y-6">
-            <span
-              class="inline-flex items-center gap-2 text-xs uppercase tracking-[0.3em] font-bold text-secondary"
-            >
-              <span class="material-symbols-outlined">history</span>
-              Travel History
-            </span>
-            <h1
-              class="text-5xl md:text-6xl font-extrabold tracking-tight max-w-3xl"
-            >
-              Your journeys, saved and ready to review.
-            </h1>
-            <p class="text-lg text-on-surface-variant max-w-2xl">
-              See your completed trips, payment history and boarding records in
-              one elegant, easy-to-scan timeline.
-            </p>
-            <div class="grid sm:grid-cols-3 gap-4">
-              <div
-                class="bg-surface-container-lowest rounded-3xl p-6 editorial-shadow border border-surface-container-highest"
-              >
-                <p
-                  class="text-xs uppercase tracking-[0.3em] font-bold text-zinc-500"
-                >
-                  Trips Completed
-                </p>
-                <p class="text-4xl font-extrabold text-on-surface mt-3">18</p>
-              </div>
-              <div
-                class="bg-surface-container-lowest rounded-3xl p-6 editorial-shadow border border-surface-container-highest"
-              >
-                <p
-                  class="text-xs uppercase tracking-[0.3em] font-bold text-zinc-500"
-                >
-                  Saved Receipts
-                </p>
-                <p class="text-4xl font-extrabold text-on-surface mt-3">12</p>
-              </div>
-              <div
-                class="bg-surface-container-lowest rounded-3xl p-6 editorial-shadow border border-surface-container-highest"
-              >
-                <p
-                  class="text-xs uppercase tracking-[0.3em] font-bold text-zinc-500"
-                >
-                  Last Trip
-                </p>
-                <p class="text-4xl font-extrabold text-on-surface mt-3">
-                  2 days ago
-                </p>
-              </div>
-            </div>
-          </div>
-          <div
-            class="rounded-[2rem] overflow-hidden shadow-xl shadow-primary/10 bg-white border border-surface-container-highest"
-          >
-            <img
-              class="w-full h-full object-cover min-h-[420px]"
-              data-alt="Luxury coach bus traveling on a scenic Zambian highway"
-              src="https://lh3.googleusercontent.com/aida-public/AB6AXuDk0Dlz3kz8govksGNNICUM9-j8vL7Yon5vj-d_62Af9GeHSg1Xug_R0TlK9veZpFbgC_oejPsCpAQr0l8wvuUN_iOXbwgj4WRvh1fVY3FX3BZoWNw2sz9d4mW33rERvAfkJ_63pxYzhVQB46HITvif6J4bFr2yh4PYyGlUt3Kw4J9BJ7JhORkiTuUg1gplwcGy3laWI4Uvvnd6t1tnX1V9GktQ9QqNQVifCYfXCi60Wi4uTGLJ96VPI73U0OijKpre_xvwA1JOg7PX"
-            />
-          </div>
-        </div>
-      </section>
-
-      <section id="history" class="max-w-7xl mx-auto px-6 mt-16">
-        <div
-          class="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-8"
-        >
-          <div>
-            <p
-              class="text-sm uppercase tracking-[0.35em] text-secondary font-bold"
-            >
-              Trip archive
-            </p>
-            <h2 class="text-3xl font-extrabold text-on-surface mt-3">
-              Recent travel history
+      @if($booking && $booking->isConfirmed())
+      <!-- Payment Successful Banner -->
+      <section class="bg-primary-container py-6 mb-8">
+        <div class="max-w-7xl mx-auto px-6">
+          <div class="flex items-center justify-center gap-3">
+            <span class="material-symbols-outlined text-primary text-3xl" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+            <h2 class="text-2xl font-extrabold font-headline text-on-primary-container">
+              PAYMENT SUCCESSFUL
             </h2>
           </div>
-          <button
-            class="inline-flex items-center gap-2 rounded-full bg-primary text-white px-5 py-3 font-bold text-sm shadow-lg shadow-primary/20 hover:brightness-105 transition-all"
-          >
-            <span class="material-symbols-outlined">download</span>
-            Export history
-          </button>
         </div>
+      </section>
+      @endif
 
-        <div class="grid gap-6 lg:grid-cols-2">
-          {{-- TODO: Loop through 'bookings' from database to display travel history --}}
-          @foreach($bookings ?? [] as $booking)
-          <article
-            class="bg-white rounded-[2rem] p-6 editorial-shadow border border-surface-container-highest"
-          >
-            <div class="flex items-center justify-between mb-4">
-              <div>
-                <p
-                  class="text-xs uppercase tracking-[0.3em] text-zinc-400 font-bold"
-                >
-                  Completed
-                </p>
-                <h3 class="text-xl font-extrabold text-on-surface mt-2">
-                  {{ $booking->origin ?? 'Lusaka' }} → {{ $booking->destination ?? 'Livingstone' }}
-                </h3>
-              </div>
-              <span
-                class="inline-flex items-center gap-2 rounded-full bg-secondary-container/10 text-secondary px-3 py-1 text-xs font-bold uppercase"
-              >
-                Completed
-              </span>
-            </div>
-            <div class="grid grid-cols-2 gap-4 text-sm text-zinc-500 mb-6">
-              <div>
-                <p class="font-semibold text-on-surface">{{ $booking->date ?? '24 Oct 2024' }}</p>
-                <p class="mt-1">{{ $booking->time ?? '08:30 AM' }}</p>
-              </div>
-              <div>
-                <p class="font-semibold text-on-surface">{{ $booking->seat ?? '14A' }}</p>
-                <p class="mt-1">K {{ $booking->fare ?? '420' }}</p>
+      <!-- Digital Ticket Display -->
+      <section class="max-w-3xl mx-auto px-6">
+        <div class="relative">
+          <!-- Top Notch -->
+          <div class="absolute -top-3 left-1/2 -translate-x-1/2 w-12 h-6 bg-surface rounded-b-full z-10"></div>
+          
+          <div class="bg-surface-container-lowest rounded-2xl shadow-xl overflow-hidden relative">
+            <!-- Visual Header -->
+            <div class="h-32 relative">
+              <img class="w-full h-full object-cover" 
+                   data-alt="Modern coach bus driving through a scenic Zambian highway landscape" 
+                   src="https://lh3.googleusercontent.com/aida-public/AB6AXuBtACWHf96GQ2Q6lm8qydU0xrhEVka89gUOGcMoH974Us9bOlDAAtmr10nk6iIVJ98jsWJWTii8Y8xLjDrFPGlxmNfkI3FGH_6VBr36Xy3f7LlCdbSg2-0_ZP_SiM83Ez88uCg3arvxEVQaOe61WNm9VIt3cvWqw1dkKoQHxHtajf-ws6BRAPpzQED8jlxcNOuEO_ywfSvtmIzSz9cKzbFuJfqHi-ADDDJ6v4amXeggpOH57W9NqViHzH1pa8mfsF4oaXs1MVj_wgc4"/>
+              <div class="absolute inset-0 bg-gradient-to-t from-surface-container-lowest to-transparent"></div>
+              <div class="absolute bottom-4 left-6">
+                <span class="px-3 py-1 bg-primary text-white text-[10px] font-bold uppercase tracking-widest rounded-full">
+                  {{ $booking->isConfirmed() ? 'Confirmed' : 'Pending' }}
+                </span>
               </div>
             </div>
-            <p class="text-sm text-zinc-600 leading-7">
-              {{ $booking->description ?? 'A smooth executive journey through Zambia\'s southern corridor with complimentary Wi-Fi and bottled water.' }}
-            </p>
-            <div class="mt-6 flex flex-wrap gap-3">
-              <span
-                class="inline-flex items-center gap-2 rounded-full bg-surface-container-low px-4 py-2 text-[11px] font-bold uppercase tracking-[0.2em] text-zinc-500"
-              >
-                <span class="material-symbols-outlined text-[16px]"
-                  >check_circle</span
-                >
-                On-time
-              </span>
-              <span
-                class="inline-flex items-center gap-2 rounded-full bg-surface-container-low px-4 py-2 text-[11px] font-bold uppercase tracking-[0.2em] text-zinc-500"
-              >
-                <span class="material-symbols-outlined text-[16px]">wifi</span>
-                Wi-Fi onboard
-              </span>
+
+            <div class="p-8 space-y-8">
+              <!-- Passenger & Seat Info -->
+              <div class="flex justify-between items-center">
+                <div class="space-y-1">
+                  <p class="text-[10px] font-bold uppercase text-on-surface-variant tracking-widest">Passenger</p>
+                  <p class="font-headline font-extrabold text-xl">{{ $booking->passenger_name ?? 'John Mulenga' }}</p>
+                </div>
+                <div class="text-right space-y-1">
+                  <p class="text-[10px] font-bold uppercase text-on-surface-variant tracking-widest">Seat</p>
+                  <p class="font-headline font-extrabold text-xl text-secondary">{{ $booking->seat_number }}</p>
+                </div>
+              </div>
+
+              <!-- Route Info -->
+              <div class="flex items-center gap-6 justify-between relative">
+                <div class="flex-1">
+                  <p class="font-black text-2xl font-headline">{{ $booking->route->origin }}</p>
+                  <p class="text-xs font-medium text-on-surface-variant">{{ $booking->route->origin }}</p>
+                </div>
+                <div class="flex flex-col items-center gap-1">
+                  <span class="material-symbols-outlined text-primary">directions_bus</span>
+                  <div class="h-[2px] w-12 bg-surface-container-highest"></div>
+                </div>
+                <div class="flex-1 text-right">
+                  <p class="font-black text-2xl font-headline">{{ $booking->route->destination }}</p>
+                  <p class="text-xs font-medium text-on-surface-variant">{{ $booking->route->destination }}</p>
+                </div>
+              </div>
+
+              <!-- Departure & Booking ID -->
+              <div class="grid grid-cols-2 gap-6 pt-6 border-t border-dashed border-outline-variant">
+                <div>
+                  <p class="text-[10px] font-bold uppercase text-on-surface-variant tracking-widest mb-1">Departure</p>
+                  <p class="font-bold text-sm">{{ $booking->route->travel_date->format('d M, Y') }}</p>
+                  <p class="text-xs text-on-surface-variant">{{ $booking->route->departure_time }}</p>
+                </div>
+                <div class="text-right">
+                  <p class="text-[10px] font-bold uppercase text-on-surface-variant tracking-widest mb-1">Booking ID</p>
+                  <p class="font-bold text-sm">{{ $booking->reference_id }}</p>
+                  <p class="text-xs text-on-surface-variant">{{ $booking->route->bus->bus_class ?? 'Premium Class' }}</p>
+                </div>
+              </div>
+
+              <!-- Operator & Bus Info -->
+              <div class="grid grid-cols-2 gap-6 pt-4 border-t border-dashed border-outline-variant">
+                <div>
+                  <p class="text-[10px] font-bold uppercase text-on-surface-variant tracking-widest mb-1">Operator</p>
+                  <p class="font-bold text-sm">{{ $booking->route->operator->company_name ?? 'BookMyBus Operator' }}</p>
+                </div>
+                <div class="text-right">
+                  <p class="text-[10px] font-bold uppercase text-on-surface-variant tracking-widest mb-1">Bus Number</p>
+                  <p class="font-bold text-sm">{{ $booking->route->bus->registration_number ?? 'ABC-123' }}</p>
+                </div>
+              </div>
+
+              <!-- QR Code Area -->
+              <div class="flex flex-col items-center pt-8">
+                <div class="p-4 bg-surface-container-low rounded-xl">
+                  <div class="w-32 h-32 bg-white flex items-center justify-center border-4 border-white">
+                    <img alt="Ticket QR Code" 
+                         class="w-full h-full" 
+                         src="https://api.qrserver.com/v1/create-qr-code/?size=128x128&data={{ urlencode($booking->reference_id) }}"/>
+                  </div>
+                </div>
+                <p class="mt-4 text-[10px] font-bold text-on-surface-variant uppercase tracking-[0.2em]">Scan at boarding</p>
+              </div>
             </div>
-          </article>
-          @endforeach
+          </div>
+
+          <!-- Bottom Notch -->
+          <div class="absolute -bottom-3 left-1/2 -translate-x-1/2 w-12 h-6 bg-surface rounded-t-full z-10"></div>
         </div>
       </section>
 
-      <section id="past-bookings" class="max-w-7xl mx-auto px-6 mt-14">
-        <div
-          class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6"
-        >
-          <div>
-            <p
-              class="text-sm uppercase tracking-[0.35em] text-secondary font-bold"
-            >
-              Booking history
-            </p>
-            <h2 class="text-3xl font-extrabold text-on-surface mt-3">
-              All past journeys
-            </h2>
-          </div>
-          <div
-            class="rounded-full bg-surface-container-low px-4 py-3 text-sm text-zinc-600"
-          >
-            Showing {{ count($bookings ?? []) }} recent trips
-          </div>
-        </div>
-
-        <div
-          class="overflow-hidden rounded-[2rem] border border-surface-container-highest bg-white editorial-shadow"
-        >
-          <table class="min-w-full text-left border-collapse">
-            <thead
-              class="bg-surface-container-low text-zinc-500 text-[11px] uppercase tracking-[0.25em] font-bold"
-            >
-              <tr>
-                <th class="px-6 py-4">Route</th>
-                <th class="px-6 py-4">Date</th>
-                <th class="px-6 py-4">Departure</th>
-                <th class="px-6 py-4">Seat</th>
-                <th class="px-6 py-4">Fare</th>
-                <th class="px-6 py-4">Status</th>
-              </tr>
-            </thead>
-            <tbody class="divide-y divide-surface-container-highest">
-              {{-- TODO: Loop through 'bookings' to display in table format --}}
-              @foreach($bookings ?? [] as $booking)
-              <tr class="hover:bg-surface-container-lowest transition-colors">
-                <td class="px-6 py-5 font-semibold text-on-surface">
-                  {{ $booking->origin ?? 'Lusaka' }} → {{ $booking->destination ?? 'Livingstone' }}
-                </td>
-                <td class="px-6 py-5 text-zinc-500">{{ $booking->date ?? '24 Oct 2024' }}</td>
-                <td class="px-6 py-5 text-zinc-500">{{ $booking->time ?? '08:30 AM' }}</td>
-                <td class="px-6 py-5 text-zinc-500">{{ $booking->seat ?? '14A' }}</td>
-                <td class="px-6 py-5 font-semibold text-on-surface">K {{ $booking->fare ?? '420' }}</td>
-                <td class="px-6 py-5 text-sm text-secondary font-bold">
-                  Completed
-                </td>
-              </tr>
-              @endforeach
-            </tbody>
-          </table>
-        </div>
-      </section>
-
-      <section id="support" class="max-w-7xl mx-auto px-6 mt-14">
-        <div
-          class="rounded-[2rem] bg-surface-container-lowest p-8 editorial-shadow border border-surface-container-highest"
-        >
-          <div
-            class="flex flex-col md:flex-row md:items-center md:justify-between gap-6"
-          >
+      <!-- Fare Summary -->
+      <section class="max-w-3xl mx-auto px-6 mt-8">
+        <div class="bg-surface-container-lowest rounded-2xl p-6 border border-surface-container-highest">
+          <div class="flex justify-between items-center">
             <div>
-              <p
-                class="text-sm uppercase tracking-[0.35em] text-secondary font-bold"
-              >
-                Need help?
-              </p>
-              <h2 class="text-3xl font-extrabold text-on-surface mt-3">
-                Customer support for historical trips
-              </h2>
+              <p class="text-xs uppercase tracking-widest text-on-surface-variant font-bold">Total Fare</p>
+              <p class="text-2xl font-extrabold font-headline text-primary">ZMW {{ number_format($booking->amount, 2) }}</p>
             </div>
-            <button
-              class="inline-flex items-center gap-2 rounded-full bg-primary text-white px-5 py-3 font-bold text-sm shadow-lg shadow-primary/20 hover:brightness-105 transition-all"
-            >
-              <span class="material-symbols-outlined">support_agent</span>
-              Contact support
-            </button>
-          </div>
-          <div class="mt-8 grid gap-4 sm:grid-cols-2">
-            <div
-              class="rounded-3xl bg-white p-6 border border-surface-container-highest"
-            >
-              <p class="text-sm font-bold text-on-surface">
-                Need your receipt?
-              </p>
-              <p class="mt-2 text-sm text-zinc-600">
-                Download invoices for any completed trip in seconds.
-              </p>
-            </div>
-            <div
-              class="rounded-3xl bg-white p-6 border border-surface-container-highest"
-            >
-              <p class="text-sm font-bold text-on-surface">
-                Report a journey issue
-              </p>
-              <p class="mt-2 text-sm text-zinc-600">
-                Share feedback or request help if a past journey had delays or
-                booking questions.
-              </p>
-            </div>
+            <a href="{{ route('trips.search') }}" 
+               class="px-6 py-3 rounded-xl bg-primary text-white font-bold text-sm hover:bg-primary-container transition-colors">
+              Book Another Trip
+            </a>
           </div>
         </div>
       </section>
