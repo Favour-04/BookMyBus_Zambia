@@ -110,7 +110,7 @@
         <div
           class="text-xl font-extrabold text-green-900 dark:text-green-100 tracking-tighter font-headline"
         >
-          BookMyBus Zambia
+          <a href="/">BookMyBus Zambia</a>
         </div>
         <div class="hidden md:flex items-center gap-8">
           <a

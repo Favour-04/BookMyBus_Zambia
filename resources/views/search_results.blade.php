@@ -90,7 +90,7 @@
 <!-- TopNavBar -->
 <nav class="fixed top-0 w-full z-50 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md shadow-sm dark:shadow-none">
 <div class="flex justify-between items-center px-6 py-4 max-w-7xl mx-auto w-full">
-<span class="text-xl font-extrabold text-green-900 dark:text-green-100 tracking-tighter">BookMyBus Zambia</span>
+<span class="text-xl font-extrabold text-green-900 dark:text-green-100 tracking-tighter"><a href="/">BookMyBus Zambia</a></span>
 <div class="hidden md:flex items-center gap-8 font-manrope tracking-tight font-bold text-sm">
 <a class="text-green-900 dark:text-green-100 border-b-2 border-orange-600 pb-1" href="/">Find Trips</a>
 <a class="text-zinc-600 dark:text-zinc-400 hover:text-green-900 dark:hover:text-green-100 transition-colors" href="#">My Bookings</a>

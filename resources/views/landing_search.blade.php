@@ -112,7 +112,7 @@
         <div
           class="text-xl font-extrabold text-green-900 dark:text-green-100 tracking-tighter font-headline"
         >
-          BookMyBus Zambia
+          <a href="#">BookMyBus Zambia</a>
         </div>
         <div class="hidden md:flex items-center gap-8">
           <a
@@ -151,119 +151,118 @@
     </nav>
     <main class="pt-20">
       <!-- Hero Section -->
-      <section
-        class="relative min-h-[870px] flex items-center justify-center px-6 overflow-hidden"
-      >
-        <div class="absolute inset-0 z-0">
-          <img
-            class="w-full h-full object-cover brightness-[0.6]"
-            data-alt="luxury modern motorcoach bus traveling on a wide open scenic Zambian highway during a bright clear morning"
-            src="https://lh3.googleusercontent.com/aida-public/AB6AXuDk0Dlz3kz8govksGNNICUM9-j8vL7Yon5vj-d_62Af9GeHSg1Xug_R0TlK9veZpFbgC_oejPsCpAQr0l8wvuUN_iOXbwgj4WRvh1fVY3FX3BZoWNw2sz9d4mW33rERvAfkJ_63pxYzhVQB46HITvif6J4bFr2yh4PYyGlUt3Kw4J9BJ7JhORkiTuUg1gplwcGy3laWI4Uvvnd6t1tnX1V9GktQ9QqNQVifCYfXCi60Wi4uTGLJ96VPI73U0OijKpre_xvwA1JOg7PX"
-          />
-        </div>
-        <div class="relative z-10 max-w-7xl mx-auto w-full">
-          <div class="max-w-3xl mb-12">
-            <h1
-              class="font-headline text-5xl md:text-7xl font-extrabold text-white tracking-tighter leading-none mb-6"
-            >
-              Travel Zambia with
-              <span class="text-secondary-container">Confidence.</span>
-            </h1>
-            <p class="text-xl text-white/90 max-w-xl font-body">
-              Experience the gold standard in bus travel. Secure your seat on
-              premium carriers across the nation with effortless mobile
-              payments.
-            </p>
-          </div>
-          <!-- Search Bar Card -->
-          <form action="{{ route('trips.search') }}" method="GET" class="bg-surface-container-lowest p-2 rounded-xl editorial-shadow w-full max-w-5xl">
-            <div class="grid grid-cols-1 md:grid-cols-12 gap-2">
-              <div
-                class="md:col-span-3 p-4 hover:bg-surface-container-low transition-colors rounded-lg cursor-pointer group"
+      <section style="position: relative; width: 100%; min-height: 650px; display: flex; align-items: center; background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://lh3.googleusercontent.com/aida-public/AB6AXuDk0Dlz3kz8govksGNNICUM9-j8vL7Yon5vj-d_62Af9GeHSg1Xug_R0TlK9veZpFbgC_oejPsCpAQr0l8wvuUN_iOXbwgj4WRvh1fVY3FX3BZoWNw2sz9d4mW33rERvAfkJ_63pxYzhVQB46HITvif6J4bFr2yh4PYyGlUt3Kw4J9BJ7JhORkiTuUg1gplwcGy3laWI4Uvvnd6t1tnX1V9GktQ9QqNQVifCYfXCi60Wi4uTGLJ96VPI73U0OijKpre_xvwA1JOg7PX'); background-size: cover; background-position: center; overflow: hidden; padding-top: 5rem; padding-bottom: 5rem;">
+      {{-- <section style="position: relative; width: 100%; min-height: 600px; display: flex; align-items: center; background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://lh3.googleusercontent.com/aida-public/AB6AXuDk0Dlz3kz8govksGNNICUM9-j8vL7Yon5vj-d_62Af9GeHSg1Xug_R0TlK9veZpFbgC_oejPsCpAQr0l8wvuUN_iOXbwgj4WRvh1fVY3FX3BZoWNw2sz9d4mW33rERvAfkJ_63pxYzhVQB46HITvif6J4bFr2yh4PYyGlUt3Kw4J9BJ7JhORkiTuUg1gplwcGy3laWI4Uvvnd6t1tnX1V9GktQ9QqNQVifCYfXCi60Wi4uTGLJ96VPI73U0OijKpre_xvwA1JOg7PX'); background-size: cover; background-position: center; overflow: hidden;"> --}}
+      {{-- <section style="position: relative; width: 100%; min-height: 550px; background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDk0Dlz3kz8govksGNNICUM9-j8vL7Yon5vj-d_62Af9GeHSg1Xug_R0TlK9veZpFbgC_oejPsCpAQr0l8wvuUN_iOXbwgj4WRvh1fVY3FX3BZoWNw2sz9d4mW33rERvAfkJ_63pxYzhVQB46HITvif6J4bFr2yh4PYyGlUt3Kw4J9BJ7JhORkiTuUg1gplwcGy3laWI4Uvvnd6t1tnX1V9GktQ9QqNQVifCYfXCi60Wi4uTGLJ96VPI73U0OijKpre_xvwA1JOg7PX'); background-size: cover; background-position: center; background-color: #000; overflow: hidden;"> --}}
+        {{-- <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none;">
+          <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDk0Dlz3kz8govksGNNICUM9-j8vL7Yon5vj-d_62Af9GeHSg1Xug_R0TlK9veZpFbgC_oejPsCpAQr0l8wvuUN_iOXbwgj4WRvh1fVY3FX3BZoWNw2sz9d4mW33rERvAfkJ_63pxYzhVQB46HITvif6J4bFr2yh4PYyGlUt3Kw4J9BJ7JhORkiTuUg1gplwcGy3laWI4Uvvnd6t1tnX1V9GktQ9QqNQVifCYfXCi60Wi4uTGLJ96VPI73U0OijKpre_xvwA1JOg7PX" 
+               style="width: 100%; height: 100%; object-fit: cover; opacity: 0.6; display: block;">
+        </div> --}}
+        <div style="position: relative; z-index: 10; width: 100%;">        {{-- <div style="position: relative; z-index: 10; width: 100%; min-height: 550px; display: flex; flex-direction: column; justify-content: center;"> --}}
+          <div class="max-w-7xl mx-auto w-full px-6">
+            <div class="max-w-3xl mb-12">
+              <h1
+                class="font-headline text-5xl md:text-7xl font-extrabold text-white tracking-tighter leading-none mb-6"
               >
-                <span
-                  class="text-[10px] uppercase font-bold text-outline tracking-widest block mb-1"
-                  >From</span
-                >
-                <div class="flex items-center gap-2">
-                  <span class="material-symbols-outlined text-primary text-xl"
-                    >location_on</span
-                  >
-                  <input
-                    class="bg-transparent border-none p-0 text-on-surface font-semibold focus:ring-0 w-full placeholder:text-surface-dim"
-                    placeholder="Lusaka"
-                    type="text"
-                    name="from"
-                    value="{{ request('from') }}"
-                  />
-                </div>
-              </div>
-              <div
-                class="md:col-span-3 p-4 hover:bg-surface-container-low transition-colors rounded-lg cursor-pointer group"
-              >
-                <span
-                  class="text-[10px] uppercase font-bold text-outline tracking-widest block mb-1"
-                  >To</span
-                >
-                <div class="flex items-center gap-2">
-                  <span class="material-symbols-outlined text-secondary text-xl"
-                    >map</span
-                  >
-                  <input
-                    class="bg-transparent border-none p-0 text-on-surface font-semibold focus:ring-0 w-full placeholder:text-surface-dim"
-                    placeholder="Livingstone"
-                    type="text"
-                    name="to"
-                    value="{{ request('to') }}"
-                  />
-                </div>
-              </div>
-              <div
-                class="md:col-span-2 p-4 hover:bg-surface-container-low transition-colors rounded-lg cursor-pointer group"
-              >
-                <span
-                  class="text-[10px] uppercase font-bold text-outline tracking-widest block mb-1"
-                  >Date</span
-                >
-                <div class="flex items-center gap-2">
-                  <span class="material-symbols-outlined text-outline text-xl"
-                    >calendar_today</span
-                  >
-                  <input
-                    class="bg-transparent border-none p-0 text-on-surface font-semibold focus:ring-0 w-full placeholder:text-surface-dim"
-                    placeholder="24 Oct 2024"
-                    type="text"
-                  />
-                </div>
-              </div>
-              <div
-                class="md:col-span-2 p-4 hover:bg-surface-container-low transition-colors rounded-lg cursor-pointer group"
-              >
-                <span
-                  class="text-[10px] uppercase font-bold text-outline tracking-widest block mb-1"
-                  >Passengers</span
-                >
-                <div class="flex items-center gap-2">
-                  <span class="material-symbols-outlined text-outline text-xl"
-                    >person</span
-                  >
-                  <input
-                    class="bg-transparent border-none p-0 text-on-surface font-semibold focus:ring-0 w-full placeholder:text-surface-dim"
-                    placeholder="1 Adult"
-                    type="text"
-                  />
-                </div>
-              </div>
-              <div class="md:col-span-2 p-2">
-                <button
-                  class="w-full h-full hero-gradient text-white font-headline font-extrabold rounded-lg hover:brightness-110 active:scale-95 transition-all flex items-center justify-center gap-2 py-4 md:py-0"
-                >
-                  <span>Find Trips</span>
-                  <span class="material-symbols-outlined">trending_flat</span>
-                </button>
-              </div>
+                Travel Zambia with
+                <span class="text-secondary-container">Confidence.</span>
+              </h1>
+              <p class="text-xl text-white/90 max-w-xl font-body">
+                Experience the gold standard in bus travel. Secure your seat on
+                premium carriers across the nation with effortless mobile
+                payments.
+              </p>
             </div>
-          </form>
+            <!-- Search Bar Card -->
+            <form action="{{ route('trips.search') }}" method="GET" class="bg-surface-container-lowest p-2 rounded-xl editorial-shadow w-full max-w-5xl">
+              <div class="grid grid-cols-1 md:grid-cols-12 gap-2">
+                <div
+                  class="md:col-span-3 p-4 hover:bg-surface-container-low transition-colors rounded-lg cursor-pointer group"
+                >
+                  <span
+                    class="text-[10px] uppercase font-bold text-outline tracking-widest block mb-1"
+                    >From</span
+                  >
+                  <div class="flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary text-xl"
+                      >location_on</span
+                    >
+                    <input
+                      class="bg-transparent border-none p-0 text-on-surface font-semibold focus:ring-0 w-full placeholder:text-surface-dim"
+                      placeholder="Lusaka"
+                      type="text"
+                      name="from"
+                      value="{{ request('from') }}"
+                    />
+                  </div>
+                </div>
+                <div
+                  class="md:col-span-3 p-4 hover:bg-surface-container-low transition-colors rounded-lg cursor-pointer group"
+                >
+                  <span
+                    class="text-[10px] uppercase font-bold text-outline tracking-widest block mb-1"
+                    >To</span
+                  >
+                  <div class="flex items-center gap-2">
+                    <span class="material-symbols-outlined text-secondary text-xl"
+                      >map</span
+                    >
+                    <input
+                      class="bg-transparent border-none p-0 text-on-surface font-semibold focus:ring-0 w-full placeholder:text-surface-dim"
+                      placeholder="Livingstone"
+                      type="text"
+                      name="to"
+                      value="{{ request('to') }}"
+                    />
+                  </div>
+                </div>
+                <div
+                  class="md:col-span-2 p-4 hover:bg-surface-container-low transition-colors rounded-lg cursor-pointer group"
+                >
+                  <span
+                    class="text-[10px] uppercase font-bold text-outline tracking-widest block mb-1"
+                    >Date</span
+                  >
+                  <div class="flex items-center gap-2">
+                    <span class="material-symbols-outlined text-outline text-xl"
+                      >calendar_today</span
+                    >
+                    <input
+                      class="bg-transparent border-none p-0 text-on-surface font-semibold focus:ring-0 w-full placeholder:text-surface-dim"
+                      placeholder="24 Oct 2024"
+                      type="text"
+                    />
+                  </div>
+                </div>
+                <div
+                  class="md:col-span-2 p-4 hover:bg-surface-container-low transition-colors rounded-lg cursor-pointer group"
+                >
+                  <span
+                    class="text-[10px] uppercase font-bold text-outline tracking-widest block mb-1"
+                    >Passengers</span
+                  >
+                  <div class="flex items-center gap-2">
+                    <span class="material-symbols-outlined text-outline text-xl"
+                      >person</span
+                    >
+                    <input
+                      class="bg-transparent border-none p-0 text-on-surface font-semibold focus:ring-0 w-full placeholder:text-surface-dim"
+                      placeholder="1 Adult"
+                      type="text"
+                    />
+                  </div>
+                </div>
+                <div class="md:col-span-2 p-2">
+                  <button
+                    class="w-full h-full hero-gradient text-white font-headline font-extrabold rounded-lg hover:brightness-110 active:scale-95 transition-all flex items-center justify-center gap-2 py-4 md:py-0"
+                  >
+                    <span>Find Trips</span>
+                    <span class="material-symbols-outlined">trending_flat</span>
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
         </div>
       </section>
       <!-- Why Choose Us - Bento Grid Pattern -->
