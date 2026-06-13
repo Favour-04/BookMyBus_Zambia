@@ -19,15 +19,15 @@ class BookingSeeder extends Seeder
 
         // Kitwe → Lusaka (economy, today) — first route seeded
         $kitweRoute    = Route::where('origin', 'Kitwe')
-                              ->where('destination', 'Lusaka')
-                              ->where('fare', 180.00)
-                              ->first();
+            ->where('destination', 'Lusaka')
+            ->where('fare', 180.00)
+            ->first();
 
         // Lusaka → Livingstone (economy, today)
         $livingstoneRoute = Route::where('origin', 'Lusaka')
-                                 ->where('destination', 'Livingstone')
-                                 ->where('fare', 220.00)
-                                 ->first();
+            ->where('destination', 'Livingstone')
+            ->where('fare', 220.00)
+            ->first();
 
         $seed = [
             // Confirmed booking + payment + ticket
@@ -35,6 +35,7 @@ class BookingSeeder extends Seeder
                 'user'        => $chanda,
                 'route'       => $kitweRoute,
                 'seat_number' => 5,
+                'amount'      => $kitweRoute->fare,
                 'status'      => 'confirmed',
                 'with_ticket' => true,
             ],
@@ -42,6 +43,7 @@ class BookingSeeder extends Seeder
                 'user'        => $mutale,
                 'route'       => $kitweRoute,
                 'seat_number' => 6,
+                'amount'      => $kitweRoute->fare,
                 'status'      => 'confirmed',
                 'with_ticket' => true,
             ],
@@ -50,6 +52,7 @@ class BookingSeeder extends Seeder
                 'user'        => $natasha,
                 'route'       => $kitweRoute,
                 'seat_number' => 7,
+                'amount'      => $kitweRoute->fare,
                 'status'      => 'pending',
                 'with_ticket' => false,
             ],
@@ -58,6 +61,7 @@ class BookingSeeder extends Seeder
                 'user'        => $natasha,
                 'route'       => $livingstoneRoute,
                 'seat_number' => 12,
+                'amount'      => $livingstoneRoute->fare,
                 'status'      => 'confirmed',
                 'with_ticket' => true,
             ],
@@ -68,6 +72,7 @@ class BookingSeeder extends Seeder
                 'user_id'     => $item['user']->id,
                 'route_id'    => $item['route']->id,
                 'seat_number' => $item['seat_number'],
+                'amount'      => $item['amount'],
                 'status'      => $item['status'],
             ]);
 
