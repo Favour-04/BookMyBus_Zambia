@@ -420,9 +420,21 @@
                 href="{{ route('trips.search', ['from' => $route->origin, 'to' => $route->destination, 'date' => \Carbon\Carbon::now()->format('Y-m-d')])}}">
                 <div class="group cursor-pointer">
                   <div class="relative h-[400px] rounded-2xl overflow-hidden mb-6">
+                    @php
+                        $cityFolder = strtolower(trim($route -> destination));
+                        $folderPath = public_path("images/cities/{$cityFolder}");
+                        $randomImageUrl = "https://placehold.co/400x400?text=" . urlencode($route -> destination);
+                        if(is_dir($folderPath)){
+                          $images = glob($folderPath . '/*{jpg,jpeg,png,webp,gif}', GLOB_BRACE);
+                          if(!empty($images)){
+                            $randomImageFile = $images[array_rand($images)];
+                            $randomImageUrl = asset("images/cities/{$cityFolder}/" . basename($randomImageFile));
+                          }
+                        }
+                    @endphp
                     <img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                      data-alt="Scenic route from {{ $route->origin }} to {{ $route->destination }}"
-                      src="https://placehold.co/400x400?text={{ $route->origin }}+to+{{ $route->destination }}" />
+                      data-alt="Scenic route from {{ $route->destination }}"
+                      src="{{ $randomImageUrl }}" />
                     <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
                     <div class="absolute bottom-6 left-6">
                       <span
