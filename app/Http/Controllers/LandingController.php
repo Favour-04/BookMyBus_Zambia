@@ -74,7 +74,7 @@ class LandingController extends Controller
      */
     public function search(Request $request)
     {
-        $trips = Route::search($request->from, $request->to)
+        $trips = Route::search($request->origin, $request->destination, $request->travel_date)
             ->where('is_active', true)
             ->with(['bus', 'operator'])
             ->get();

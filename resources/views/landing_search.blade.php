@@ -217,7 +217,7 @@
 
                         <input
                           class="bg-transparent border-none p-0 text-on-surface font-semibold focus:ring-0 w-full placeholder:text-surface-dim"
-                          placeholder="Lusaka" required type="text" name="from" value="{{ request('from') }}" />
+                          placeholder="Lusaka" required type="text" name="origin" value="{{ request('origin') }}" />
                       </div>
                     </div>
                     <div
@@ -232,7 +232,7 @@
 
                         <input
                           class="bg-transparent border-none p-0 text-on-surface font-semibold focus:ring-0 w-full placeholder:text-surface-dim"
-                          placeholder="Kitwe" required type="text" name="to" value="{{ request('to') }}" />
+                          placeholder="Kitwe" required type="text" name="destination" value="{{ request('destination') }}" />
                       </div>
                     </div>
                     <div
@@ -247,7 +247,8 @@
                         <input
                           class="bg-transparent border-none p-0 text-on-surface font-semibold focus:ring-0 w-full placeholder:text-surface-dim"
                           placeholder="{{\Carbon\Carbon::now() -> format('Y-m-d')}}" type="date" required
-                          value="{{ request('date', \Carbon\Carbon::now() -> format('Y-m-d'))}}"
+                          name="travel_date"
+                          value="{{ request('travel_date', \Carbon\Carbon::now() -> format('Y-m-d'))}}"
                           min="{{ \Carbon\Carbon::now() -> format('Y-m-d')}}"
                           max="{{ \Carbon\Carbon::now() -> addDays(30) -> format('Y-m-d')}}" />
                       </div>
@@ -417,7 +418,8 @@
             <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
               @foreach($routes as $route)
               <a
-                href="{{ route('trips.search', ['from' => $route->origin, 'to' => $route->destination, 'date' => \Carbon\Carbon::now()->format('Y-m-d')])}}">
+                href="{{ route('trips.search', ['origin' => $route->origin, 'destination' => $route->destination, 'travel_date' => \Carbon\Carbon::now()->format('Y-m-d'), 'passengers' => 1]
+                )}}">
                 <div class="group cursor-pointer">
                   <div class="relative h-[400px] rounded-2xl overflow-hidden mb-6">
                     @php

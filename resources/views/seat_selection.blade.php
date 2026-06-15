@@ -3,15 +3,21 @@
 
 <!DOCTYPE html>
 
-<html lang="en"><head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>BookMyBus Zambia | Seat Selection</title>
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
-<script id="tailwind-config">
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>BookMyBus Zambia | Seat Selection</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
         tailwind.config = {
             darkMode: "class",
             theme: {
@@ -80,181 +86,235 @@
             },
         }
     </script>
-<style>
+    <style>
         .material-symbols-outlined {
             font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
         }
-        body { font-family: 'Inter', sans-serif; }
-        h1, h2, h3, .font-headline { font-family: 'Manrope', sans-serif; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        h1,
+        h2,
+        h3,
+        .font-headline {
+            font-family: 'Manrope', sans-serif;
+        }
     </style>
 </head>
+
 <body class="bg-background text-on-background min-h-screen">
-<!-- TopNavBar -->
-<nav class="fixed top-0 w-full z-50 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md shadow-sm dark:shadow-none">
-<div class="flex justify-between items-center px-6 py-4 max-w-7xl mx-auto w-full">
-<span class="text-xl font-extrabold text-green-900 dark:text-green-100 tracking-tighter"><a href="/">BookMyBus Zambia</a></span>
-<div class="hidden md:flex gap-8 items-center">
-<a class="font-manrope tracking-tight font-bold text-sm text-green-900 dark:text-green-100 border-b-2 border-orange-600 pb-1" href="#">Find Trips</a>
-<a class="font-manrope tracking-tight font-bold text-sm text-zinc-600 dark:text-zinc-400 hover:text-green-900 dark:hover:text-green-100" href="#">My Bookings</a>
-<a class="font-manrope tracking-tight font-bold text-sm text-zinc-600 dark:text-zinc-400 hover:text-green-900 dark:hover:text-green-100" href="#">Operator Portal</a>
-<a class="font-manrope tracking-tight font-bold text-sm text-zinc-600 dark:text-zinc-400 hover:text-green-900 dark:hover:text-green-100" href="#">Support</a>
-</div>
-<div class="flex items-center gap-4">
-<button class="material-symbols-outlined text-zinc-600 dark:text-zinc-400" data-icon="account_circle">account_circle</button>
-<button class="bg-primary text-on-primary px-4 py-2 rounded-lg font-bold text-sm transition-transform active:scale-95">Sign In</button>
-</div>
-</div>
-</nav>
-<main class="pt-24 pb-12 px-6 max-w-7xl mx-auto">
-<form method="POST" action="{{ route('bookings.store') }}" id="booking-form">
-@csrf
-<input type="hidden" name="route_id" value="{{ $route->id }}">
-<input type="hidden" name="seat_number" id="selected-seat" value="">
-<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-<!-- Left Column: Bus Layout -->
-<section class="lg:col-span-7 space-y-6">
-<div class="flex items-baseline justify-between">
-<h1 class="text-3xl font-black tracking-tight text-primary">{{ $route->origin }} → {{ $route->destination }}</h1>
-<div class="flex gap-4">
-<div class="flex items-center gap-2">
-<div class="w-4 h-4 bg-surface-container-highest rounded-md"></div>
-<span class="text-xs font-medium text-on-surface-variant">Available</span>
-</div>
-<div class="flex items-center gap-2">
-<div class="w-4 h-4 bg-secondary-container rounded-md"></div>
-<span class="text-xs font-medium text-on-surface-variant">Selected</span>
-</div>
-<div class="flex items-center gap-2">
-<div class="w-4 h-4 bg-surface-dim opacity-40 rounded-md"></div>
-<span class="text-xs font-medium text-on-surface-variant">Occupied</span>
-</div>
-</div>
-</div>
-<!-- Bus Interior Visualization -->
-<div class="bg-surface-container-low rounded-[2rem] p-8 relative overflow-hidden">
-<!-- Subtle Interior Texture/Glass Effect -->
-<div class="absolute inset-0 opacity-10 pointer-events-none bg-[radial-gradient(circle_at_50%_0%,#00601f,transparent)]"></div>
-<div class="relative bg-surface-container-lowest rounded-xl p-8 shadow-sm border border-outline-variant/15">
-<!-- Driver's Cabin Area -->
-<div class="flex justify-between items-center mb-12 pb-8 border-b border-outline-variant/10">
-<div class="flex items-center gap-4">
-<div class="w-12 h-12 bg-surface-container-highest rounded-full flex items-center justify-center">
-<span class="material-symbols-outlined text-on-surface-variant" data-icon="steering_wheel">steering_wheel_heat</span>
-</div>
-<span class="text-sm font-bold uppercase tracking-widest text-on-surface-variant/60">Cockpit</span>
-</div>
-<div class="h-12 w-1.5 bg-surface-container-highest rounded-full"></div>
-</div>
-<!-- Seat Grid -->
-<div class="grid grid-cols-5 gap-y-4 gap-x-2" id="seat-grid">
-@for($seatNumber = 1; $seatNumber <= $route->bus->seat_capacity; $seatNumber++)
-@php
-$isBooked = in_array($seatNumber, $bookedSeats);
-$seatClasses = 'h-14 rounded-lg flex items-center justify-center text-xs font-bold';
-if($isBooked) {
-    $seatClasses .= ' bg-surface-dim opacity-40 cursor-not-allowed pointer-events-none';
-} else {
-    $seatClasses .= ' bg-surface-container-highest hover:bg-secondary-container transition-colors cursor-pointer';
-}
-@endphp
-<button type="button" class="{{ $seatClasses }}" data-seat="{{ $seatNumber }}" @if($isBooked) disabled @endif>
-<span class="{{ $isBooked ? 'text-on-surface-variant' : 'text-on-surface-variant group-hover:text-primary' }}">{{ $seatNumber }}</span>
-</button>
-@endfor
-</div>
-</div>
-</div>
-</section>
-<!-- Right Column: Details & Checkout -->
-<aside class="lg:col-span-5 flex flex-col gap-6">
-<!-- Trip Summary Card -->
-<div class="bg-surface-container-lowest rounded-2xl p-6 shadow-sm border border-outline-variant/10">
-<div class="flex justify-between items-start mb-6">
-<div>
-<p class="text-label uppercase text-[10px] tracking-[0.2em] font-bold text-secondary mb-1">Trip Summary</p>
-<h2 class="text-2xl font-black text-on-surface">{{ $route->origin }} → {{ $route->destination }}</h2>
-</div>
-<div class="bg-primary-container px-3 py-1 rounded-full">
-<span class="text-xs font-bold text-on-primary-container">{{ $route->bus->bus_class ?? 'Executive Class' }}</span>
-</div>
-</div>
-<div class="flex gap-12 mb-6">
-<div>
-<p class="text-[10px] uppercase font-bold text-on-surface-variant/60 mb-1">Departure</p>
-<p class="text-lg font-bold">{{ $route->departure_time }}</p>
-<p class="text-xs text-on-surface-variant">{{ $route->travel_date->format('d M, Y') }}</p>
-</div>
-<div>
-<p class="text-[10px] uppercase font-bold text-on-surface-variant/60 mb-1">Arrival</p>
-<p class="text-lg font-bold">{{ $route->arrival_time }}</p>
-<p class="text-xs text-on-surface-variant">{{ $route->destination }} Station</p>
-</div>
-</div>
-<div class="p-4 bg-surface-container-low rounded-xl flex justify-between items-center">
-<div class="flex items-center gap-3">
-<div class="w-8 h-8 bg-secondary-container rounded flex items-center justify-center text-on-secondary-container font-black text-xs" id="selected-seat-display">1A</div>
-<div>
-<p class="text-xs font-bold">Selected Seat</p>
-<p class="text-[10px] text-on-surface-variant">Window View</p>
-</div>
-</div>
-<div class="text-right">
-<span class="text-xs text-on-surface-variant align-top mr-1">ZMW</span>
-<span class="text-2xl font-black text-secondary">{{ $route->fare }}</span>
-</div>
-</div>
-</div>
-<!-- Booking Form -->
-<div class="bg-surface-container-lowest rounded-2xl p-6 shadow-sm border border-outline-variant/10">
-<h3 class="text-lg font-bold mb-6 text-on-surface">Passenger Details</h3>
-<div class="space-y-4">
-<div class="space-y-1">
-<label class="text-[10px] uppercase font-bold text-on-surface-variant/70 ml-1">Full Name</label>
-<input class="w-full bg-surface-container-low border-none rounded-xl p-4 text-sm focus:ring-2 focus:ring-primary/30 transition-all placeholder:text-on-surface-variant/40" placeholder="John Mulenga" type="text" name="passenger_name"/>
-</div>
-<div class="grid grid-cols-2 gap-4">
-<div class="space-y-1">
-<label class="text-[10px] uppercase font-bold text-on-surface-variant/70 ml-1">NRC / ID Number</label>
-<input class="w-full bg-surface-container-low border-none rounded-xl p-4 text-sm focus:ring-2 focus:ring-primary/30 transition-all placeholder:text-on-surface-variant/40" placeholder="123456/78/1" type="text" name="id_number"/>
-</div>
-<div class="space-y-1">
-<label class="text-[10px] uppercase font-bold text-on-surface-variant/70 ml-1">Phone Number</label>
-<input class="w-full bg-surface-container-low border-none rounded-xl p-4 text-sm focus:ring-2 focus:ring-primary/30 transition-all placeholder:text-on-surface-variant/40" placeholder="+260 9xx xxxxxx" type="tel" name="phone"/>
-</div>
-</div>
-<div class="pt-4">
-<button class="w-full py-4 bg-gradient-to-br from-primary to-primary-container text-on-primary rounded-xl font-bold text-sm shadow-xl shadow-primary/20 hover:opacity-90 active:scale-[0.98] transition-all flex items-center justify-center gap-2" type="submit" id="confirm-btn" disabled>
-<span>Confirm Booking</span>
-<span class="material-symbols-outlined text-base" data-icon="arrow_forward">arrow_forward</span>
-</button>
-</div>
-</div>
-<!-- Security Assurance -->
-<div class="flex items-center gap-3 px-4 text-on-surface-variant/60">
-<span class="material-symbols-outlined text-sm" data-icon="lock">lock</span>
-<p class="text-[10px] font-medium leading-relaxed">Your data is encrypted and secured by Zambia Digital Trust protocol. Guaranteed safe transaction.</p>
-</div>
-</aside>
-</div>
-</form>
-</main>
-<!-- Footer -->
-<footer class="w-full py-12 mt-auto bg-zinc-50 dark:bg-zinc-950 border-t border-zinc-200 dark:border-zinc-800">
-<div class="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-<div>
-<span class="font-manrope font-bold text-zinc-900 dark:text-zinc-100">BookMyBus Zambia</span>
-<p class="font-inter text-xs text-zinc-500 dark:text-zinc-400 mt-2">© 2024 BookMyBus Zambia. Premium Travel Excellence.</p>
-</div>
-<div class="flex flex-wrap gap-6 md:justify-end">
-<a class="font-inter text-xs text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 underline underline-offset-4 transition-opacity" href="#">Privacy Policy</a>
-<a class="font-inter text-xs text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 underline underline-offset-4 transition-opacity" href="#">Terms of Service</a>
-<a class="font-inter text-xs text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 underline underline-offset-4 transition-opacity" href="#">Carrier Partners</a>
-<a class="font-inter text-xs text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 underline underline-offset-4 transition-opacity" href="#">Contact Us</a>
-</div>
-</div>
-</footer>
-<script>
-document.addEventListener('DOMContentLoaded', function() {
+    <!-- TopNavBar -->
+    <nav class="fixed top-0 w-full z-50 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md shadow-sm dark:shadow-none">
+        <div class="flex justify-between items-center px-6 py-4 max-w-7xl mx-auto w-full">
+            <span class="text-xl font-extrabold text-green-900 dark:text-green-100 tracking-tighter"><a
+                    href="/">BookMyBus Zambia</a></span>
+            <div class="hidden md:flex gap-8 items-center">
+                <a class="font-manrope tracking-tight font-bold text-sm text-green-900 dark:text-green-100 border-b-2 border-orange-600 pb-1"
+                    href="#">Find Trips</a>
+                <a class="font-manrope tracking-tight font-bold text-sm text-zinc-600 dark:text-zinc-400 hover:text-green-900 dark:hover:text-green-100"
+                    href="#">My Bookings</a>
+                <a class="font-manrope tracking-tight font-bold text-sm text-zinc-600 dark:text-zinc-400 hover:text-green-900 dark:hover:text-green-100"
+                    href="#">Operator Portal</a>
+                <a class="font-manrope tracking-tight font-bold text-sm text-zinc-600 dark:text-zinc-400 hover:text-green-900 dark:hover:text-green-100"
+                    href="#">Support</a>
+            </div>
+            <div class="flex items-center gap-4">
+                <button class="material-symbols-outlined text-zinc-600 dark:text-zinc-400"
+                    data-icon="account_circle">account_circle</button>
+                <button
+                    class="bg-primary text-on-primary px-4 py-2 rounded-lg font-bold text-sm transition-transform active:scale-95">Sign
+                    In</button>
+            </div>
+        </div>
+    </nav>
+    <main class="pt-24 pb-12 px-6 max-w-7xl mx-auto">
+        <form method="POST" action="{{ route('bookings.store') }}" id="booking-form">
+            @csrf
+            <input type="hidden" name="route_id" value="{{ $route->id }}">
+            <input type="hidden" name="seat_number" id="selected-seat" value="">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                <!-- Left Column: Bus Layout -->
+                <section class="lg:col-span-7 space-y-6">
+                    <div class="flex items-baseline justify-between">
+                        <h1 class="text-3xl font-black tracking-tight text-primary">{{ $route->origin }} → {{
+                            $route->destination }}</h1>
+                        <div class="flex gap-4">
+                            <div class="flex items-center gap-2">
+                                <div class="w-4 h-4 bg-surface-container-highest rounded-md"></div>
+                                <span class="text-xs font-medium text-on-surface-variant">Available</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <div class="w-4 h-4 bg-secondary-container rounded-md"></div>
+                                <span class="text-xs font-medium text-on-surface-variant">Selected</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <div class="w-4 h-4 bg-surface-dim opacity-40 rounded-md"></div>
+                                <span class="text-xs font-medium text-on-surface-variant">Occupied</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Bus Interior Visualization -->
+                    <div class="bg-surface-container-low rounded-[2rem] p-8 relative overflow-hidden">
+                        <!-- Subtle Interior Texture/Glass Effect -->
+                        <div
+                            class="absolute inset-0 opacity-10 pointer-events-none bg-[radial-gradient(circle_at_50%_0%,#00601f,transparent)]">
+                        </div>
+                        <div
+                            class="relative bg-surface-container-lowest rounded-xl p-8 shadow-sm border border-outline-variant/15">
+                            <!-- Driver's Cabin Area -->
+                            <div
+                                class="flex justify-between items-center mb-12 pb-8 border-b border-outline-variant/10">
+                                <div class="flex items-center gap-4">
+                                    <div
+                                        class="w-12 h-12 bg-surface-container-highest rounded-full flex items-center justify-center">
+                                        <span class="material-symbols-outlined text-on-surface-variant"
+                                            data-icon="steering_wheel">steering_wheel_heat</span>
+                                    </div>
+                                    <span
+                                        class="text-sm font-bold uppercase tracking-widest text-on-surface-variant/60">Cockpit</span>
+                                </div>
+                                <div class="h-12 w-1.5 bg-surface-container-highest rounded-full"></div>
+                            </div>
+                            <!-- Seat Grid -->
+                            <div class="grid grid-cols-5 gap-y-4 gap-x-2" id="seat-grid">
+                                @for($seatNumber = 1; $seatNumber <= $route->bus->seat_capacity; $seatNumber++)
+                                    @php
+                                    $isBooked = in_array($seatNumber, $bookedSeats);
+                                    $seatClasses = 'h-14 rounded-lg flex items-center justify-center text-xs font-bold';
+                                    if($isBooked) {
+                                    $seatClasses .= ' bg-surface-dim opacity-40 cursor-not-allowed pointer-events-none';
+                                    } else {
+                                    $seatClasses .= ' bg-surface-container-highest hover:bg-secondary-container
+                                    transition-colors cursor-pointer';
+                                    }
+                                    @endphp
+                                    <button type="button" class="{{ $seatClasses }}" data-seat="{{ $seatNumber }}"
+                                        @if($isBooked) disabled @endif>
+                                        <span
+                                            class="{{ $isBooked ? 'text-on-surface-variant' : 'text-on-surface-variant group-hover:text-primary' }}">{{
+                                            $seatNumber }}</span>
+                                    </button>
+                                    @endfor
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <!-- Right Column: Details & Checkout -->
+                <aside class="lg:col-span-5 flex flex-col gap-6">
+                    <!-- Trip Summary Card -->
+                    <div class="bg-surface-container-lowest rounded-2xl p-6 shadow-sm border border-outline-variant/10">
+                        <div class="flex justify-between items-start mb-6">
+                            <div>
+                                <p
+                                    class="text-label uppercase text-[10px] tracking-[0.2em] font-bold text-secondary mb-1">
+                                    Trip Summary</p>
+                                <h2 class="text-2xl font-black text-on-surface">{{ $route->origin }} → {{
+                                    $route->destination }}</h2>
+                            </div>
+                            <div class="bg-primary-container px-3 py-1 rounded-full">
+                                <span class="text-xs font-bold text-on-primary-container">{{ $route->bus->bus_class ??
+                                    'Executive Class' }}</span>
+                            </div>
+                        </div>
+                        <div class="flex gap-12 mb-6">
+                            <div>
+                                <p class="text-[10px] uppercase font-bold text-on-surface-variant/60 mb-1">Departure</p>
+                                <p class="text-lg font-bold">{{ $route->departure_time }}</p>
+                                <p class="text-xs text-on-surface-variant">{{ $route->travel_date->format('d M, Y') }}
+                                </p>
+                            </div>
+                            <div>
+                                <p class="text-[10px] uppercase font-bold text-on-surface-variant/60 mb-1">Arrival</p>
+                                <p class="text-lg font-bold">{{ $route->arrival_time }}</p>
+                                <p class="text-xs text-on-surface-variant">{{ $route->destination }} Station</p>
+                            </div>
+                        </div>
+                        <div class="p-4 bg-surface-container-low rounded-xl flex justify-between items-center">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 bg-secondary-container rounded flex items-center justify-center text-on-secondary-container font-black text-xs"
+                                    id="selected-seat-display">1A</div>
+                                <div>
+                                    <p class="text-xs font-bold">Selected Seat</p>
+                                    <p class="text-[10px] text-on-surface-variant">Window View</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <span class="text-xs text-on-surface-variant align-top mr-1">ZMW</span>
+                                <span class="text-2xl font-black text-secondary">{{ $route->fare }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Booking Form -->
+                    <div class="bg-surface-container-lowest rounded-2xl p-6 shadow-sm border border-outline-variant/10">
+                        <h3 class="text-lg font-bold mb-6 text-on-surface">Passenger Details</h3>
+                        <div class="space-y-4">
+                            <div class="space-y-1">
+                                <label class="text-[10px] uppercase font-bold text-on-surface-variant/70 ml-1">Full
+                                    Name</label>
+                                <input
+                                    class="w-full bg-surface-container-low border-none rounded-xl p-4 text-sm focus:ring-2 focus:ring-primary/30 transition-all placeholder:text-on-surface-variant/40"
+                                    placeholder="John Mulenga" type="text" name="passenger_name" />
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="space-y-1">
+                                    <label class="text-[10px] uppercase font-bold text-on-surface-variant/70 ml-1">NRC /
+                                        ID Number</label>
+                                    <input
+                                        class="w-full bg-surface-container-low border-none rounded-xl p-4 text-sm focus:ring-2 focus:ring-primary/30 transition-all placeholder:text-on-surface-variant/40"
+                                        placeholder="123456/78/1" type="text" name="id_number" />
+                                </div>
+                                <div class="space-y-1">
+                                    <label class="text-[10px] uppercase font-bold text-on-surface-variant/70 ml-1">Phone
+                                        Number</label>
+                                    <input
+                                        class="w-full bg-surface-container-low border-none rounded-xl p-4 text-sm focus:ring-2 focus:ring-primary/30 transition-all placeholder:text-on-surface-variant/40"
+                                        placeholder="+260 9xx xxxxxx" type="tel" name="phone" />
+                                </div>
+                            </div>
+                            <div class="pt-4">
+                                <button
+                                    class="w-full py-4 bg-gradient-to-br from-primary to-primary-container text-on-primary rounded-xl font-bold text-sm shadow-xl shadow-primary/20 hover:opacity-90 active:scale-[0.98] transition-all flex items-center justify-center gap-2"
+                                    type="submit" id="confirm-btn" disabled>
+                                    <span>Confirm Booking</span>
+                                    <span class="material-symbols-outlined text-base"
+                                        data-icon="arrow_forward">arrow_forward</span>
+                                </button>
+                            </div>
+                        </div>
+                        <!-- Security Assurance -->
+                        <div class="flex items-center gap-3 px-4 text-on-surface-variant/60">
+                            <span class="material-symbols-outlined text-sm" data-icon="lock">lock</span>
+                            <p class="text-[10px] font-medium leading-relaxed">Your data is encrypted and secured by
+                                Zambia Digital Trust protocol. Guaranteed safe transaction.</p>
+                        </div>
+                </aside>
+            </div>
+        </form>
+    </main>
+    <!-- Footer -->
+    <footer class="w-full py-12 mt-auto bg-zinc-50 dark:bg-zinc-950 border-t border-zinc-200 dark:border-zinc-800">
+        <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+            <div>
+                <span class="font-manrope font-bold text-zinc-900 dark:text-zinc-100">BookMyBus Zambia</span>
+                <p class="font-inter text-xs text-zinc-500 dark:text-zinc-400 mt-2">© 2024 BookMyBus Zambia. Premium
+                    Travel Excellence.</p>
+            </div>
+            <div class="flex flex-wrap gap-6 md:justify-end">
+                <a class="font-inter text-xs text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 underline underline-offset-4 transition-opacity"
+                    href="#">Privacy Policy</a>
+                <a class="font-inter text-xs text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 underline underline-offset-4 transition-opacity"
+                    href="#">Terms of Service</a>
+                <a class="font-inter text-xs text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 underline underline-offset-4 transition-opacity"
+                    href="#">Carrier Partners</a>
+                <a class="font-inter text-xs text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 underline underline-offset-4 transition-opacity"
+                    href="#">Contact Us</a>
+            </div>
+        </div>
+    </footer>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
     const seatButtons = document.querySelectorAll('#seat-grid button[data-seat]');
     const selectedSeatInput = document.getElementById('selected-seat');
     const selectedSeatDisplay = document.getElementById('selected-seat-display');
@@ -283,5 +343,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
-</script>
-</body></html>
+    </script>
+</body>
+
+</html>
