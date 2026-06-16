@@ -1,396 +1,905 @@
 <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Search Results | BookMyBus Zambia</title>
 
-<html lang="en"><head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>BookMyBus Zambia | Lusaka to Kitwe</title>
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&amp;family=Inter:wght@400;500;600&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<script id="tailwind-config">
-      tailwind.config = {
-        darkMode: "class",
-        theme: {
-          extend: {
-            "colors": {
-                    "on-secondary": "#ffffff",
-                    "on-secondary-container": "#632f00",
-                    "on-secondary-fixed": "#301400",
-                    "inverse-surface": "#2f3133",
-                    "on-primary-container": "#b1ffb1",
-                    "secondary-container": "#ff8921",
-                    "primary-fixed-dim": "#7edb83",
-                    "inverse-primary": "#7edb83",
-                    "background": "#f9f9fc",
-                    "inverse-on-surface": "#f0f0f3",
-                    "tertiary-container": "#d1200f",
-                    "secondary-fixed": "#ffdcc6",
-                    "surface-container-lowest": "#ffffff",
-                    "outline-variant": "#bfcaba",
-                    "on-tertiary": "#ffffff",
-                    "surface": "#f9f9fc",
-                    "on-primary": "#ffffff",
-                    "primary-fixed": "#99f89d",
-                    "surface-variant": "#e2e2e5",
-                    "secondary-fixed-dim": "#ffb784",
-                    "on-primary-fixed": "#002106",
-                    "surface-bright": "#f9f9fc",
-                    "on-error-container": "#93000a",
-                    "surface-dim": "#dadadc",
-                    "outline": "#6f7a6c",
-                    "on-secondary-fixed-variant": "#713700",
-                    "primary": "#00601f",
-                    "on-primary-fixed-variant": "#00531a",
-                    "surface-container-low": "#f3f3f6",
-                    "on-surface-variant": "#3f493e",
-                    "surface-container-high": "#e8e8ea",
-                    "on-surface": "#1a1c1e",
-                    "primary-container": "#197b30",
-                    "error-container": "#ffdad6",
-                    "tertiary-fixed": "#ffdad4",
-                    "on-tertiary-fixed": "#400100",
-                    "tertiary-fixed-dim": "#ffb4a7",
-                    "surface-container-highest": "#e2e2e5",
-                    "on-tertiary-container": "#ffe7e3",
-                    "on-tertiary-fixed-variant": "#920600",
-                    "surface-tint": "#006e25",
-                    "error": "#ba1a1a",
-                    "surface-container": "#eeeef0",
-                    "secondary": "#954a00",
-                    "tertiary": "#a80800",
-                    "on-error": "#ffffff",
-                    "on-background": "#1a1c1e"
-            },
-            "borderRadius": {
-                    "DEFAULT": "0.125rem",
-                    "lg": "0.25rem",
-                    "xl": "0.5rem",
-                    "full": "0.75rem"
-            },
-            "fontFamily": {
-                    "headline": ["Manrope"],
-                    "body": ["Inter"],
-                    "label": ["Inter"]
-            }
-          },
-        },
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=Inter:wght@400;500;600;700&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #f9f9fc;
+      color: #1a1c1e;
+    }
+
+    h1, h2, h3 {
+      font-family: 'Manrope', sans-serif;
+    }
+
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+
+    /* Toast Notification */
+    .toast-notify {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: #1f2937;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 40px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      z-index: 1000;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+      pointer-events: none;
+      white-space: nowrap;
+      box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+    }
+
+    .toast-notify.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* Filter Active States */
+    .filter-time-btn.active {
+      background-color: #197b30 !important;
+      color: white !important;
+    }
+
+    .filter-time-btn.active .material-symbols-outlined {
+      color: white !important;
+    }
+
+    .operator-checkbox {
+      transition: all 0.2s;
+    }
+
+    /* Navigation - NO LOGIN, NO OPERATOR PORTAL */
+    .nav {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      z-index: 50;
+      background: rgba(255,255,255,0.95);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    }
+
+    .nav-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 1.5rem;
+      max-width: 80rem;
+      margin: 0 auto;
+    }
+
+    .nav-logo {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: #00601f;
+      text-decoration: none;
+    }
+
+    .nav-links {
+      display: none;
+      gap: 2rem;
+    }
+
+    @media (min-width: 768px) {
+      .nav-links {
+        display: flex;
       }
-    </script>
-<style>
-        .material-symbols-outlined {
-            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-        }
-        body { font-family: 'Inter', sans-serif; }
-        h1, h2, h3 { font-family: 'Manrope', sans-serif; }
-    </style>
+    }
+
+    .nav-link {
+      font-size: 0.875rem;
+      font-weight: 700;
+      color: #71717a;
+      text-decoration: none;
+    }
+
+    .nav-link:hover, .nav-link.active {
+      color: #00601f;
+    }
+
+    .nav-link.active {
+      border-bottom: 2px solid #ea580c;
+      padding-bottom: 0.25rem;
+    }
+
+    /* Main Content */
+    main {
+      padding-top: 6rem;
+      padding-bottom: 5rem;
+      padding-left: 1rem;
+      padding-right: 1rem;
+      max-width: 80rem;
+      margin: 0 auto;
+    }
+
+    @media (min-width: 768px) {
+      main {
+        padding-left: 1.5rem;
+        padding-right: 1.5rem;
+      }
+    }
+
+    /* Search Header */
+    .search-header {
+      margin-bottom: 2.5rem;
+    }
+
+    .breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      font-weight: 700;
+      color: #954a00;
+      margin-bottom: 0.5rem;
+    }
+
+    .header-title {
+      font-size: 2.25rem;
+      font-weight: 900;
+      letter-spacing: -0.02em;
+    }
+
+    @media (min-width: 768px) {
+      .header-title {
+        font-size: 3rem;
+      }
+    }
+
+    .header-date {
+      color: #71717a;
+      font-weight: 500;
+      margin-top: 0.25rem;
+    }
+
+    /* Grid */
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+
+    @media (min-width: 1024px) {
+      .main-grid {
+        grid-template-columns: repeat(12, 1fr);
+      }
+    }
+
+    /* Sidebar */
+    .sidebar {
+      display: none;
+    }
+
+    @media (min-width: 1024px) {
+      .sidebar {
+        display: block;
+        grid-column: span 3;
+      }
+    }
+
+    .filters-card {
+      background: #f3f3f6;
+      padding: 1.5rem;
+      border-radius: 1rem;
+    }
+
+    .filter-section {
+      margin-bottom: 2rem;
+    }
+
+    .filter-label {
+      font-size: 0.625rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      font-weight: 700;
+      color: #a1a1aa;
+      margin-bottom: 1rem;
+      display: block;
+    }
+
+    .filter-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.5rem;
+    }
+
+    .filter-time-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 0.75rem;
+      border-radius: 0.5rem;
+      background: white;
+      border: none;
+      cursor: pointer;
+      width: 100%;
+    }
+
+    .price-slider {
+      width: 100%;
+      height: 4px;
+      accent-color: #00601f;
+    }
+
+    .operator-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .operator-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      cursor: pointer;
+    }
+
+    .checkbox {
+      width: 1.25rem;
+      height: 1.25rem;
+      border-radius: 0.25rem;
+      border: 2px solid #00601f;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .checkbox.checked {
+      background: #00601f;
+    }
+
+    .checkbox.empty {
+      background: transparent;
+      border-color: #d4d4d8;
+    }
+
+    /* Results Section */
+    .results-section {
+      grid-column: span 9;
+    }
+
+    .result-card {
+      background: white;
+      border-radius: 1rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .premium-badge {
+      position: absolute;
+      top: 0;
+      right: 0;
+      background: #954a00;
+      padding: 0.25rem 1rem;
+      border-bottom-left-radius: 0.75rem;
+      font-size: 0.625rem;
+      font-weight: 700;
+      color: white;
+    }
+
+    .card-content {
+      padding: 1.5rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2rem;
+      align-items: center;
+    }
+
+    @media (min-width: 768px) {
+      .card-content {
+        padding: 2rem;
+      }
+    }
+
+    .operator-info {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+    }
+
+    @media (min-width: 768px) {
+      .operator-info {
+        align-items: flex-start;
+        width: 8rem;
+        flex-shrink: 0;
+      }
+    }
+
+    .operator-logo {
+      width: 3.5rem;
+      height: 3.5rem;
+      background: #e8e8ea;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .operator-name {
+      font-weight: 800;
+      font-size: 0.875rem;
+      text-align: center;
+    }
+
+    .trip-details {
+      flex-grow: 1;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+      align-items: center;
+      width: 100%;
+    }
+
+    @media (min-width: 768px) {
+      .trip-details {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    .time-point {
+      text-align: center;
+    }
+
+    .time-label {
+      font-size: 0.625rem;
+      text-transform: uppercase;
+      font-weight: 700;
+      color: #a1a1aa;
+    }
+
+    .time-value {
+      font-size: 1.875rem;
+      font-weight: 900;
+    }
+
+    .route-visual {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .duration {
+      font-size: 0.625rem;
+      font-weight: 700;
+      color: #00601f;
+    }
+
+    .route-line {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      width: 100%;
+    }
+
+    .dot-start {
+      width: 0.5rem;
+      height: 0.5rem;
+      border-radius: 50%;
+      border: 2px solid #00601f;
+    }
+
+    .line {
+      flex-grow: 1;
+      height: 2px;
+      border-top: 2px dashed #e4e4e7;
+      position: relative;
+    }
+
+    .bus-icon {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+    }
+
+    .dot-end {
+      width: 0.5rem;
+      height: 0.5rem;
+      border-radius: 50%;
+      background: #00601f;
+    }
+
+    .price-section {
+      width: 100%;
+      background: #f3f3f6;
+      padding: 1rem;
+      border-radius: 0.75rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    @media (min-width: 768px) {
+      .price-section {
+        width: 12rem;
+        flex-direction: column;
+        align-items: flex-end;
+        background: transparent;
+        padding: 0;
+      }
+    }
+
+    .price-amount {
+      font-size: 1.875rem;
+      font-weight: 900;
+    }
+
+    .seats-left {
+      font-size: 0.625rem;
+      font-weight: 700;
+      color: #00601f;
+    }
+
+    .seats-left.low {
+      color: #dc3545;
+    }
+
+    .select-btn {
+      background: #00601f;
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border-radius: 0.5rem;
+      font-weight: 700;
+      border: none;
+      cursor: pointer;
+    }
+
+    /* Info Grid */
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+
+    @media (min-width: 768px) {
+      .info-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    .info-card {
+      padding: 1.5rem;
+      border-radius: 1rem;
+      cursor: pointer;
+    }
+
+    .info-card.primary {
+      background: rgba(0,96,31,0.05);
+      border: 1px solid rgba(0,96,31,0.1);
+    }
+
+    .info-card.secondary {
+      background: rgba(149,74,0,0.05);
+      border: 1px solid rgba(149,74,0,0.1);
+    }
+
+    .info-card.neutral {
+      background: #f4f4f5;
+    }
+
+    /* Footer */
+    .footer {
+      background: #fafafa;
+      border-top: 1px solid #e4e4e7;
+      padding: 2rem 1.5rem;
+      margin-top: 3rem;
+    }
+
+    .footer-content {
+      max-width: 80rem;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 2rem;
+    }
+
+    .footer-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+    }
+
+    .footer-links a {
+      font-size: 0.75rem;
+      color: #71717a;
+      text-decoration: underline;
+    }
+
+    /* Mobile Bottom Nav */
+    .mobile-bottom-nav {
+      display: none;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background: white;
+      border-top: 1px solid #e4e4e7;
+      padding: 0.75rem 1.5rem;
+      justify-content: space-between;
+      z-index: 40;
+    }
+
+    @media (max-width: 768px) {
+      .mobile-bottom-nav {
+        display: flex;
+      }
+      main {
+        padding-bottom: 5rem;
+      }
+    }
+
+    .mobile-nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.25rem;
+      cursor: pointer;
+    }
+
+    .mobile-nav-item span:first-child {
+      font-size: 1.25rem;
+    }
+
+    .mobile-nav-item span:last-child {
+      font-size: 0.625rem;
+      font-weight: 700;
+    }
+
+    /* Loading Spinner */
+    .loading-spinner {
+      display: inline-block;
+      width: 40px;
+      height: 40px;
+      border: 3px solid #e4e4e7;
+      border-top-color: #00601f;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .flex-row {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .items-center {
+      align-items: center;
+    }
+
+    .justify-between {
+      justify-content: space-between;
+    }
+
+    .text-right {
+      text-align: right;
+    }
+
+    .text-center {
+      text-align: center;
+    }
+
+    .mt-4 {
+      margin-top: 1rem;
+    }
+
+    .mb-4 {
+      margin-bottom: 1rem;
+    }
+
+    .cursor-pointer {
+      cursor: pointer;
+    }
+  </style>
 </head>
-<body class="bg-surface text-on-surface">
-<!-- TopNavBar -->
-<nav class="fixed top-0 w-full z-50 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md shadow-sm dark:shadow-none">
-<div class="flex justify-between items-center px-6 py-4 max-w-7xl mx-auto w-full">
-<span class="text-xl font-extrabold text-green-900 dark:text-green-100 tracking-tighter">BookMyBus Zambia</span>
-<div class="hidden md:flex items-center gap-8 font-manrope tracking-tight font-bold text-sm">
-<a class="text-green-900 dark:text-green-100 border-b-2 border-orange-600 pb-1" href="#">Find Trips</a>
-<a class="text-zinc-600 dark:text-zinc-400 hover:text-green-900 dark:hover:text-green-100 transition-colors" href="#">My Bookings</a>
-<a class="text-zinc-600 dark:text-zinc-400 hover:text-green-900 dark:hover:text-green-100 transition-colors" href="#">Operator Portal</a>
-<a class="text-zinc-600 dark:text-zinc-400 hover:text-green-900 dark:hover:text-green-100 transition-colors" href="#">Support</a>
-</div>
-<div class="flex items-center gap-4">
-<span class="material-symbols-outlined text-zinc-600 cursor-pointer">account_circle</span>
-<button class="bg-primary text-on-primary px-4 py-2 rounded-lg font-bold text-sm hover:opacity-90 active:scale-95 transition-all">Sign In</button>
-</div>
-</div>
+<body>
+
+<!-- Navigation - NO LOGIN, NO OPERATOR PORTAL -->
+<nav class="nav">
+  <div class="nav-container">
+    <a href="index.html" class="nav-logo">🚌 BookMyBus Zambia</a>
+    <div class="nav-links">
+      <a href="search-results.html" class="nav-link active">Search Results</a>
+      <a href="my-bookings.html" class="nav-link">My Bookings</a>
+      <a href="support.html" class="nav-link">Support</a>
+    </div>
+    <!-- NO LOGIN BUTTONS, NO OPERATOR PORTAL LINK -->
+  </div>
 </nav>
-<main class="pt-24 pb-20 px-4 md:px-6 max-w-7xl mx-auto">
-<!-- Search Summary Header -->
-<header class="mb-10">
-<div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
-<div>
-<nav class="flex items-center gap-2 text-xs uppercase tracking-widest text-secondary font-bold mb-2">
-<span>One Way</span>
-<span class="w-1 h-1 rounded-full bg-secondary"></span>
-<span>1 Passenger</span>
-</nav>
-<h1 class="text-4xl md:text-5xl font-black text-on-surface tracking-tighter">
-                        Lusaka <span class="text-primary-container">→</span> Kitwe
-                    </h1>
-<p class="text-zinc-500 font-medium mt-1">Friday, 24 May 2024 • 12 departures available</p>
-</div>
-<button class="flex items-center gap-2 bg-surface-container-low px-5 py-3 rounded-xl font-bold text-sm hover:translate-x-1 transition-transform">
-<span class="material-symbols-outlined text-sm">edit</span>
-                    Modify Search
-                </button>
-</div>
-</header>
-<div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-<!-- Filters Sidebar -->
-<aside class="lg:col-span-3 space-y-8">
-<div class="bg-surface-container-low p-6 rounded-2xl">
-<h3 class="font-headline font-extrabold text-lg mb-6">Filters</h3>
-<!-- Time of Day -->
-<div class="mb-8">
-<label class="text-[10px] uppercase tracking-widest font-bold text-zinc-400 mb-4 block">Time of Day</label>
-<div class="grid grid-cols-2 gap-2">
-<button class="flex flex-col items-center justify-center p-3 rounded-lg bg-surface-container-lowest hover:bg-primary/5 transition-colors group">
-<span class="material-symbols-outlined text-zinc-400 group-hover:text-primary mb-1">wb_twilight</span>
-<span class="text-[10px] font-bold">Dawn</span>
-</button>
-<button class="flex flex-col items-center justify-center p-3 rounded-lg bg-primary/10 text-primary transition-colors">
-<span class="material-symbols-outlined mb-1">light_mode</span>
-<span class="text-[10px] font-bold">Morning</span>
-</button>
-<button class="flex flex-col items-center justify-center p-3 rounded-lg bg-surface-container-lowest hover:bg-primary/5 transition-colors group">
-<span class="material-symbols-outlined text-zinc-400 group-hover:text-primary mb-1">wb_sunny</span>
-<span class="text-[10px] font-bold">Afternoon</span>
-</button>
-<button class="flex flex-col items-center justify-center p-3 rounded-lg bg-surface-container-lowest hover:bg-primary/5 transition-colors group">
-<span class="material-symbols-outlined text-zinc-400 group-hover:text-primary mb-1">bedtime</span>
-<span class="text-[10px] font-bold">Night</span>
-</button>
-</div>
-</div>
-<!-- Price Range -->
-<div class="mb-8">
-<label class="text-[10px] uppercase tracking-widest font-bold text-zinc-400 mb-4 block">Price Range (ZMW)</label>
-<input class="w-full accent-primary h-1 bg-zinc-300 rounded-lg appearance-none cursor-pointer" max="800" min="150" type="range"/>
-<div class="flex justify-between mt-2 text-xs font-bold text-zinc-600">
-<span>K150</span>
-<span>K800</span>
-</div>
-</div>
-<!-- Operators -->
-<div>
-<label class="text-[10px] uppercase tracking-widest font-bold text-zinc-400 mb-4 block">Preferred Operator</label>
-<div class="space-y-3">
-<label class="flex items-center gap-3 cursor-pointer group">
-<div class="w-5 h-5 rounded border-2 border-primary bg-primary flex items-center justify-center">
-<span class="material-symbols-outlined text-white text-xs">check</span>
-</div>
-<span class="text-sm font-medium">Power Tools</span>
-</label>
-<label class="flex items-center gap-3 cursor-pointer group">
-<div class="w-5 h-5 rounded border-2 border-zinc-300 group-hover:border-primary transition-colors"></div>
-<span class="text-sm font-medium">Euro Africa</span>
-</label>
-<label class="flex items-center gap-3 cursor-pointer group">
-<div class="w-5 h-5 rounded border-2 border-zinc-300 group-hover:border-primary transition-colors"></div>
-<span class="text-sm font-medium">Likili Motorways</span>
-</label>
-<label class="flex items-center gap-3 cursor-pointer group">
-<div class="w-5 h-5 rounded border-2 border-zinc-300 group-hover:border-primary transition-colors"></div>
-<span class="text-sm font-medium">Mazhandu Family Bus</span>
-</label>
-</div>
-</div>
-</div>
-<!-- Quick Map View Ad -->
-<div class="relative overflow-hidden rounded-2xl h-48 group cursor-pointer">
-<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" data-alt="Stylized map of Zambia with transit routes highlighted in glowing green lines over a dark navy background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAMGarMYuWSoIz79hw-lrj4rTEZzaAayT2NfzYd847uEPdX9SjVkM5num8flMVZKuGbOxOksjxoT6ghZ-4TdZ_ALVB6S2mQMaoYAHNllu4FzkcqgMJmang2ck2IUPCNmF6Rw5FQjlQ4ljrQCqyuD2PB_gvT8_X_HPqBXJXEbetsUrXOmrVHNZ28VNuGXl_g3cQzxBKH_3fkGlA1Q0IyAlIrH3bZpBeEaLJRQcz_ea-Qg-6UGP3iZGX4QeZ6kYb8bMXIWZz-r3dYmyHq"/>
-<div class="absolute inset-0 bg-gradient-to-t from-zinc-950 to-transparent p-6 flex flex-col justify-end">
-<span class="text-white font-bold text-sm">View Route on Map</span>
-<p class="text-white/70 text-[10px]">Track real-time bus locations</p>
-</div>
-</div>
-</aside>
-<!-- Results Section -->
-<div class="lg:col-span-9 space-y-6">
-<!-- Result Card 1 -->
-<div class="bg-surface-container-lowest group relative overflow-hidden rounded-2xl hover:shadow-xl hover:shadow-primary/5 transition-all duration-300">
-<!-- Premium Badge -->
-<div class="absolute top-0 right-0 bg-secondary px-4 py-1 rounded-bl-xl z-10">
-<span class="text-[10px] font-black uppercase text-white tracking-widest">Luxury Class</span>
-</div>
-<div class="p-6 md:p-8 flex flex-col md:flex-row gap-8 items-center">
-<!-- Operator Info -->
-<div class="flex md:flex-col items-center md:items-start gap-4 md:gap-2 w-full md:w-32 flex-shrink-0">
-<div class="w-14 h-14 bg-surface-container-high rounded-full flex items-center justify-center p-2">
-<img class="w-full h-full object-contain rounded-full" data-alt="A stylized logo icon featuring a modern bus silhouette in deep emerald green and gold" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCmRAfBzWh4rJObrTuk9i_jLhn8ktL4aJL9ElQTPhE6o5CLs3bZjjczM6Y5b9CwIo9r7V4jvw5thFt3iAZmKt7rMuB4G3CVL_85MlIOhfbyiPzAU_0tTXArAukBfMbuCQvXZo6PcpvL-oZdUkVsVO2ZaPSyp_dlrTb8ln-H-5bMoXLi2xqahp3rGI8CiiqQCfg1XkE7_3wSk9sOsQNiFp5dRg6vKs6FhUuJyVOEQKiBAvpItSyZeLfx5jxYngNXG6XvS60_NEtru8On"/>
-</div>
-<div>
-<h4 class="font-headline font-extrabold text-sm text-on-surface">Power Tools</h4>
-<div class="flex items-center gap-1 text-[10px] text-zinc-400 font-bold uppercase">
-<span class="material-symbols-outlined text-[12px] text-secondary" style="font-variation-settings: 'FILL' 1;">star</span>
-<span>4.8</span>
-</div>
-</div>
-</div>
-<!-- Trip Details -->
-<div class="flex-grow grid grid-cols-1 md:grid-cols-3 gap-6 items-center w-full">
-<!-- Departure -->
-<div class="text-center md:text-left">
-<span class="block text-[10px] uppercase tracking-widest font-bold text-zinc-400 mb-1">Departure</span>
-<h2 class="text-3xl font-black text-on-surface">06:00</h2>
-<p class="text-sm font-medium text-zinc-500">Inter-City Terminus</p>
-</div>
-<!-- Visual Route -->
-<div class="flex flex-col items-center px-4">
-<span class="text-[10px] font-bold text-primary mb-2">5h 30m</span>
-<div class="w-full flex items-center gap-2">
-<div class="w-2 h-2 rounded-full border-2 border-primary"></div>
-<div class="flex-grow border-t-2 border-dashed border-zinc-200 relative">
-<span class="material-symbols-outlined absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-primary bg-white text-sm">directions_bus</span>
-</div>
-<div class="w-2 h-2 rounded-full bg-primary"></div>
-</div>
-<span class="text-[10px] font-medium text-zinc-400 mt-2">Direct Trip</span>
-</div>
-<!-- Arrival -->
-<div class="text-center md:text-right">
-<span class="block text-[10px] uppercase tracking-widest font-bold text-zinc-400 mb-1">Arrival</span>
-<h2 class="text-3xl font-black text-on-surface">11:30</h2>
-<p class="text-sm font-medium text-zinc-500">Kitwe Station</p>
-</div>
-</div>
-<!-- Price & CTA -->
-<div class="w-full md:w-48 bg-surface-container-low md:bg-transparent p-4 md:p-0 rounded-xl flex md:flex-col items-center md:items-end justify-between gap-4">
-<div class="text-right">
-<div class="flex items-baseline gap-1 md:justify-end">
-<span class="text-[10px] uppercase font-bold text-zinc-400">ZMW</span>
-<span class="text-3xl font-black text-on-surface">320</span>
-</div>
-<p class="text-[10px] font-bold text-primary-container uppercase tracking-tight">12 Seats left</p>
-</div>
-<button class="bg-gradient-to-br from-primary to-primary-container text-white px-8 md:w-full py-3 rounded-lg font-bold text-sm shadow-lg shadow-primary/20 hover:scale-[1.02] transition-transform">
-                                Select
-                            </button>
-</div>
-</div>
-</div>
-<!-- Result Card 2 -->
-<div class="bg-surface-container-lowest group relative overflow-hidden rounded-2xl hover:shadow-xl hover:shadow-primary/5 transition-all duration-300">
-<div class="p-6 md:p-8 flex flex-col md:flex-row gap-8 items-center">
-<div class="flex md:flex-col items-center md:items-start gap-4 md:gap-2 w-full md:w-32 flex-shrink-0">
-<div class="w-14 h-14 bg-surface-container-high rounded-full flex items-center justify-center p-2">
-<img class="w-full h-full object-contain rounded-full" data-alt="A stylized logo icon featuring a modern bus silhouette in deep emerald green and gold" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCH6zbih3FC9oOfkKBhSZbYpWtHjWGiqt66rWUz92TUrX5R6OyO04B6z0C9G0lQObeKjkOdd1eOlXgZ7foj57fbAOf1WQQ_BGy4-bPL8M0KEOfBHhYlzHTt9z2ZtkNdk2fOGNs-QAiaFsAcobJhSSOxrYjL32tpTr-uhQaR1miVUsIz5M7_yWQZNRTZRv_hgRhu9Cy-1Rd2ziCOwOipOR_L-GPdDvWDv-yX-6Dk-tumvBT9cTAWCHvj5Kgjur97oFfiweyOCx8WTVcy"/>
-</div>
-<div>
-<h4 class="font-headline font-extrabold text-sm text-on-surface">Euro Africa</h4>
-<div class="flex items-center gap-1 text-[10px] text-zinc-400 font-bold uppercase">
-<span class="material-symbols-outlined text-[12px] text-secondary" style="font-variation-settings: 'FILL' 1;">star</span>
-<span>4.2</span>
-</div>
-</div>
-</div>
-<div class="flex-grow grid grid-cols-1 md:grid-cols-3 gap-6 items-center w-full">
-<div class="text-center md:text-left">
-<span class="block text-[10px] uppercase tracking-widest font-bold text-zinc-400 mb-1">Departure</span>
-<h2 class="text-3xl font-black text-on-surface">08:15</h2>
-<p class="text-sm font-medium text-zinc-500">Inter-City Terminus</p>
-</div>
-<div class="flex flex-col items-center px-4">
-<span class="text-[10px] font-bold text-zinc-500 mb-2">6h 15m</span>
-<div class="w-full flex items-center gap-2">
-<div class="w-2 h-2 rounded-full border-2 border-zinc-300"></div>
-<div class="flex-grow border-t-2 border-zinc-200 relative">
-<span class="material-symbols-outlined absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-zinc-300 bg-white text-sm">directions_bus</span>
-</div>
-<div class="w-2 h-2 rounded-full bg-zinc-300"></div>
-</div>
-<span class="text-[10px] font-medium text-zinc-400 mt-2">Semi-Luxury</span>
-</div>
-<div class="text-center md:text-right">
-<span class="block text-[10px] uppercase tracking-widest font-bold text-zinc-400 mb-1">Arrival</span>
-<h2 class="text-3xl font-black text-on-surface">14:30</h2>
-<p class="text-sm font-medium text-zinc-500">Kitwe Station</p>
-</div>
-</div>
-<div class="w-full md:w-48 flex md:flex-col items-center md:items-end justify-between gap-4">
-<div class="text-right">
-<div class="flex items-baseline gap-1 md:justify-end">
-<span class="text-[10px] uppercase font-bold text-zinc-400">ZMW</span>
-<span class="text-3xl font-black text-on-surface">260</span>
-</div>
-<p class="text-[10px] font-bold text-error uppercase tracking-tight">Only 4 left!</p>
-</div>
-<button class="bg-surface-container-low text-on-surface px-8 md:w-full py-3 rounded-lg font-bold text-sm hover:bg-surface-container-highest transition-colors">
-                                Select
-                            </button>
-</div>
-</div>
-</div>
-<!-- Result Card 3 -->
-<div class="bg-surface-container-lowest group relative overflow-hidden rounded-2xl hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 opacity-80 border-2 border-transparent">
-<div class="p-6 md:p-8 flex flex-col md:flex-row gap-8 items-center grayscale">
-<div class="flex md:flex-col items-center md:items-start gap-4 md:gap-2 w-full md:w-32 flex-shrink-0">
-<div class="w-14 h-14 bg-surface-container-high rounded-full flex items-center justify-center p-2 opacity-50">
-<img class="w-full h-full object-contain rounded-full" data-alt="A stylized logo icon featuring a modern bus silhouette in deep emerald green and gold" src="https://lh3.googleusercontent.com/aida-public/AB6AXuABorlWLVlsBX3G09mwYhAmULi0Bn5x9DH6m9uI34kQpb01Beg_4_8HVaxq69bZvuXFJSc2zilRGVmueW7dS12EvSd8VFe2SwgJ-sumGKy3eXwyBwgWR8erJVOTII3nFeb0Te-EdKSN1K2bXnzX6Ki9eTni5kLa4Ibv-Mc-slHA3S9F1A7fQz0dCnz6K92-zkkJJflgTYT4mKbpfW-W8sCL7tG3rKraPktGlc84paoihSuXjquy2SPpW1V6cQER08evZEQoaeXv7Uu7"/>
-</div>
-<div>
-<h4 class="font-headline font-extrabold text-sm text-zinc-400">Likili Motors</h4>
-<p class="text-[10px] font-bold uppercase text-error">Sold Out</p>
-</div>
-</div>
-<div class="flex-grow grid grid-cols-1 md:grid-cols-3 gap-6 items-center w-full">
-<div class="text-center md:text-left opacity-50">
-<span class="block text-[10px] uppercase tracking-widest font-bold text-zinc-400 mb-1">Departure</span>
-<h2 class="text-3xl font-black text-zinc-300">09:00</h2>
-</div>
-<div class="flex flex-col items-center px-4">
-<div class="w-full flex items-center gap-2 opacity-20">
-<div class="w-2 h-2 rounded-full border-2 border-zinc-300"></div>
-<div class="flex-grow border-t-2 border-zinc-200"></div>
-<div class="w-2 h-2 rounded-full bg-zinc-300"></div>
-</div>
-</div>
-<div class="text-center md:text-right opacity-50">
-<span class="block text-[10px] uppercase tracking-widest font-bold text-zinc-400 mb-1">Arrival</span>
-<h2 class="text-3xl font-black text-zinc-300">15:00</h2>
-</div>
-</div>
-<div class="w-full md:w-48 text-right opacity-50">
-<span class="text-3xl font-black text-zinc-300">K240</span>
-</div>
-</div>
-</div>
-<!-- Bento Info Grid -->
-<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-12">
-<div class="bg-primary/5 p-6 rounded-2xl border border-primary/10">
-<span class="material-symbols-outlined text-primary mb-4" style="font-variation-settings: 'FILL' 1;">security</span>
-<h4 class="font-headline font-bold text-on-surface mb-2">Verified Operators</h4>
-<p class="text-xs text-zinc-500 leading-relaxed">All bus operators on our platform pass a 24-point safety and cleanliness inspection.</p>
-</div>
-<div class="bg-secondary/5 p-6 rounded-2xl border border-secondary/10">
-<span class="material-symbols-outlined text-secondary mb-4" style="font-variation-settings: 'FILL' 1;">confirmation_number</span>
-<h4 class="font-headline font-bold text-on-surface mb-2">Instant Ticket</h4>
-<p class="text-xs text-zinc-500 leading-relaxed">Receive your boarding QR code via SMS and WhatsApp immediately after payment.</p>
-</div>
-<div class="bg-zinc-100 p-6 rounded-2xl">
-<span class="material-symbols-outlined text-zinc-600 mb-4" style="font-variation-settings: 'FILL' 1;">support_agent</span>
-<h4 class="font-headline font-bold text-on-surface mb-2">24/7 Support</h4>
-<p class="text-xs text-zinc-500 leading-relaxed">Our Zambian-based support team is available via phone and chat for any trip issues.</p>
-</div>
-</div>
-</div>
-</div>
+
+<main>
+  <!-- Search Header -->
+  <header class="search-header">
+    <div class="flex-row justify-between items-center" style="flex-wrap: wrap; gap: 1.5rem;">
+      <div>
+        <div class="breadcrumb">
+          <span>One Way</span>
+          <span class="material-symbols-outlined" style="font-size: 0.25rem;">circle</span>
+          <span id="passengerCount">1 Passenger</span>
+        </div>
+        <h1 class="header-title">
+          <span id="originCity">Lusaka</span>
+          <span>→</span>
+          <span id="destinationCity">Kitwe</span>
+        </h1>
+        <p class="header-date" id="searchDate">Friday, 24 May 2024 • 12 departures available</p>
+      </div>
+      <button class="filter-time-btn" style="flex-direction: row; gap: 0.5rem; background: #f3f3f6; width: auto;" onclick="goBack()">
+        <span class="material-symbols-outlined">edit</span>
+        <span>Modify Search</span>
+      </button>
+    </div>
+  </header>
+
+  <div class="main-grid">
+
+    <!-- Sidebar Filters -->
+    <aside class="sidebar">
+      <div class="filters-card">
+        <div class="flex-row justify-between items-center mb-4">
+          <h3 style="font-weight: 800;">Filters</h3>
+          <button id="clearFiltersBtn" style="font-size: 0.75rem; color: #00601f; background: none; border: none; cursor: pointer;">Clear All</button>
+        </div>
+
+        <!-- Time Filters -->
+        <div class="filter-section">
+          <label class="filter-label">Time of Day</label>
+          <div class="filter-grid">
+            <button data-time="dawn" class="filter-time-btn"><span class="material-symbols-outlined">wb_twilight</span><span>Dawn</span></button>
+            <button data-time="morning" class="filter-time-btn active"><span class="material-symbols-outlined">light_mode</span><span>Morning</span></button>
+            <button data-time="afternoon" class="filter-time-btn"><span class="material-symbols-outlined">wb_sunny</span><span>Afternoon</span></button>
+            <button data-time="night" class="filter-time-btn"><span class="material-symbols-outlined">bedtime</span><span>Night</span></button>
+          </div>
+        </div>
+
+        <!-- Price Filter -->
+        <div class="filter-section">
+          <label class="filter-label">Price Range (ZMW)</label>
+          <input type="range" class="price-slider" min="360" max="800" value="800" id="priceSlider">
+          <div class="flex-row justify-between mt-4">
+            <span>K360</span>
+            <span id="priceValue">K800</span>
+            <span>K800</span>
+          </div>
+        </div>
+
+        <!-- Operators Filter -->
+        <div class="filter-section">
+          <label class="filter-label">Preferred Operator</label>
+          <div class="operator-list">
+            <label class="operator-item" data-op="Power Tools"><div class="checkbox checked"><span class="material-symbols-outlined" style="font-size: 0.75rem; color: white;">check</span></div><span>Power Tools</span></label>
+            <label class="operator-item" data-op="Rayon Bus"><div class="checkbox empty"></div><span>Rayon Bus</span></label>
+            <label class="operator-item" data-op="Likili Motorways"><div class="checkbox empty"></div><span>Likili Motorways</span></label>
+            <label class="operator-item" data-op="Mazhandu Family Bus"><div class="checkbox empty"></div><span>Mazhandu Family Bus</span></label>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Results Section -->
+    <div class="results-section">
+      <div id="resultsContainer"></div>
+
+      <!-- Info Cards -->
+      <div class="info-grid">
+        <div class="info-card primary">
+          <span class="material-symbols-outlined" style="color: #00601f; margin-bottom: 1rem;">security</span>
+          <h4 style="font-weight: 700; margin-bottom: 0.5rem;">Verified Operators</h4>
+          <p style="font-size: 0.75rem; color: #71717a;">All operators pass safety inspection.</p>
+        </div>
+        <div class="info-card secondary">
+          <span class="material-symbols-outlined" style="color: #954a00; margin-bottom: 1rem;">confirmation_number</span>
+          <h4 style="font-weight: 700; margin-bottom: 0.5rem;">Instant Ticket</h4>
+          <p style="font-size: 0.75rem; color: #71717a;">QR via SMS/WhatsApp after payment.</p>
+        </div>
+        <div class="info-card neutral">
+          <span class="material-symbols-outlined" style="color: #71717a; margin-bottom: 1rem;">support_agent</span>
+          <h4 style="font-weight: 700; margin-bottom: 0.5rem;">24/7 Support</h4>
+          <p style="font-size: 0.75rem; color: #71717a;">Zambian support team available.</p>
+        </div>
+      </div>
+    </div>
+  </div>
 </main>
+
 <!-- Footer -->
-<footer class="w-full py-12 mt-auto bg-zinc-50 dark:bg-zinc-950 border-t border-zinc-200 dark:border-zinc-800">
-<div class="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-<div>
-<span class="font-manrope font-bold text-zinc-900 dark:text-zinc-100 block mb-2">BookMyBus Zambia</span>
-<p class="font-inter text-xs text-zinc-500 dark:text-zinc-400">© 2024 BookMyBus Zambia. Premium Travel Excellence.</p>
-</div>
-<div class="flex flex-wrap gap-6 md:justify-end">
-<a class="font-inter text-xs text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 underline underline-offset-4 transition-opacity hover:opacity-80" href="#">Privacy Policy</a>
-<a class="font-inter text-xs text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 underline underline-offset-4 transition-opacity hover:opacity-80" href="#">Terms of Service</a>
-<a class="font-inter text-xs text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 underline underline-offset-4 transition-opacity hover:opacity-80" href="#">Carrier Partners</a>
-<a class="font-inter text-xs text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 underline underline-offset-4 transition-opacity hover:opacity-80" href="#">Contact Us</a>
-</div>
-</div>
+<footer class="footer">
+  <div class="footer-content">
+    <div>
+      <div style="font-weight: 700; margin-bottom: 0.5rem;">🚌 BookMyBus Zambia</div>
+      <p style="font-size: 0.75rem; color: #71717a;">© 2025 BookMyBus Zambia. Premium Travel Excellence.</p>
+    </div>
+    <div class="footer-links">
+      <a href="#">Privacy Policy</a>
+      <a href="#">Terms of Service</a>
+      <a href="#">Carrier Partners</a>
+      <a href="#">Contact Us</a>
+    </div>
+  </div>
 </footer>
-<!-- Mobile Navigation Mockup -->
-<div class="md:hidden fixed bottom-0 left-0 w-full bg-white border-t border-zinc-100 px-6 py-3 flex justify-between items-center z-50">
-<button class="flex flex-col items-center text-primary">
-<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">search</span>
-<span class="text-[10px] font-bold">Find</span>
-</button>
-<button class="flex flex-col items-center text-zinc-400">
-<span class="material-symbols-outlined">confirmation_number</span>
-<span class="text-[10px] font-bold">Trips</span>
-</button>
-<button class="flex flex-col items-center text-zinc-400">
-<span class="material-symbols-outlined">account_circle</span>
-<span class="text-[10px] font-bold">Profile</span>
-</button>
+
+<!-- Mobile Bottom Navigation -->
+<div class="mobile-bottom-nav">
+  <div class="mobile-nav-item" onclick="window.location.href='index.html'">
+    <span class="material-symbols-outlined">search</span>
+    <span>Find</span>
+  </div>
+  <div class="mobile-nav-item" onclick="window.location.href='my-bookings.html'">
+    <span class="material-symbols-outlined">confirmation_number</span>
+    <span>Trips</span>
+  </div>
+  <div class="mobile-nav-item" onclick="window.location.href='user-profile.html'">
+    <span class="material-symbols-outlined">account_circle</span>
+    <span>Profile</span>
+  </div>
 </div>
-</body></html>
+
+<div id="toastMsg" class="toast-notify"></div>
+
+<script>
+  // Sample trip data
+  const tripsData = [
+    { id: 1, operator: "Power Tools", departureTime: "06:00", arrivalTime: "11:30", duration: "5h 30m", price: 320, seatsLeft: 12, type: "Luxury Class", rating: 4.8, departureTerminal: "Inter-City Terminus", arrivalTerminal: "Kitwe Station", category: "morning" },
+    { id: 2, operator: "Rayob Bus", departureTime: "08:15", arrivalTime: "14:30", duration: "6h 15m", price: 260, seatsLeft: 4, type: "Semi-Luxury", rating: 4.2, departureTerminal: "Inter-City Terminus", arrivalTerminal: "Kitwe Station", category: "morning" },
+    { id: 3, operator: "Likili Motorways", departureTime: "09:00", arrivalTime: "15:00", duration: "6h 0m", price: 240, seatsLeft: 0, type: "Standard", rating: 3.9, category: "morning", soldOut: true },
+    { id: 4, operator: "Mazhandu Family Bus", departureTime: "14:30", arrivalTime: "20:00", duration: "5h 30m", price: 380, seatsLeft: 24, type: "Luxury Class", rating: 4.7, category: "afternoon" },
+    { id: 5, operator: "Power Tools", departureTime: "19:00", arrivalTime: "00:30", duration: "5h 30m", price: 300, seatsLeft: 8, type: "Business", rating: 4.5, category: "night" }
+  ];
+
+  let activeFilters = { time: "morning", maxPrice: 800, operators: ["Power Tools"] };
+
+  function showToast(msg) {
+    const toast = document.getElementById('toastMsg');
+    toast.innerText = msg;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 2000);
+  }
+
+  function showLoading() {
+    document.getElementById('resultsContainer').innerHTML = '<div class="text-center" style="padding: 3rem;"><div class="loading-spinner"></div><p style="margin-top: 1rem;">Loading buses...</p></div>';
+  }
+
+  function renderTrips() {
+    showLoading();
+    setTimeout(() => {
+      let filtered = tripsData.filter(trip => {
+        if (trip.price > activeFilters.maxPrice) return false;
+        if (activeFilters.time !== "all" && trip.category !== activeFilters.time) return false;
+        if (activeFilters.operators.length > 0 && !activeFilters.operators.includes(trip.operator)) return false;
+        return true;
+      });
+
+      const container = document.getElementById('resultsContainer');
+      if (filtered.length === 0) {
+        container.innerHTML = `<div style="background: white; padding: 3rem; text-align: center; border-radius: 1rem;"><span class="material-symbols-outlined" style="font-size: 3rem; color: #a1a1aa;">search_off</span><p style="margin-top: 0.5rem; font-weight: bold;">No trips match your filters.</p><button onclick="clearAllFilters()" style="margin-top: 1rem; color: #00601f; background: none; border: none; cursor: pointer;">Clear all filters</button></div>`;
+        return;
+      }
+
+      container.innerHTML = filtered.map(trip => {
+        const isSoldOut = trip.seatsLeft === 0;
+        const luxuryBadge = trip.type === "Luxury Class" ? `<div class="premium-badge">${trip.type}</div>` : (trip.type ? `<div style="position: absolute; top: 0; right: 0; background: #00601f; padding: 0.25rem 1rem; border-bottom-left-radius: 0.75rem; font-size: 0.625rem; font-weight: 700; color: white;">${trip.type}</div>` : '');
+        const seatsClass = trip.seatsLeft <= 4 ? 'low' : '';
+        return `<div class="result-card">
+          ${luxuryBadge}
+          <div class="card-content">
+            <div class="operator-info">
+              <div class="operator-logo"><div style="width: 100%; height: 100%; background: linear-gradient(135deg, #00601f, #197b30); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">BUS</div></div>
+              <div class="operator-name">${trip.operator}</div>
+              <div class="flex-row items-center"><span class="material-symbols-outlined" style="font-size: 0.75rem; color: #954a00;">star</span><span style="font-size: 0.625rem;">${trip.rating}</span></div>
+            </div>
+            <div class="trip-details">
+              <div class="time-point"><div class="time-label">Departure</div><div class="time-value">${trip.departureTime}</div><div style="font-size: 0.75rem; color: #71717a;">${trip.departureTerminal || 'Inter-City Terminus'}</div></div>
+              <div class="route-visual"><div class="duration">${trip.duration}</div><div class="route-line"><div class="dot-start"></div><div class="line"><div class="bus-icon"><span class="material-symbols-outlined" style="font-size: 1rem;">directions_bus</span></div></div><div class="dot-end"></div></div><div style="font-size: 0.625rem; color: #a1a1aa;">Direct Trip</div></div>
+              <div class="time-point text-right"><div class="time-label">Arrival</div><div class="time-value">${trip.arrivalTime}</div><div style="font-size: 0.75rem; color: #71717a;">${trip.arrivalTerminal || 'Kitwe Station'}</div></div>
+            </div>
+            <div class="price-section"><div><span style="font-size: 0.625rem;">ZMW</span><span class="price-amount">${trip.price}</span></div><div class="seats-left ${seatsClass}">${isSoldOut ? 'Sold Out' : trip.seatsLeft + ' Seats left'}</div><button class="select-btn" data-trip='${JSON.stringify(trip)}' ${isSoldOut ? 'disabled style="opacity:0.5; cursor:not-allowed;"' : ''}>${isSoldOut ? 'Sold Out' : 'Select Seats'}</button></div>
+          </div>
+        </div>`;
+      }).join('');
+
+      document.querySelectorAll('.select-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          if (btn.disabled) return;
+          const trip = JSON.parse(btn.getAttribute('data-trip'));
+          localStorage.setItem('selectedTrip', JSON.stringify(trip));
+          window.location.href = 'seat-selection.html';
+        });
+      });
+    }, 300);
+  }
+
+  function updateUI() {
+    document.querySelectorAll('.filter-time-btn').forEach(btn => {
+      if (btn.getAttribute('data-time') === activeFilters.time) btn.classList.add('active');
+      else btn.classList.remove('active');
+    });
+    document.querySelectorAll('.operator-item').forEach(item => {
+      const op = item.getAttribute('data-op');
+      const checkDiv = item.querySelector('.checkbox');
+      if (activeFilters.operators.includes(op)) {
+        checkDiv.classList.add('checked');
+        checkDiv.classList.remove('empty');
+        checkDiv.innerHTML = '<span class="material-symbols-outlined" style="font-size: 0.75rem; color: white;">check</span>';
+      } else {
+        checkDiv.classList.remove('checked');
+        checkDiv.classList.add('empty');
+        checkDiv.innerHTML = '';
+      }
+    });
+    document.getElementById('priceValue').innerText = `K${activeFilters.maxPrice}`;
+    document.getElementById('priceSlider').value = activeFilters.maxPrice;
+  }
+
+  function clearAllFilters() {
+    activeFilters = { time: "all", maxPrice: 800, operators: [] };
+    updateUI();
+    renderTrips();
+    showToast("All filters cleared");
+  }
+
+  function goBack() { window.location.href = 'index.html'; }
+
+  document.getElementById('priceSlider').addEventListener('input', (e) => {
+    activeFilters.maxPrice = parseInt(e.target.value);
+    updateUI();
+    renderTrips();
+  });
+
+  document.querySelectorAll('.filter-time-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      activeFilters.time = btn.getAttribute('data-time');
+      updateUI();
+      renderTrips();
+    });
+  });
+
+  document.querySelectorAll('.operator-item').forEach(item => {
+    item.addEventListener('click', () => {
+      const op = item.getAttribute('data-op');
+      if (activeFilters.operators.includes(op)) {
+        activeFilters.operators = activeFilters.operators.filter(o => o !== op);
+      } else {
+        activeFilters.operators.push(op);
+      }
+      updateUI();
+      renderTrips();
+    });
+  });
+
+  document.getElementById('clearFiltersBtn').addEventListener('click', clearAllFilters);
+
+  renderTrips();
+</script>
+</body>
+</html>
