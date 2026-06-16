@@ -13,6 +13,7 @@ class RouteController extends Controller
      
     public function search(Request $request): JsonResponse
     {
+        dd($request->all());
         $data = $request->validate([
             'origin'      => 'required|string',
             'destination' => 'required|string',
