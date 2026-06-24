@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Successful | BookMyBus Zambia</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-surface font-body text-on-surface selection:bg-primary-container selection:text-on-primary-container flex items-center justify-center min-h-screen">
+    <div class="max-w-md mx-auto p-8 bg-surface-container-lowest rounded-xl shadow-xl text-center space-y-6">
+        <span class="material-symbols-outlined text-green-500 text-6xl">check_circle</span>
+        <h1 class="text-3xl font-black font-headline tracking-tight text-on-surface">Payment Successful!</h1>
+        <p class="text-on-surface-variant font-medium">Your booking has been confirmed and your ticket has been issued.</p>
+        <div id="booking-confirmation" class="text-sm text-on-surface-variant mt-4"></div>
+        <a href="/" class="inline-block mt-6 px-6 py-3 rounded-xl bg-gradient-to-br from-primary to-primary-container text-white font-headline font-bold text-lg shadow-lg hover:shadow-primary/20 transition-all active:scale-[0.98]">
+            View My Ticket
+        </a>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const bookingId = urlParams.get('booking_id');
+
+            const bookingConfirmationDiv = document.getElementById('booking-confirmation');
+            if (bookingId) {
+                bookingConfirmationDiv.innerHTML = `Booking ID: ${bookingId}`;
+            }
+        });
+    </script>
+</body>
+</html>

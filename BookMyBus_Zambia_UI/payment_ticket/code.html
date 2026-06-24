@@ -114,14 +114,16 @@
 <p class="text-on-surface-variant font-medium">Finalize your booking to Lusaka securely.</p>
 </header>
 <section class="space-y-4">
+<input id="booking-id" type="hidden" value="BMB-8829-ZM"/>
+<input id="booking-amount" type="hidden" value="450.00"/> <!-- Example booking amount -->
 <h2 class="text-sm font-bold uppercase tracking-widest text-secondary font-label">Mobile Money Wallets</h2>
 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 <!-- Airtel Money Option -->
-<div class="group relative bg-surface-container-lowest p-6 rounded-xl shadow-sm cursor-pointer hover:shadow-md transition-all border-2 border-transparent hover:border-primary/20">
+                    <div id="airtel-option" class="group relative bg-surface-container-lowest p-6 rounded-xl shadow-sm cursor-pointer hover:shadow-md transition-all border-2 border-transparent hover:border-primary/20">
 <div class="flex justify-between items-start mb-6">
 <div class="w-12 h-12 rounded-lg bg-red-600 flex items-center justify-center text-white font-bold text-xl">A</div>
-<div class="w-5 h-5 rounded-full border-2 border-outline flex items-center justify-center">
-<div class="w-2.5 h-2.5 bg-primary rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                            <div class="indicator w-5 h-5 rounded-full border-2 border-outline flex items-center justify-center">
+                                <div class="dot w-2.5 h-2.5 bg-primary rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></div>
 </div>
 </div>
 <h3 class="font-headline font-bold text-lg">Airtel Money</h3>
@@ -131,11 +133,11 @@
                             </span>
 </div>
 <!-- MTN Money Option -->
-<div class="group relative bg-surface-container-lowest p-6 rounded-xl shadow-sm cursor-pointer hover:shadow-md transition-all border-2 border-primary">
+                    <div id="mtn-option" class="group relative bg-surface-container-lowest p-6 rounded-xl shadow-sm cursor-pointer hover:shadow-md transition-all border-2 border-primary">
 <div class="flex justify-between items-start mb-6">
 <div class="w-12 h-12 rounded-lg bg-yellow-400 flex items-center justify-center text-zinc-900 font-bold text-xl">M</div>
-<div class="w-5 h-5 rounded-full border-2 border-primary flex items-center justify-center">
-<div class="w-2.5 h-2.5 bg-primary rounded-full"></div>
+                            <div class="indicator w-5 h-5 rounded-full border-2 border-primary flex items-center justify-center">
+                                <div class="dot w-2.5 h-2.5 bg-primary rounded-full"></div>
 </div>
 </div>
 <h3 class="font-headline font-bold text-lg">MTN MoMo</h3>
@@ -150,12 +152,11 @@
 <div class="flex items-center gap-4">
 <span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">phone_iphone</span>
 <div class="flex-1">
-<label class="block text-xs font-bold uppercase text-on-surface-variant tracking-wider mb-1">MTN Phone Number</label>
-<input class="w-full bg-surface-container-lowest border-none rounded-lg p-4 font-headline font-bold text-lg focus:ring-2 focus:ring-primary/30 transition-shadow outline-none" placeholder="096 XXX XXXX" type="text"/>
+                        <label id="phone-label" class="block text-xs font-bold uppercase text-on-surface-variant tracking-wider mb-1">MTN Phone Number</label>
+                        <input id="phone-input" class="w-full bg-surface-container-lowest border-none rounded-lg p-4 font-headline font-bold text-lg focus:ring-2 focus:ring-primary/30 transition-shadow outline-none" placeholder="096 XXX XXXX" type="text"/>
 </div>
 </div>
-<button class="w-full py-4 rounded-xl bg-gradient-to-br from-primary to-primary-container text-white font-headline font-bold text-lg shadow-lg hover:shadow-primary/20 transition-all active:scale-[0.98]">
-                        Authorize Payment • K450.00
+                <button id="pay-button" class="w-full py-4 rounded-xl bg-gradient-to-br from-primary to-primary-container text-white font-headline font-bold text-lg shadow-lg hover:shadow-primary/20 transition-all active:scale-[0.98] flex items-center justify-center gap-2">Authorize Payment • K<span id="display-amount"></span>
                     </button>
 <p class="text-center text-xs text-on-surface-variant">By clicking authorize, you will receive a prompt on your phone to enter your PIN.</p>
 </section>
@@ -254,4 +255,85 @@
 </div>
 </div>
 </footer>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const airtel = document.getElementById('airtel-option');
+            const mtn = document.getElementById('mtn-option');
+            const input = document.getElementById('phone-input');
+            const label = document.getElementById('phone-label');
+            const btn = document.getElementById('pay-button');
+            const bookingAmount = document.getElementById('booking-amount');
+            const displayAmount = document.getElementById('display-amount');
+
+            // Populate the display amount on the pay button
+            if (bookingAmount && displayAmount) {
+                displayAmount.textContent = bookingAmount.value;
+            }
+
+            const switchProvider = (selected, other, labelText, placeholderText) => {
+                selected.classList.add('border-primary');
+                selected.classList.remove('border-transparent');
+                selected.querySelector('.indicator').classList.add('border-primary');
+                selected.querySelector('.indicator').classList.remove('border-outline');
+                selected.querySelector('.dot').classList.remove('opacity-0');
+                
+                other.classList.remove('border-primary');
+                other.classList.add('border-transparent');
+                other.querySelector('.indicator').classList.remove('border-primary');
+                other.querySelector('.indicator').classList.add('border-outline');
+                other.querySelector('.dot').classList.add('opacity-0');
+                
+                label.textContent = labelText;
+                input.placeholder = placeholderText;
+            };
+
+            airtel.addEventListener('click', () => {
+                switchProvider(airtel, mtn, 'Airtel Phone Number', '097 XXX XXXX');
+            });
+
+            mtn.addEventListener('click', () => {
+                switchProvider(mtn, airtel, 'MTN Phone Number', '096 XXX XXXX');
+            });
+
+            btn.addEventListener('click', () => {
+                const val = input.value.trim();
+                if (val.length < 10) {
+                    alert('Please enter a valid Zambian phone number.');
+                    return;
+                }
+                btn.disabled = true;
+                btn.textContent = 'Processing...';
+
+                const selectedPaymentMethod = airtel.classList.contains('border-primary') ? 'airtel_money' : 'mtn_money';
+                const bookingId = document.getElementById('booking-id').value;
+
+                // Simulate API call to initiate payment
+                setTimeout(() => {
+                    // In a real application, you would make a fetch/axios call to your backend's initiate endpoint
+                    // Example:
+                    /*
+                    fetch('/api/payment/initiate', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ booking_id: bookingId, payment_method: selectedPaymentMethod, phone_number: val })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        // Handle response, e.g., redirect to a payment gateway URL or a processing page
+                        window.location.href = 'payment-processing.html?booking_id=' + bookingId + '&payment_method=' + selectedPaymentMethod;
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('An error occurred during payment initiation.');
+                        btn.disabled = false;
+                        btn.textContent = 'Authorize Payment ';
+                    });
+                    */
+                    // For this example, we directly redirect to a simulated processing page
+                    const amount = document.getElementById('booking-amount').value;
+                    window.location.href = 'payment-processing.html?booking_id=' + bookingId + '&payment_method=' + selectedPaymentMethod + '&amount=' + amount;
+                }, 2000);
+            });
+        });
+    </script>
 </body></html>
