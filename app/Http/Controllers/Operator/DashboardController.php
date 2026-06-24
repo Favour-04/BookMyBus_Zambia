@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Route;
 use App\Models\Booking;
 use App\Models\Operator;
+use App\Models\Bus;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Operator\TripManagementController;
@@ -17,6 +18,10 @@ class DashboardController extends Controller
     {
         $operator = $this->getOperator();
         $operatorId = $operator->id;
+
+        $routes = $this->getOperatorRoutes($operator);
+        $buses = $this->getOperatorBuses($operator);
+
         $today = Carbon::today()->toDateString();
 
         $total_bookings = Booking::whereHas('route', function ($query) use ($operatorId) {
@@ -108,7 +113,7 @@ class DashboardController extends Controller
 
         $operator = Operator::find($operatorId);
 
-        return view('operator-dashboard', compact('total_bookings', 'bookings_trend', 'revenue', 'revenue_trend', 'revenue_average', 'active_trips_count', 'total_trips_today', 'avg_occupancy', 'fleet_status', 'upcoming_trips', 'operator'));
+        return view('operator-dashboard', compact('total_bookings', 'bookings_trend', 'revenue', 'revenue_trend', 'revenue_average', 'active_trips_count', 'total_trips_today', 'avg_occupancy', 'fleet_status', 'upcoming_trips', 'operator', 'routes', 'buses'));
     }
     private function getOperator()
     {
@@ -173,5 +178,49 @@ class DashboardController extends Controller
         session(['operator_id' => $operator->id]);
 
         return $operator;
+    }
+
+    private function getOperatorRoutes($operator)
+    {
+        return Route::where('operator_id', $operator->id)
+            ->where('travel_date', '>=', Carbon::today())
+            ->where('is_active', true)
+            ->get()
+            ->unique(function ($route) {
+                return $route->origin . '|' . $route->destination;
+            })
+            ->map(function ($route) {
+                return [
+                    'from' => $route->origin,
+                    'to' => $route->destination,
+                    'id' => $route->id,
+                    'display' => $route->origin . ' → ' . $route->destination,
+                ];
+            })
+            ->values();
+    }
+    private function getOperatorBuses($operator)
+    {
+        return Bus::where('operator_id', $operator->id)
+            ->where('is_active', true)
+            ->get()
+            ->map(function ($bus) {
+                // Get today's trips for this bus
+                $todayTrips = Route::where('bus_id', $bus->id)
+                    ->where('travel_date', Carbon::today())
+                    ->where('is_active', true)
+                    ->count();
+                
+                return [
+                    'id' => $bus->id,
+                    'plate' => $bus->registration_number,
+                    'model' => $bus->model ?? 'Bus',
+                    'capacity' => $bus->seat_capacity,
+                    'class' => $bus->bus_class ?? 'economy',
+                    'amenities' => $bus->amenities ?? [],
+                    'today_trips' => $todayTrips,
+                    'is_active' => $bus->is_active,
+                ];
+            });
     }
 }
