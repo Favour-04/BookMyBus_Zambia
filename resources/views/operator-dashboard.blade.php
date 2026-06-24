@@ -1,0 +1,587 @@
+@php
+// Default fallback dataset matching the design specification
+
+$alerts = $alerts ?? [
+[
+'type' => 'maintenance',
+'icon' => 'build',
+'title' => 'Maintenance Required',
+'message' => 'Bus #ZTC-8812 is 500km overdue for engine service. Safety clearance expires in 48 hours.',
+'action_label' => 'Schedule Service',
+'action_icon' => 'arrow_forward',
+'bg_class' => 'bg-tertiary-container/5 border-tertiary-container/30',
+'icon_bg' => 'bg-tertiary-container text-on-tertiary',
+'title_class' => 'text-on-tertiary-fixed-variant',
+'btn_class' => 'text-tertiary'
+],
+[
+'type' => 'demand',
+'icon' => 'local_fire_department',
+'title' => 'High Demand Route',
+'message' => 'Lusaka-Livingstone bookings for tomorrow are at 94%. Consider adding an extra 18:00 express trip.',
+'action_label' => 'Add Trip',
+'action_icon' => 'add',
+'bg_class' => 'bg-secondary-container/5 border-secondary-container/30',
+'icon_bg' => 'bg-secondary-container text-on-secondary-container',
+'title_class' => 'text-on-secondary-container',
+'btn_class' => 'text-secondary'
+],
+[
+'type' => 'rest',
+'icon' => 'person_alert',
+'title' => 'Driver Rest Alert',
+'message' => 'Driver Mubita is approaching max legal driving hours. Ensure shift change at Kabwe station.',
+'action_label' => 'View Schedule',
+'action_icon' => 'event',
+'bg_class' => 'bg-surface-container-low border-outline-variant/30',
+'icon_bg' => 'bg-primary-container text-on-primary',
+'title_class' => 'text-primary',
+'btn_class' => 'text-primary'
+]
+];
+@endphp
+
+<!DOCTYPE html>
+<html class="light" lang="{{ str_replace('_', '-', app()->getLocale() ?? 'en') }}">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zambia Transit | Operator Dashboard</title>
+
+    <!-- Tailwind CSS with custom colors config -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+    <!-- Google Fonts & Material Symbols -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Manrope:wght@700;800&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Manrope:wght@100..900&display=swap"
+        rel="stylesheet" />
+
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f9f9fc;
+        }
+
+        .bento-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 24px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #bfcaba;
+            border-radius: 10px;
+        }
+    </style>
+
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "seat-available": "#00601f",
+                        "on-tertiary-fixed-variant": "#920600",
+                        "on-primary-fixed": "#002106",
+                        "inverse-primary": "#86d989",
+                        "surface-container-low": "#f3f3f6",
+                        "primary-fixed": "#a1f6a3",
+                        "surface-variant": "#e2e2e5",
+                        "primary-container": "#197b30",
+                        "on-primary": "#ffffff",
+                        "outline-variant": "#bfcaba",
+                        "outline": "#6f7a6c",
+                        "tertiary-fixed-dim": "#ffb4a7",
+                        "on-secondary-fixed": "#301400",
+                        "surface-dim": "#d9dadd",
+                        "seat-booked": "#a80800",
+                        "on-background": "#1a1c1e",
+                        "surface-container-high": "#e8e8eb",
+                        "surface": "#f9f9fc",
+                        "on-primary-fixed-variant": "#00531a",
+                        "surface-container": "#edeef1",
+                        "primary-fixed-dim": "#86d989",
+                        "on-secondary-container": "#6f3600",
+                        "surface-container-highest": "#e2e2e5",
+                        "inverse-on-surface": "#f0f0f3",
+                        "error-container": "#ffdad6",
+                        "secondary-fixed-dim": "#ffb785",
+                        "on-tertiary-container": "#ffb3a7",
+                        "seat-selected": "#0077b6",
+                        "surface-container-lowest": "#ffffff",
+                        "background": "#f9f9fc",
+                        "error": "#ba1a1a",
+                        "tertiary-fixed": "#ffdad4",
+                        "on-surface": "#1a1c1e",
+                        "on-tertiary": "#ffffff",
+                        "tertiary-container": "#a80800",
+                        "secondary-container": "#fd9c53",
+                        "primary": "#004614",
+                        "on-secondary-fixed-variant": "#713700",
+                        "surface-tint": "#176d2a",
+                        "secondary-fixed": "#ffdcc6",
+                        "tertiary": "#7c0400",
+                        "on-tertiary-fixed": "#400100",
+                        "on-surface-variant": "#40493e",
+                        "secondary": "#954a00",
+                        "on-error": "#ffffff",
+                        "on-primary-container": "#85d988",
+                        "on-secondary": "#ffffff",
+                        "on-error-container": "#93000a",
+                        "surface-bright": "#f9f9fc",
+                        "inverse-surface": "#2f3133"
+                    },
+                    "fontFamily": {
+                        "headline-lg": ["Manrope"],
+                        "headline-md": ["Manrope"],
+                        "headline-sm": ["Manrope"],
+                        "body-md": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "label-caps": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-lg": ["36px", {"lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                        "headline-md": ["20px", {"lineHeight": "28px", "fontWeight": "700"}],
+                        "headline-sm": ["14px", {"lineHeight": "20px", "fontWeight": "700"}],
+                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "500"}],
+                        "body-sm": ["12px", {"lineHeight": "16px", "fontWeight": "400"}],
+                        "label-caps": ["10px", {"lineHeight": "12px", "letterSpacing": "0.1em", "fontWeight": "700"}]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+
+<body class="bg-background text-on-surface">
+
+    <!-- Sidebar Navigation -->
+    <aside
+        class="h-screen w-64 fixed left-0 top-0 bg-surface-container-low dark:bg-surface-dim flex flex-col py-6 px-4 z-20">
+        <div class="mb-10 px-2 font-headline-md text-headline-md font-extrabold text-primary">
+            <h1
+                class="font-headline-md text-headline-md font-extrabold text-primary dark:text-primary-fixed uppercase tracking-tighter">
+                {{$operator -> company_name ?? 'N/A'}}</h1>
+            <p class="font-body-sm text-body-sm text-on-surface-variant opacity-70">Operator Portal</p>
+        </div>
+
+        <nav class="flex-grow space-y-1">
+            <!-- Dashboard (Active) -->
+            <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-primary dark:text-primary-fixed font-bold border-r-4 border-primary dark:border-primary-fixed bg-surface-container-high dark:bg-surface-container transition-all duration-150"
+                href="#">
+                <span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+                <span class="font-body-md text-body-md">Dashboard</span>
+            </a>
+
+            <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant dark:text-outline hover:text-primary dark:hover:text-primary-fixed hover:bg-surface-container-highest dark:hover:bg-surface-container transition-colors duration-200"
+                href="{{ route('operator.trips.index') }}">
+                <span class="material-symbols-outlined" data-icon="directions_bus">directions_bus</span>
+                <span class="font-body-md text-body-md">Manage Trips</span>
+            </a>
+
+            <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant dark:text-outline hover:text-primary dark:hover:text-primary-fixed hover:bg-surface-container-highest dark:hover:bg-surface-container transition-colors duration-200"
+                href="#">
+                <span class="material-symbols-outlined" data-icon="event_seat">event_seat</span>
+                <span class="font-body-md text-body-md">Seat Maps</span>
+            </a>
+
+            <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant dark:text-outline hover:text-primary dark:hover:text-primary-fixed hover:bg-surface-container-highest dark:hover:bg-surface-container transition-colors duration-200"
+                href="#">
+                <span class="material-symbols-outlined" data-icon="payments">payments</span>
+                <span class="font-body-md text-body-md">Revenue</span>
+            </a>
+
+            <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant dark:text-outline hover:text-primary dark:hover:text-primary-fixed hover:bg-surface-container-highest dark:hover:bg-surface-container transition-colors duration-200"
+                href="#">
+                <span class="material-symbols-outlined" data-icon="account_circle">account_circle</span>
+                <span class="font-body-md text-body-md">Profile</span>
+            </a>
+        </nav>
+
+        <div class="mt-auto pt-6 border-t border-outline-variant/20 space-y-1">
+            <button
+                class="w-full bg-primary text-on-primary py-3 rounded-xl font-bold flex items-center justify-center gap-2 hover:brightness-110 transition-all mb-6">
+                <span class="material-symbols-outlined" data-icon="add_circle">add_circle</span>
+                <span class="font-body-md text-body-md">New Trip</span>
+            </button>
+            <a class="flex items-center gap-3 px-4 py-2 rounded-lg text-on-surface-variant hover:text-primary transition-colors"
+                href="#">
+                <span class="material-symbols-outlined" data-icon="settings">settings</span>
+                <span class="font-body-md text-body-md">Settings</span>
+            </a>
+            <a class="flex items-center gap-3 px-4 py-2 rounded-lg text-on-surface-variant hover:text-primary transition-colors"
+                href="#">
+                <span class="material-symbols-outlined" data-icon="help">help</span>
+                <span class="font-body-md text-body-md">Support</span>
+            </a>
+        </div>
+    </aside>
+
+    <!-- Main Dynamic Content -->
+    <main class="ml-64 min-h-screen">
+
+        <!-- Header / Top Navigation Bar -->
+        <header
+            class="h-16 px-8 flex items-center justify-between sticky top-0 bg-surface-container-low dark:bg-surface-container border-b border-outline-variant/15 z-50">
+            <div>
+                <h2 class="font-headline-sm text-headline-sm text-primary">Operator Dashboard</h2>
+            </div>
+            <div class="flex items-center gap-6">
+                <div class="relative group">
+                    <span class="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-outline"
+                        data-icon="search">search</span>
+                    <input
+                        class="pl-10 pr-4 py-2 bg-surface-container-low border-none rounded-full w-64 text-body-sm focus:ring-2 focus:ring-primary transition-all"
+                        placeholder="Search trips, buses, drivers..." type="text" />
+                </div>
+                <div class="flex items-center gap-4">
+                    <button
+                        class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors relative"
+                        data-icon="notifications">
+                        notifications
+                        <span class="absolute top-0 right-0 w-2 h-2 bg-tertiary rounded-full"></span>
+                    </button>
+                    <button
+                        class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors"
+                        data-icon="schedule">schedule</button>
+
+                    <div
+                        class="h-8 w-8 rounded-full bg-primary-container flex items-center justify-center overflow-hidden border border-primary/20 cursor-pointer">
+                        <img class="w-full h-full object-cover"
+                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuCC_um6BOHoYSxo-sV9I20VWjGhb-zV38rw6PHYfGSX0QMjIeGSDnnne5VQ14Dzbl5_QrVJX5_vf9Oa8BbR14Quv_NiAyAwDiq0kE0DcDQJOphyR4LIeKHbMnH-h8ZMG6u6DR33RnE2cyaFw6ZAbOHdAOBnCN1v0jT6IZfFuEKJpPprVP7AizC0wx979g01rNJ1E_sy6EkF-9fnN8eQsFlOzY2E0gyGlEvPmSuK6usojfMoTbfn4_z-_fOxaQj3y4d_f9TRJqctFUM"
+                            alt="Profile avatar">
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Page Canvas -->
+        <div class="p-8">
+
+            <!-- Key Performance Indicators Row -->
+            <div class="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+
+                <!-- Total Bookings -->
+                    <div
+                        class="bg-surface-container-low dark:bg-surface-container rounded-2xl p-5 border border-outline-variant/10 shadow-sm flex flex-col justify-between">
+                        <div class="flex justify-between items-start">
+                            <span class="text-label-md font-bold text-on-surface-variant uppercase tracking-wider">Total
+                                Bookings</span>
+                            <span
+                                class="material-symbols-outlined text-primary text-headline-sm">confirmation_number</span>
+                        </div>
+                        <div class="mt-4">
+                            <h3 class="text-headline-lg font-black tracking-tight text-on-surface">{{
+                                number_format($total_bookings) }}</h3>
+                            <p class="text-body-sm text-on-surface-variant mt-1 flex items-center gap-1">
+                                <span class="text-primary font-bold">{{ $bookings_trend }}</span> vs last month
+                            </p>
+                        </div>
+                    </div>
+
+                    <div
+                        class="bg-surface-container-low dark:bg-surface-container rounded-2xl p-5 border border-outline-variant/10 shadow-sm flex flex-col justify-between">
+                        <div class="flex justify-between items-start">
+                            <span
+                                class="text-label-md font-bold text-on-surface-variant uppercase tracking-wider">Revenue
+                                Generated</span>
+                            <span class="material-symbols-outlined text-secondary text-headline-sm">payments</span>
+                        </div>
+                        <div class="mt-4">
+                            <h3 class="text-headline-lg font-black tracking-tight text-on-surface">ZMW {{
+                                number_format($revenue, 2) }}</h3>
+                            <p class="text-body-sm text-on-surface-variant mt-1 flex items-center gap-1">
+                                <span class="text-secondary font-bold">{{ $revenue_trend }}</span> Daily Avg: <span
+                                    class="font-bold text-on-surface">{{ $revenue_average }}</span>
+                            </p>
+                        </div>
+                    </div>
+
+                    <div
+                        class="bg-surface-container-low dark:bg-surface-container rounded-2xl p-5 border border-outline-variant/10 shadow-sm flex flex-col justify-between">
+                        <div class="flex justify-between items-start">
+                            <span
+                                class="text-label-md font-bold text-on-surface-variant uppercase tracking-wider">Active
+                                Fleet</span>
+                            <span class="material-symbols-outlined text-tertiary text-headline-sm">directions_bus</span>
+                        </div>
+                        <div class="mt-4">
+                            <h3 class="text-headline-lg font-black tracking-tight text-on-surface">{{
+                                $active_trips_count }}/{{ $total_trips_today }}</h3>
+                            <p class="text-body-sm text-on-surface-variant mt-1 flex items-center gap-1">
+                                Avg Occupancy: <span class="font-bold text-primary">{{ $avg_occupancy }}%</span>
+                            </p>
+                        </div>
+                    </div>
+                {{-- </div> --}}
+
+                <!-- Revenue Card (ZMW) -->
+                <div
+                    class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant/15 shadow-sm hover:shadow-md transition-shadow">
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="text-on-surface-variant font-label-caps text-label-caps uppercase">Revenue
+                            (ZMW)</span>
+                        <div class="p-2 bg-secondary-container/10 rounded-lg">
+                            <span class="material-symbols-outlined text-secondary" data-icon="payments">payments</span>
+                        </div>
+                    </div>
+                    <div class="flex items-baseline gap-2">
+                        <span class="font-headline-lg text-headline-lg text-on-surface">{{ number_format($revenue)
+                            }}</span>
+                        <span class="text-seat-available text-body-sm font-bold flex items-center">
+                            <span class="material-symbols-outlined text-sm mr-0.5"
+                                data-icon="trending_up">trending_up</span>
+                            {{ $revenue_trend }}
+                        </span>
+                    </div>
+                    <p class="text-on-surface-variant text-body-sm mt-1">Daily average: {{ $revenue_average }}</p>
+                </div>
+
+                <!-- Active Trips Card -->
+                <div
+                    class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant/15 shadow-sm hover:shadow-md transition-shadow">
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="text-on-surface-variant font-label-caps text-label-caps uppercase">Active
+                            Trips</span>
+                        <div class="p-2 bg-primary-container/10 rounded-lg">
+                            <span class="material-symbols-outlined text-primary" data-icon="route">route</span>
+                        </div>
+                    </div>
+                    <div class="flex items-baseline gap-2">
+                        <span class="font-headline-lg text-headline-lg text-on-surface">{{ $active_trips_count }}</span>
+                        <span class="text-on-surface-variant text-body-sm font-medium">/ {{ $total_trips_today }}
+                            today</span>
+                    </div>
+                    <div class="w-full bg-surface-container rounded-full h-1.5 mt-4">
+                        <div class="bg-primary h-1.5 rounded-full"
+                            style="width: {{ ($active_trips_count / max($total_trips_today, 1)) * 100 }}%"></div>
+                    </div>
+                </div>
+
+                <!-- Average Occupancy Highlight Card -->
+                <div class="bg-primary p-6 rounded-xl shadow-lg shadow-primary/20 relative overflow-hidden">
+                    <div class="relative z-10">
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="text-primary-fixed font-label-caps text-label-caps uppercase">Avg
+                                Occupancy</span>
+                            <span class="material-symbols-outlined text-primary-fixed" data-icon="groups">groups</span>
+                        </div>
+                        <div class="flex items-baseline gap-2">
+                            <span class="font-headline-lg text-headline-lg text-on-primary">{{ $avg_occupancy }}%</span>
+                            <span class="text-primary-fixed text-body-sm font-bold flex items-center">
+                                <span class="material-symbols-outlined text-sm mr-0.5"
+                                    data-icon="keyboard_double_arrow_up">keyboard_double_arrow_up</span>
+                                High
+                            </span>
+                        </div>
+                        <p class="text-primary-fixed/80 text-body-sm mt-1">Across all inter-city routes</p>
+                    </div>
+                    <!-- Decorative background vector element -->
+                    <div class="absolute -right-4 -bottom-4 opacity-10">
+                        <span class="material-symbols-outlined text-9xl text-on-primary"
+                            data-icon="directions_bus">directions_bus</span>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Dashboard Content Bento Grid -->
+            <div class="bento-grid">
+
+                <!-- Section 1: Live Fleet Status -->
+                <div
+                    class="col-span-12 lg:col-span-4 bg-surface-container-lowest p-6 rounded-xl border border-outline-variant/15 flex flex-col h-[500px]">
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="font-headline-md text-headline-md text-on-surface">Live Fleet Status</h3>
+                        <button class="text-primary text-body-sm font-bold flex items-center gap-1 hover:underline">
+                            Map View <span class="material-symbols-outlined text-sm" data-icon="map">map</span>
+                        </button>
+                    </div>
+
+                    <div class="flex-grow overflow-y-auto custom-scrollbar pr-2 space-y-4">
+                        @forelse($fleet_status as $bus)
+                        <div class="bg-surface border border-outline-variant/20 p-4 rounded-xl shadow-xs">
+                            <div class="flex justify-between items-center mb-2">
+                                <div>
+                                    <span class="text-body-md font-bold text-on-surface tracking-wide">{{ $bus['plate']
+                                        }}</span>
+                                    <span class="text-body-sm text-on-surface-variant block mt-0.5">{{ $bus['route']
+                                        }}</span>
+                                </div>
+                                <span
+                                    class="text-label-sm font-bold px-2.5 py-1 rounded-full {{ $bus['badge_class'] }}">
+                                    {{ $bus['status'] }}
+                                </span>
+                            </div>
+
+                            <div class="w-full bg-surface-container-highest rounded-full h-2 mt-3 overflow-hidden">
+                                <div class="{{ $bus['bar_class'] }} h-2 rounded-full transition-all duration-500"
+                                    style="width: {{ $bus['progress'] }}%"></div>
+                            </div>
+                            <div class="flex justify-between items-center mt-1.5">
+                                <span class="text-label-sm font-medium text-on-surface-variant">{{
+                                    $bus['progress_label'] }}</span>
+                            </div>
+                        </div>
+                        @empty
+                        <p class="text-body-md text-on-surface-variant text-center py-4">No active trips dispatched on
+                            the terminal lines today.</p>
+                        @endforelse
+                    </div>
+                </div>
+
+                <!-- Section 2: Upcoming Trips Table -->
+                <div
+                    class="col-span-12 lg:col-span-8 bg-surface-container-lowest rounded-xl border border-outline-variant/15 flex flex-col h-[500px] overflow-hidden">
+                    <div class="p-6 border-b border-outline-variant/15 flex items-center justify-between">
+                        <h3 class="font-headline-md text-headline-md text-on-surface">Upcoming Trips</h3>
+                        <div class="flex gap-2">
+                            <button
+                                class="px-3 py-1 bg-surface-container text-body-sm font-bold rounded-lg hover:bg-surface-container-high transition-colors">Today</button>
+                            <button
+                                class="px-3 py-1 text-on-surface-variant text-body-sm font-medium rounded-lg hover:bg-surface-container-low transition-colors">Tomorrow</button>
+                        </div>
+                    </div>
+
+                    <div class="flex-grow overflow-auto custom-scrollbar">
+                        <table class="w-full text-left border-collapse">
+                            <thead class="bg-surface-container-high sticky top-0 z-10">
+                                <tr>
+                                    <th
+                                        class="px-6 py-4 font-label-caps text-label-caps text-on-surface-variant uppercase">
+                                        Trip ID</th>
+                                    <th
+                                        class="px-6 py-4 font-label-caps text-label-caps text-on-surface-variant uppercase">
+                                        Route</th>
+                                    <th
+                                        class="px-6 py-4 font-label-caps text-label-caps text-on-surface-variant uppercase">
+                                        Departure</th>
+                                    <th
+                                        class="px-6 py-4 font-label-caps text-label-caps text-on-surface-variant uppercase">
+                                        Occupancy</th>
+                                    <th
+                                        class="px-6 py-4 font-label-caps text-label-caps text-on-surface-variant uppercase">
+                                        Status</th>
+                                    <th
+                                        class="px-6 py-4 font-label-caps text-label-caps text-on-surface-variant uppercase">
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-outline-variant/10 w-full">
+                                @forelse($upcoming_trips as $trip)
+                                <tr class="hover:bg-surface-container-low transition-colors group w-full">
+                                    <td class="py-3 px-4 font-bold text-on-surface tracking-wide">{{ $trip['id'] }}</td>
+                                    <td class="py-3 px-4">
+                                        <div class="font-bold text-on-surface flex items-center gap-1">
+                                            {{ $trip['route_from'] }} <span
+                                                class="material-symbols-outlined text-sm text-on-surface-variant">arrow_forward</span>
+                                            {{ $trip['route_to'] }}
+                                        </div>
+                                        <div class="text-body-sm text-on-surface-variant capitalize mt-0.5">{{
+                                            $trip['class'] }}</div>
+                                    </td>
+                                    <td class="py-3 px-4 font-bold text-on-surface">{{ $trip['departure'] }} hrs</td>
+                                    <td class="py-3 px-4">
+                                        <div class="flex items-center gap-2">
+                                            <div
+                                                class="w-16 bg-surface-container-highest rounded-full h-1.5 overflow-hidden hidden sm:block">
+                                                <div class="bg-primary h-1.5 rounded-full"
+                                                    style="width: {{ $trip['occupancy_percentage'] }}%"></div>
+                                            </div>
+                                            <span class="font-semibold text-on-surface-variant text-body-sm">
+                                                {{ $trip['booked'] }}/{{ $trip['capacity'] }}
+                                            </span>
+                                        </div>
+                                    </td>
+                                    <td class="py-3 px-4 text-right min-w-max">
+                                        <span
+                                            class="text-label-sm font-bold px-2.5 py-1 rounded-full {{ $trip['status_type'] === 'delayed' ? 'bg-tertiary-container/10 text-tertiary' : 'bg-primary/10 text-primary' }}">
+                                            {{ $trip['status'] }}
+                                        </span>
+                                    </td>
+                                </tr>
+                                @empty
+                                <tr>
+                                    <td colspan="5" class="py-6 px-4 text-center text-on-surface-variant">
+                                        No upcoming line manifests scheduled for this operator profile.
+                                    </td>
+                                </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Section 3: Recent Notifications & Critical Operational Alerts -->
+                <div class="col-span-12 bg-surface-container-lowest p-6 rounded-xl border border-outline-variant/15">
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="font-headline-md text-headline-md text-on-surface">Recent Notifications & Alerts</h3>
+                        <div class="flex items-center gap-2">
+                            <span class="w-3 h-3 bg-tertiary rounded-full"></span>
+                            <span class="text-body-sm font-bold text-tertiary">2 High Priority Alerts</span>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        @foreach($alerts as $alert)
+                        <div class="p-4 rounded-xl border {{ $alert['bg_class'] }} flex gap-4">
+                            <div
+                                class="w-10 h-10 rounded-lg {{ $alert['icon_bg'] }} flex items-center justify-center shrink-0">
+                                <span class="material-symbols-outlined" data-icon="{{ $alert['icon'] }}">{{
+                                    $alert['icon'] }}</span>
+                            </div>
+                            <div class="flex-grow">
+                                <h4 class="font-bold text-body-md {{ $alert['title_class'] }}">{{ $alert['title'] }}
+                                </h4>
+                                <p class="text-body-sm text-on-surface-variant mt-1 leading-relaxed">{{
+                                    $alert['message'] }}</p>
+                                <button
+                                    class="mt-3 {{ $alert['btn_class'] }} font-bold text-body-sm flex items-center gap-1 hover:underline cursor-pointer">
+                                    {{ $alert['action_label'] }}
+                                    <span class="material-symbols-outlined text-sm"
+                                        data-icon="{{ $alert['action_icon'] }}">{{ $alert['action_icon'] }}</span>
+                                </button>
+                            </div>
+                        </div>
+                        @endforeach
+                    </div>
+                </div>
+
+            </div> <!-- End Bento Grid -->
+
+        </div>
+    </main>
+
+    <!-- Micro-interaction Event Handlers for Buttons/Links -->
+    <script>
+        document.querySelectorAll('a, button').forEach(el => {
+            el.addEventListener('mousedown', () => {
+                el.classList.add('scale-[0.98]');
+            });
+            el.addEventListener('mouseup', () => {
+                el.classList.remove('scale-[0.98]');
+            });
+            el.addEventListener('mouseleave', () => {
+                el.classList.remove('scale-[0.98]');
+            });
+        });
+    </script>
+</body>
+
+</html>
