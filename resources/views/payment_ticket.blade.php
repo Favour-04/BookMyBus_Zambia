@@ -181,7 +181,7 @@
                     <section class="bg-surface-container-low p-8 rounded-xl space-y-6">
                         <div class="flex items-center gap-4">
                             <span class="material-symbols-outlined text-primary"
-                                style="font-variation-settings: 'FILL' 1;">phone_iphone</span>
+                                style="font-variation-settings: 'FILL' 1;">phone_iphone</span> {{--phone icon--}}
                             <div class="flex-1">
                                 <label
                                     class="block text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-1">MTN

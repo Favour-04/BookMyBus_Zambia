@@ -31,10 +31,11 @@ class Route extends Model
     ];
 
     // Query scopes
-    public function scopeSearch($query, $origin, $destination)
+    public function scopeSearch($query, $origin, $destination, $travel_date)
     {
         return $query->where('origin', 'ilike', '%' . $origin . '%')
-                     ->where('destination', 'ilike', '%' . $destination . '%');
+                     ->where('destination', 'ilike', '%' . $destination . '%')
+                     ->where('travel_date', $travel_date);
     }
 
     // relationships definitions
