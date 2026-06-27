@@ -14,14 +14,17 @@ class BookingController extends Controller
     public function showSeats($id)
     {
         $route = Route::with(['bus', 'operator'])->findOrFail($id);
-        
-        // Get already booked seats for this route
-        $bookedSeats = Booking::where('route_id', $id)
-            ->where('status', 'pending')
-            ->pluck('seat_number')
-            ->toArray();
-        
-        return view('seat_selection', compact('route', 'bookedSeats'));
+
+        $bookedSeats = $route->bookedSeats();
+
+        $searchBackUrl = route('trips.search', [
+            'origin' => $route->origin,
+            'destination' => $route->destination,
+            'travel_date' => $route->travel_date->format('Y-m-d'),
+            'passengers' => request()->query('passengers', 1),
+        ]);
+
+        return view('seat_selection', compact('route', 'bookedSeats', 'searchBackUrl'));
     }
 
     /**
@@ -29,25 +32,39 @@ class BookingController extends Controller
      */
     public function store(Request $request)
     {
-        // Validate the request
         $validated = $request->validate([
             'route_id' => 'required|exists:routes,id',
             'seat_number' => 'required|integer|min:1',
+            'passenger_name' => 'required|string|max:255',
+            'id_number' => 'required|string|max:50',
+            'phone' => 'required|string|max:20',
         ]);
 
-        // Get the route to access fare
-        $route = Route::findOrFail($validated['route_id']);
+        $route = Route::with('bus')->findOrFail($validated['route_id']);
 
-        // Create the booking
+        if ($validated['seat_number'] > $route->bus->seat_capacity) {
+            return back()
+                ->withErrors(['seat_number' => 'Please select a valid seat.'])
+                ->withInput();
+        }
+
+        if (in_array($validated['seat_number'], $route->bookedSeats(), true)) {
+            return back()
+                ->withErrors(['seat_number' => 'This seat was just taken. Please choose another seat.'])
+                ->withInput();
+        }
+
         $booking = Booking::create([
-            'user_id' => null, // nullable for now
+            'user_id' => null,
             'route_id' => $validated['route_id'],
             'seat_number' => $validated['seat_number'],
+            'passenger_name' => $validated['passenger_name'],
+            'passenger_id_number' => $validated['id_number'],
+            'passenger_phone' => $validated['phone'],
             'amount' => $route->fare,
             'status' => 'pending',
         ]);
 
-        // Redirect to payment page
         return redirect()->route('payment.ticket', $booking->id);
     }
 
@@ -60,6 +77,7 @@ class BookingController extends Controller
         
         return view('payment_ticket', [
             'booking' => $booking,
+            'passenger_name' => $booking->passenger_name,
             'seat_number' => $booking->seat_number,
             'total_fare' => $booking->amount,
             'origin' => $booking->route->origin,

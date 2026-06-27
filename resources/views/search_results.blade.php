@@ -290,7 +290,7 @@
                 <p class="text-[10px] font-bold text-primary-container uppercase tracking-tight">{{
                   $trip->availableSeatsCount() }} Seats left</p>
               </div>
-              <a href="{{ route('booking.seats', $trip->id) }}"
+              <a href="{{ route('booking.seats', ['route' => $trip->id, 'passengers' => request('passengers', 1)]) }}"
                 class="inline-block bg-gradient-to-br from-primary to-primary-container text-white px-8 md:w-full py-3 rounded-lg font-bold text-sm shadow-lg shadow-primary/20 hover:scale-[1.02] transition-transform text-center">
                 View Seats
               </a>
