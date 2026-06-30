@@ -33,18 +33,57 @@ return [
     | users are actually retrieved out of your database or other storage
     | system used by the application. Typically, Eloquent is utilized.
     |
-    | Supported: "session"
+    | Supported: "session", "sanctum"
     |
     */
 
     'guards' => [
+        // ----------------------------
+        // Traveler Guard (Web)
+        // ----------------------------
         'web' => [
             'driver' => 'session',
             'provider' => 'users',
         ],
-        'operator_api' => [
-            'driver'   => 'sanctum',
+
+        // ----------------------------
+        // Traveler API Guard (Sanctum)
+        // ----------------------------
+        'sanctum' => [
+            'driver' => 'sanctum',
+            'provider' => 'users',
+        ],
+
+        // ----------------------------
+        // Operator Guard (Web)
+        // ----------------------------
+        'operator' => [
+            'driver' => 'session',
             'provider' => 'operators',
+        ],
+
+        // ----------------------------
+        // Operator API Guard (Sanctum)
+        // ----------------------------
+        'operator_api' => [
+            'driver' => 'sanctum',
+            'provider' => 'operators',
+        ],
+
+        // ----------------------------
+        // Admin Guard (Web)
+        // ----------------------------
+        'admin' => [
+            'driver' => 'session',
+            'provider' => 'admins',
+        ],
+
+        // ----------------------------
+        // Admin API Guard (Sanctum)
+        // ----------------------------
+        'admin_api' => [
+            'driver' => 'sanctum',
+            'provider' => 'admins',
         ],
     ],
 
@@ -66,19 +105,29 @@ return [
     */
 
     'providers' => [
+        // ----------------------------
+        // Traveler Provider
+        // ----------------------------
         'users' => [
             'driver' => 'eloquent',
             'model' => env('AUTH_MODEL', User::class),
         ],
+
+        // ----------------------------
+        // Operator Provider
+        // ----------------------------
         'operators' => [
             'driver' => 'eloquent',
-            'model'  => App\Models\Operator::class,
+            'model' => App\Models\Operator::class,
         ],
 
-        // 'users' => [
-        //     'driver' => 'database',
-        //     'table' => 'users',
-        // ],
+        // ----------------------------
+        // Admin Provider
+        // ----------------------------
+        /*'admins' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Admin::class,
+        ],*/
     ],
 
     /*
@@ -101,9 +150,32 @@ return [
     */
 
     'passwords' => [
+        // ----------------------------
+        // Traveler Password Reset
+        // ----------------------------
         'users' => [
             'provider' => 'users',
             'table' => env('AUTH_PASSWORD_RESET_TOKEN_TABLE', 'password_reset_tokens'),
+            'expire' => 60,
+            'throttle' => 60,
+        ],
+
+        // ----------------------------
+        // Operator Password Reset
+        // ----------------------------
+        'operators' => [
+            'provider' => 'operators',
+            'table' => 'operator_password_reset_tokens',
+            'expire' => 60,
+            'throttle' => 60,
+        ],
+
+        // ----------------------------
+        // Admin Password Reset
+        // ----------------------------
+        'admins' => [
+            'provider' => 'admins',
+            'table' => 'admin_password_reset_tokens',
             'expire' => 60,
             'throttle' => 60,
         ],

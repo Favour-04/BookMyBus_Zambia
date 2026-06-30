@@ -154,17 +154,33 @@
           href="#">Operator Portal</a>
         <a class="font-headline tracking-tight font-bold text-sm text-zinc-600 dark:text-zinc-400 hover:text-green-900 dark:hover:text-green-100 transition-colors"
           href="#">Support</a>
-      </div>
-        <button
-          class="text-green-800 dark:text-green-400 font-headline font-bold text-sm px-4 py-2 hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-colors rounded-lg flex items-center gap-2">
+      </div class="flex justify-center">
+      @auth
+      <a
+        class="text-green-800 dark:text-green-400 font-headline font-bold text-sm px-4 py-2 hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-colors rounded-lg flex items-center gap-2">
+        <span>My Bookings</span>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+          class="search-icon">
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+        </svg>
+      </a>
+      <form action="{{ route('logout') }}" method="POST">
+        @csrf
+        <button class="text-green-800 dark:text-green-400 font-headline font-bold text-sm px-4 py-2 hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-colors rounded-lg flex items-center gap-2" type="submit">Sign Out</button>
+      </form>
+      @else
+      <a
+          class="text-green-800 dark:text-green-400 font-headline font-bold text-sm px-4 py-2 hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-colors rounded-lg flex items-center gap-2" href="{{ route('login') }}">
           <span>Sign In</span>
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
           class="search-icon">
           <path stroke-linecap="round" stroke-linejoin="round"
             d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
         </svg>
-        </button>
-        
+        </a>
+      @endauth
+
     </div>
   </nav>
   <main class="pt-20">
@@ -205,7 +221,8 @@
                   <div class="grid grid-cols-1 md:grid-cols-12 gap-2">
                     <div
                       class="md:col-span-3 p-4 hover:bg-surface-container-low transition-colors rounded-lg cursor-pointer group">
-                      <label class="text-[10px] uppercase font-bold text-outline tracking-widest block mb-1">From</label>
+                      <label
+                        class="text-[10px] uppercase font-bold text-outline tracking-widest block mb-1">From</label>
                       <div class="flex items-center gap-2">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                           stroke="currentColor" class="search-icon">
@@ -232,18 +249,20 @@
 
                         <input
                           class="bg-transparent border-none p-0 text-on-surface font-semibold focus:ring-0 w-full placeholder:text-surface-dim"
-                          placeholder="Kitwe" required type="text" name="destination" value="{{ request('destination') }}" />
+                          placeholder="Kitwe" required type="text" name="destination"
+                          value="{{ request('destination') }}" />
                       </div>
                     </div>
                     <div
                       class="relative md:col-span-2 p-4 hover:bg-surface-container-low transition-colors rounded-lg cursor-pointer group">
-                      <label class="text-[10px] uppercase font-bold text-outline tracking-widest block mb-1">Date</label>
+                      <label
+                        class="text-[10px] uppercase font-bold text-outline tracking-widest block mb-1">Date</label>
                       <div class="flex items-center gap-2">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                        stroke="currentColor" class="search-icon">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                          d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5m-9-6h.008v.008H12v-.008ZM12 15h.008v.008H12V15Zm0 2.25h.008v.008H12v-.008ZM9.75 15h.008v.008H9.75V15Zm0 2.25h.008v.008H9.75v-.008ZM7.5 15h.008v.008H7.5V15Zm0 2.25h.008v.008H7.5v-.008Zm6.75-4.5h.008v.008h-.008v-.008Zm0 2.25h.008v.008h-.008V15Zm0 2.25h.008v.008h-.008v-.008Zm2.25-4.5h.008v.008H16.5v-.008Zm0 2.25h.008v.008H16.5V15Z" />
-                      </svg>
+                          stroke="currentColor" class="search-icon">
+                          <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5m-9-6h.008v.008H12v-.008ZM12 15h.008v.008H12V15Zm0 2.25h.008v.008H12v-.008ZM9.75 15h.008v.008H9.75V15Zm0 2.25h.008v.008H9.75v-.008ZM7.5 15h.008v.008H7.5V15Zm0 2.25h.008v.008H7.5v-.008Zm6.75-4.5h.008v.008h-.008v-.008Zm0 2.25h.008v.008h-.008V15Zm0 2.25h.008v.008h-.008v-.008Zm2.25-4.5h.008v.008H16.5v-.008Zm0 2.25h.008v.008H16.5V15Z" />
+                        </svg>
                         <input
                           class="bg-transparent border-none p-0 text-on-surface font-semibold focus:ring-0 w-full placeholder:text-surface-dim"
                           placeholder="{{\Carbon\Carbon::now() -> format('Y-m-d')}}" type="date" required
@@ -404,39 +423,41 @@
                 <span class="material-symbols-outlined">east</span>
               </button> --}}
               @if($detectedCity)
-                <div>
-                  <h3 class="text-green-800 dark:text-green-400 text-2xl font-bold font-headline text-on-surface mb-2">Popular Routes from {{ $detectedCity }}</h3>
-                  <p class="text-green-800 dark:text-green-400 text-on-surface-variant mb-6 text-sm">Handpicked direct bus trips heading out from your immediate area.</p>
-                </div>
+              <div>
+                <h3 class="text-green-800 dark:text-green-400 text-2xl font-bold font-headline text-on-surface mb-2">
+                  Popular Routes from {{ $detectedCity }}</h3>
+                <p class="text-green-800 dark:text-green-400 text-on-surface-variant mb-6 text-sm">Handpicked direct bus
+                  trips heading out from your immediate area.</p>
+              </div>
               @else
-                <div>
-                  <h3 class="text-green-800 dark:text-green-400 text-2xl font-bold font-headline text-on-surface mb-2">Trending Travel Routes</h3>
-                  <p class="text-green-800 dark:text-green-400 text-on-surface-variant mb-6 text-sm">The most popular inter-city bus routes across Zambia today.</p>
-                </div>
+              <div>
+                <h3 class="text-green-800 dark:text-green-400 text-2xl font-bold font-headline text-on-surface mb-2">
+                  Trending Travel Routes</h3>
+                <p class="text-green-800 dark:text-green-400 text-on-surface-variant mb-6 text-sm">The most popular
+                  inter-city bus routes across Zambia today.</p>
+              </div>
               @endif
             </div>
             <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
               @foreach($routes as $route)
-              <a
-                href="{{ route('trips.search', ['origin' => $route->origin, 'destination' => $route->destination, 'travel_date' => \Carbon\Carbon::now()->format('Y-m-d'), 'passengers' => 1]
+              <a href="{{ route('trips.search', ['origin' => $route->origin, 'destination' => $route->destination, 'travel_date' => \Carbon\Carbon::now()->format('Y-m-d'), 'passengers' => 1]
                 )}}">
                 <div class="group cursor-pointer">
                   <div class="relative h-[400px] rounded-2xl overflow-hidden mb-6">
                     @php
-                        $cityFolder = strtolower(trim($route -> destination));
-                        $folderPath = public_path("images/cities/{$cityFolder}");
-                        $randomImageUrl = "https://placehold.co/400x400?text=" . urlencode($route -> destination);
-                        if(is_dir($folderPath)){
-                          $images = glob($folderPath . '/*{jpg,jpeg,png,webp,gif}', GLOB_BRACE);
-                          if(!empty($images)){
-                            $randomImageFile = $images[array_rand($images)];
-                            $randomImageUrl = asset("images/cities/{$cityFolder}/" . basename($randomImageFile));
-                          }
-                        }
+                    $cityFolder = strtolower(trim($route -> destination));
+                    $folderPath = public_path("images/cities/{$cityFolder}");
+                    $randomImageUrl = "https://placehold.co/400x400?text=" . urlencode($route -> destination);
+                    if(is_dir($folderPath)){
+                    $images = glob($folderPath . '/*{jpg,jpeg,png,webp,gif}', GLOB_BRACE);
+                    if(!empty($images)){
+                    $randomImageFile = $images[array_rand($images)];
+                    $randomImageUrl = asset("images/cities/{$cityFolder}/" . basename($randomImageFile));
+                    }
+                    }
                     @endphp
-                    <img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                      data-alt="Scenic route from {{ $route->destination }}"
-                      src="{{ $randomImageUrl }}" />
+                    <img loading="lazy" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                      data-alt="Scenic route from {{ $route->destination }}" src="{{ $randomImageUrl }}" />
                     <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
                     <div class="absolute bottom-6 left-6">
                       <span

@@ -88,30 +88,60 @@ $alerts = $alerts ?? [
             background: #bfcaba;
             border-radius: 10px;
         }
+
         .material-symbols-outlined {
             font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
             vertical-align: middle;
         }
-        body { font-family: 'Inter', sans-serif; background-color: #f9f9fc; }
-        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #bfcaba; border-radius: 10px; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f9f9fc;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #bfcaba;
+            border-radius: 10px;
+        }
 
         /* Drawer transition */
         #trip-drawer {
             transform: translateX(100%);
             transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        #trip-drawer.open { transform: translateX(0); }
+
+        #trip-drawer.open {
+            transform: translateX(0);
+        }
+
         #drawer-backdrop {
-            opacity: 0; pointer-events: none;
+            opacity: 0;
+            pointer-events: none;
             transition: opacity 0.25s ease;
         }
-        #drawer-backdrop.open { opacity: 1; pointer-events: auto; }
+
+        #drawer-backdrop.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
 
         /* Row hover action reveal */
-        .trip-row .row-actions { opacity: 0; transition: opacity 0.15s ease; }
-        .trip-row:hover .row-actions { opacity: 1; }
+        .trip-row .row-actions {
+            opacity: 0;
+            transition: opacity 0.15s ease;
+        }
+
+        .trip-row:hover .row-actions {
+            opacity: 1;
+        }
     </style>
 
     <script id="tailwind-config">
@@ -291,6 +321,12 @@ $alerts = $alerts ?? [
                             src="https://lh3.googleusercontent.com/aida-public/AB6AXuCC_um6BOHoYSxo-sV9I20VWjGhb-zV38rw6PHYfGSX0QMjIeGSDnnne5VQ14Dzbl5_QrVJX5_vf9Oa8BbR14Quv_NiAyAwDiq0kE0DcDQJOphyR4LIeKHbMnH-h8ZMG6u6DR33RnE2cyaFw6ZAbOHdAOBnCN1v0jT6IZfFuEKJpPprVP7AizC0wx979g01rNJ1E_sy6EkF-9fnN8eQsFlOzY2E0gyGlEvPmSuK6usojfMoTbfn4_z-_fOxaQj3y4d_f9TRJqctFUM"
                             alt="Profile avatar">
                     </div>
+                    <form action="{{ route('operator.logout') }}" method="POST">
+                        @csrf
+                        <button
+                            class="text-green-800 dark:text-green-400 font-headline font-bold text-sm px-4 py-2 hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-colors rounded-lg flex items-center gap-2"
+                            type="submit">Sign Out</button>
+                    </form>
                 </div>
             </div>
         </header>
@@ -591,24 +627,29 @@ $alerts = $alerts ?? [
         <div class="px-6 py-5 border-b border-outline-variant/15 flex items-center justify-between shrink-0">
             <div>
                 <h3 class="font-headline-md text-headline-md text-on-surface">New trip</h3>
-                <p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">Schedule a departure for your fleet</p>
+                <p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">Schedule a departure for your fleet
+                </p>
             </div>
-            <button onclick="closeDrawer()" class="p-2 rounded-xl hover:bg-surface-container transition-colors text-on-surface-variant">
+            <button onclick="closeDrawer()"
+                class="p-2 rounded-xl hover:bg-surface-container transition-colors text-on-surface-variant">
                 <span class="material-symbols-outlined">close</span>
             </button>
         </div>
 
         <!-- Drawer form -->
-        <form action="{{ route('operator.trips.store') }}" method="POST" class="flex-grow overflow-y-auto custom-scrollbar px-6 py-6 space-y-6">
+        <form action="{{ route('operator.trips.store') }}" method="POST"
+            class="flex-grow overflow-y-auto custom-scrollbar px-6 py-6 space-y-6">
             @csrf
 
             <!-- Route -->
             <div>
-                <label class="font-label-caps text-label-caps text-on-surface-variant uppercase block mb-3">Route</label>
+                <label
+                    class="font-label-caps text-label-caps text-on-surface-variant uppercase block mb-3">Route</label>
                 <div class="grid grid-cols-2 gap-3">
                     <div>
                         <label class="font-body-sm text-body-sm text-on-surface-variant block mb-1.5">From</label>
-                        <select name="origin" class="w-full rounded-xl border-outline-variant/30 bg-surface-container-low text-body-sm text-on-surface focus:ring-2 focus:ring-primary py-2.5 px-3">
+                        <select name="origin"
+                            class="w-full rounded-xl border-outline-variant/30 bg-surface-container-low text-body-sm text-on-surface focus:ring-2 focus:ring-primary py-2.5 px-3">
                             @foreach($routes as $route)
                             <option value="{{ $route['from'] }}">{{ $route['from'] }}</option>
                             @endforeach
@@ -616,7 +657,8 @@ $alerts = $alerts ?? [
                     </div>
                     <div>
                         <label class="font-body-sm text-body-sm text-on-surface-variant block mb-1.5">To</label>
-                        <select name="destination" class="w-full rounded-xl border-outline-variant/30 bg-surface-container-low text-body-sm text-on-surface focus:ring-2 focus:ring-primary py-2.5 px-3">
+                        <select name="destination"
+                            class="w-full rounded-xl border-outline-variant/30 bg-surface-container-low text-body-sm text-on-surface focus:ring-2 focus:ring-primary py-2.5 px-3">
                             @foreach($routes as $route)
                             <option value="{{ $route['to'] }}">{{ $route['to'] }}</option>
                             @endforeach
@@ -627,32 +669,41 @@ $alerts = $alerts ?? [
 
             <!-- Date & Time -->
             <div>
-                <label class="font-label-caps text-label-caps text-on-surface-variant uppercase block mb-3">Date &amp; time</label>
+                <label class="font-label-caps text-label-caps text-on-surface-variant uppercase block mb-3">Date &amp;
+                    time</label>
                 <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label class="font-body-sm text-body-sm text-on-surface-variant block mb-1.5">Departure date</label>
-                        <input type="date" name="travel_date" class="w-full rounded-xl border-outline-variant/30 bg-surface-container-low text-body-sm text-on-surface focus:ring-2 focus:ring-primary py-2.5 px-3">
+                        <label class="font-body-sm text-body-sm text-on-surface-variant block mb-1.5">Departure
+                            date</label>
+                        <input type="date" name="travel_date"
+                            class="w-full rounded-xl border-outline-variant/30 bg-surface-container-low text-body-sm text-on-surface focus:ring-2 focus:ring-primary py-2.5 px-3">
                     </div>
                     <div>
-                        <label class="font-body-sm text-body-sm text-on-surface-variant block mb-1.5">Departure time</label>
-                        <input type="time" name="departure_time" class="w-full rounded-xl border-outline-variant/30 bg-surface-container-low text-body-sm text-on-surface focus:ring-2 focus:ring-primary py-2.5 px-3">
+                        <label class="font-body-sm text-body-sm text-on-surface-variant block mb-1.5">Departure
+                            time</label>
+                        <input type="time" name="departure_time"
+                            class="w-full rounded-xl border-outline-variant/30 bg-surface-container-low text-body-sm text-on-surface focus:ring-2 focus:ring-primary py-2.5 px-3">
                     </div>
                 </div>
             </div>
 
             <!-- Bus assignment -->
             <div>
-                <label class="font-label-caps text-label-caps text-on-surface-variant uppercase block mb-3">Assign bus</label>
+                <label class="font-label-caps text-label-caps text-on-surface-variant uppercase block mb-3">Assign
+                    bus</label>
                 <div class="space-y-2">
                     @foreach($buses as $bus)
-                    <label class="flex items-center gap-3 p-3 rounded-xl border border-outline-variant/20 bg-surface-container-low cursor-pointer hover:border-primary/40 hover:bg-surface-container transition-all has-[:checked]:border-primary has-[:checked]:bg-primary/5">
+                    <label
+                        class="flex items-center gap-3 p-3 rounded-xl border border-outline-variant/20 bg-surface-container-low cursor-pointer hover:border-primary/40 hover:bg-surface-container transition-all has-[:checked]:border-primary has-[:checked]:bg-primary/5">
                         <input type="radio" name="bus_id" value="{{ $bus['id'] }}" class="accent-primary">
                         <div class="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                            <span class="material-symbols-outlined text-primary" style="font-size:16px">directions_bus</span>
+                            <span class="material-symbols-outlined text-primary"
+                                style="font-size:16px">directions_bus</span>
                         </div>
                         <div class="flex-1 min-w-0">
                             <span class="font-bold text-body-sm text-on-surface block">{{ $bus['plate'] }}</span>
-                            <span class="text-body-sm text-on-surface-variant">{{ $bus['model'] }} · {{ $bus['capacity'] }} seats</span>
+                            <span class="text-body-sm text-on-surface-variant">{{ $bus['model'] }} · {{ $bus['capacity']
+                                }} seats</span>
                         </div>
                     </label>
                     @endforeach
@@ -662,16 +713,20 @@ $alerts = $alerts ?? [
             <!-- Trip class & Fare -->
             <div class="grid grid-cols-2 gap-3">
                 <div>
-                    <label class="font-label-caps text-label-caps text-on-surface-variant uppercase block mb-3">Trip class</label>
-                    <select name="class" class="w-full rounded-xl border-outline-variant/30 bg-surface-container-low text-body-sm text-on-surface focus:ring-2 focus:ring-primary py-2.5 px-3">
+                    <label class="font-label-caps text-label-caps text-on-surface-variant uppercase block mb-3">Trip
+                        class</label>
+                    <select name="class"
+                        class="w-full rounded-xl border-outline-variant/30 bg-surface-container-low text-body-sm text-on-surface focus:ring-2 focus:ring-primary py-2.5 px-3">
                         <option value="economy">Economy</option>
                         <option value="business">Business</option>
                     </select>
                 </div>
                 <div>
-                    <label class="font-label-caps text-label-caps text-on-surface-variant uppercase block mb-3">Fare (ZMW)</label>
+                    <label class="font-label-caps text-label-caps text-on-surface-variant uppercase block mb-3">Fare
+                        (ZMW)</label>
                     <div class="relative">
-                        <span class="absolute left-3 top-1/2 -translate-y-1/2 font-body-sm text-body-sm text-on-surface-variant">K</span>
+                        <span
+                            class="absolute left-3 top-1/2 -translate-y-1/2 font-body-sm text-body-sm text-on-surface-variant">K</span>
                         <input type="number" name="fare" placeholder="0.00"
                             class="w-full pl-7 rounded-xl border-outline-variant/30 bg-surface-container-low text-body-sm text-on-surface focus:ring-2 focus:ring-primary py-2.5 px-3">
                     </div>
@@ -680,7 +735,8 @@ $alerts = $alerts ?? [
 
             <!-- Notes -->
             <div>
-                <label class="font-label-caps text-label-caps text-on-surface-variant uppercase block mb-3">Notes <span class="normal-case text-on-surface-variant/50">(optional)</span></label>
+                <label class="font-label-caps text-label-caps text-on-surface-variant uppercase block mb-3">Notes <span
+                        class="normal-case text-on-surface-variant/50">(optional)</span></label>
                 <textarea name="notes" rows="3" placeholder="Driver assignment, stop notes, special instructions..."
                     class="w-full rounded-xl border-outline-variant/30 bg-surface-container-low text-body-sm text-on-surface focus:ring-2 focus:ring-primary py-2.5 px-3 resize-none"></textarea>
             </div>

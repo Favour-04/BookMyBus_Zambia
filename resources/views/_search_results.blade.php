@@ -113,7 +113,7 @@
         <a class="text-zinc-600 dark:text-zinc-400 hover:text-green-900 dark:hover:text-green-100 transition-colors"
           href="#">Operator Portal</a>
         <a class="text-zinc-600 dark:text-zinc-400 hover:text-green-900 dark:hover:text-green-100 transition-colors"
-          href="{{-- route('support.page') --}}">Support</a>
+          href="#">Support</a>
       </div>
       <div class="flex items-center gap-4">
         <span class="material-symbols-outlined text-zinc-600 cursor-pointer">account_circle</span>
@@ -171,17 +171,27 @@
             <label class="text-[10px] uppercase tracking-widest font-bold text-zinc-400 mb-4 block">Preferred
               Operator</label>
             <div class="space-y-3">
-              @php
-                $uniqueOperators = $trips->unique('operator_id')->pluck('operator');
-              @endphp
-              @forelse($uniqueOperators as $operator)
               <label class="flex items-center gap-3 cursor-pointer group">
-                <input type="checkbox" class="w-5 h-5 rounded accent-primary" />
-                <span class="text-sm font-medium">{{ $operator->name }}</span>
+                <div class="w-5 h-5 rounded border-2 border-primary bg-primary flex items-center justify-center">
+                  <span class="material-symbols-outlined text-white text-xs">check</span>
+                </div>
+                <span class="text-sm font-medium">Power Tools</span>
               </label>
-              @empty
-              <p class="text-xs text-zinc-500">No operators available</p>
-              @endforelse
+              <label class="flex items-center gap-3 cursor-pointer group">
+                <div class="w-5 h-5 rounded border-2 border-zinc-300 group-hover:border-primary transition-colors">
+                </div>
+                <span class="text-sm font-medium">Euro Africa</span>
+              </label>
+              <label class="flex items-center gap-3 cursor-pointer group">
+                <div class="w-5 h-5 rounded border-2 border-zinc-300 group-hover:border-primary transition-colors">
+                </div>
+                <span class="text-sm font-medium">Likili Motorways</span>
+              </label>
+              <label class="flex items-center gap-3 cursor-pointer group">
+                <div class="w-5 h-5 rounded border-2 border-zinc-300 group-hover:border-primary transition-colors">
+                </div>
+                <span class="text-sm font-medium">Mazhandu Family Bus</span>
+              </label>
             </div>
           </div>
         </div>
@@ -205,18 +215,19 @@
               <nav class="flex items-center gap-2 text-xs uppercase tracking-widest text-secondary font-bold mb-2">
                 <span>One Way</span>
                 <span class="w-1 h-1 rounded-full bg-secondary"></span>
-                <span>{{ $request->passengers ?? 1 }} Passenger{{ ($request->passengers ?? 1) > 1 ? 's' : '' }}</span>
+                <span>{{$request -> passengers}} Passenger </span>
               </nav>
               <h1 class="text-4xl md:text-5xl font-black text-on-surface tracking-tighter">
-                {{ $trips->first()->origin ?? 'N/A' }} <span class="text-primary-container">&rarr;</span> {{ $trips->first()->destination ?? 'N/A' }}
+                 {{ $request->origin }} <span class="text-primary-container">&rarr;</span> {{ $request->destination}}
               </h1>
-              <p class="text-zinc-500 font-medium mt-1">{{ $trips->first() ? \Carbon\Carbon::parse($trips->first()->travel_date)->format('l, d F Y') : 'N/A' }} • {{ $trips->count() }}
+              <p class="text-zinc-500 font-medium mt-1">{{ $request->travel_date ?? 'Today' }} • {{ count($trips ?? []) }}
                 departures available</p>
             </div>
-            <a href="/" class="flex items-center gap-2 bg-surface-container-low px-5 py-3 rounded-xl font-bold text-sm hover:translate-x-1 transition-transform cursor-pointer">
+            <button
+              class="flex items-center gap-2 bg-surface-container-low px-5 py-3 rounded-xl font-bold text-sm hover:translate-x-1 transition-transform">
               <span class="material-symbols-outlined text-sm">edit</span>
               Modify Search
-            </a>
+            </button>
           </div>
         </header>
 
@@ -227,15 +238,16 @@
             <!-- Operator Info -->
             <div class="flex md:flex-col items-center md:items-start gap-4 md:gap-2 w-full md:w-32 flex-shrink-0">
               <div class="w-14 h-14 bg-surface-container-high rounded-full flex items-center justify-center p-2">
-                <img class="w-full h-full object-contain rounded-full" alt="{{ $trip->operator->name ?? 'Operator' }} logo"
-                  src="https://placehold.co/56x56?text={{ urlencode($trip->operator->name ?? 'Operator') }}" />
+                <img class="w-full h-full object-contain rounded-full" data-alt="Operator logo"
+                  src="https://placehold.co/56x56?text={{ $trip->operator->name ?? 'Operator' }}" />
               </div>
               <div>
-                <h4 class="font-headline font-extrabold text-sm text-on-surface">{{ $trip->operator->name ?? 'Unknown Operator' }}</h4>
+                <h4 class="font-headline font-extrabold text-sm text-on-surface">{{ $trip->operator->name ?? 'Unknown
+                  Operator' }}</h4>
                 <div class="flex items-center gap-1 text-[10px] text-zinc-400 font-bold uppercase">
                   <span class="material-symbols-outlined text-[12px] text-secondary"
                     style="font-variation-settings: 'FILL' 1;">star</span>
-                  <span>{{ $trip->operator->rating ?? '4.8' }}</span>
+                  <span>4.8</span>
                 </div>
               </div>
             </div>
@@ -244,12 +256,12 @@
               <!-- Departure -->
               <div class="text-center md:text-left">
                 <span class="block text-[10px] uppercase tracking-widest font-bold text-zinc-400 mb-1">Departure</span>
-                <h2 class="text-3xl font-black text-on-surface">{{ \Carbon\Carbon::parse($trip->departure_time)->format('H:i') }}</h2>
-                <p class="text-sm font-medium text-zinc-500">{{ $trip->origin ?? 'Terminal' }}</p>
+                <h2 class="text-3xl font-black text-on-surface">{{ $trip->departure_time }}</h2>
+                <p class="text-sm font-medium text-zinc-500">{{ $trip->origin }} Terminal</p>
               </div>
               <!-- Visual Route -->
               <div class="flex flex-col items-center px-4">
-                <span class="text-[10px] font-bold text-primary mb-2">{{ round($trip->distance_km, 0) }} km • {{ \Carbon\Carbon::parse($trip->departure_time)->diff(\Carbon\Carbon::parse($trip->arrival_time))->format('%Hh %Im') }}</span>
+                <span class="text-[10px] font-bold text-primary mb-2">{{ $trip->distance_km }} km</span>
                 <div class="w-full flex items-center gap-2">
                   <div class="w-2 h-2 rounded-full border-2 border-primary"></div>
                   <div class="flex-grow border-t-2 border-dashed border-zinc-200 relative">
@@ -263,8 +275,8 @@
               <!-- Arrival -->
               <div class="text-center md:text-right">
                 <span class="block text-[10px] uppercase tracking-widest font-bold text-zinc-400 mb-1">Arrival</span>
-                <h2 class="text-3xl font-black text-on-surface">{{ \Carbon\Carbon::parse($trip->arrival_time)->format('H:i') }}</h2>
-                <p class="text-sm font-medium text-zinc-500">{{ $trip->destination ?? 'Station' }}</p>
+                <h2 class="text-3xl font-black text-on-surface">{{ $trip->arrival_time }}</h2>
+                <p class="text-sm font-medium text-zinc-500">{{ $trip->destination }} Station</p>
               </div>
             </div>
             <!-- Price & CTA -->
@@ -273,21 +285,14 @@
               <div class="text-right">
                 <div class="flex items-baseline gap-1 md:justify-end">
                   <span class="text-[10px] uppercase font-bold text-zinc-400">ZMW</span>
-                  <span class="text-3xl font-black text-on-surface">{{ number_format($trip->fare, 0) }}</span>
+                  <span class="text-3xl font-black text-on-surface">{{ $trip->fare }}</span>
                 </div>
-                @php
-                  $availableSeats = $trip->availableSeatsCount();
-                  $isSoldOut = $availableSeats === 0;
-                  $isLowSeats = $availableSeats > 0 && $availableSeats <= 4;
-                @endphp
-                <p class="text-[10px] font-bold {{ $isSoldOut ? 'text-red-500' : ($isLowSeats ? 'text-secondary' : 'text-primary-container') }} uppercase tracking-tight">
-                  {{ $isSoldOut ? 'Sold Out' : $availableSeats . ' Seats left' }}
-                </p>
+                <p class="text-[10px] font-bold text-primary-container uppercase tracking-tight">{{
+                  $trip->availableSeatsCount() }} Seats left</p>
               </div>
-              <a href="{{ $isSoldOut ? 'javascript:void(0)' : route('booking.seats', $trip->id) }}"
-                class="inline-block {{ $isSoldOut ? 'bg-zinc-300 cursor-not-allowed' : 'bg-gradient-to-br from-primary to-primary-container hover:scale-[1.02]' }} text-white px-8 md:w-full py-3 rounded-lg font-bold text-sm shadow-lg shadow-primary/20 transition-transform text-center"
-                {{ $isSoldOut ? 'onclick=event.preventDefault();' : '' }}>
-                {{ $isSoldOut ? 'Sold Out' : 'View Seats' }}
+              <a href="{{ route('booking.seats', $trip->id) }}"
+                class="inline-block bg-gradient-to-br from-primary to-primary-container text-white px-8 md:w-full py-3 rounded-lg font-bold text-sm shadow-lg shadow-primary/20 hover:scale-[1.02] transition-transform text-center">
+                View Seats
               </a>
             </div>
           </div>
