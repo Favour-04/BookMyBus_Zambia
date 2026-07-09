@@ -45,6 +45,18 @@
             </div>
         @endif
 
+        <!-- Payment Error (shown prominently for payment failures) -->
+        @error('payment')
+            <div class="bg-error-container text-on-error-container p-6 rounded-xl flex items-start gap-4 mb-6">
+                <span class="material-symbols-outlined text-3xl">payment</span>
+                <div>
+                    <h3 class="font-headline font-bold text-lg">Payment Failed</h3>
+                    <p class="text-sm mt-1">{{ $message }}</p>
+                    <p class="text-xs mt-2 opacity-80">You can try again with a different phone number or payment method.</p>
+                </div>
+            </div>
+        @enderror
+
         <!-- Reservation Countdown Timer -->
         @if (!$expired && $held_until)
             <div class="bg-surface-container-low p-4 rounded-xl flex items-center gap-3" id="countdown-container">

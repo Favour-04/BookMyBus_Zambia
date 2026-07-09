@@ -19,6 +19,9 @@ class Booking extends Model
         'status',
         'held_until',
         'reference_id',
+        'passenger_name',
+        'id_number',
+        'phone_number',
     ];
 
     protected $casts = [
