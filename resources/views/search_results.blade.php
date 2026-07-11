@@ -284,10 +284,9 @@
                   {{ $isSoldOut ? 'Sold Out' : $availableSeats . ' Seats left' }}
                 </p>
               </div>
-              <a href="{{ $isSoldOut ? 'javascript:void(0)' : route('booking.seats', $trip->id) }}"
-                class="inline-block {{ $isSoldOut ? 'bg-zinc-300 cursor-not-allowed' : 'bg-gradient-to-br from-primary to-primary-container hover:scale-[1.02]' }} text-white px-8 md:w-full py-3 rounded-lg font-bold text-sm shadow-lg shadow-primary/20 transition-transform text-center"
-                {{ $isSoldOut ? 'onclick=event.preventDefault();' : '' }}>
-                {{ $isSoldOut ? 'Sold Out' : 'View Seats' }}
+              <a href="{{ route('booking.seats', ['route' => $trip->id, 'passengers' => request('passengers', 1)]) }}"
+                class="inline-block bg-gradient-to-br from-primary to-primary-container text-white px-8 md:w-full py-3 rounded-lg font-bold text-sm shadow-lg shadow-primary/20 hover:scale-[1.02] transition-transform text-center">
+                View Seats
               </a>
             </div>
           </div>
