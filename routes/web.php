@@ -3,8 +3,10 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LandingController;
 use App\Http\Controllers\BookingController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Operator\DashboardController;
 use App\Http\Controllers\Operator\TripManagementController;
+use App\Http\Controllers\Operator\ProfileController as OperatorProfileController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\PasswordResetController;
@@ -29,7 +31,6 @@ Route::get('/search', [LandingController::class, 'search'])->name('trips.search'
 
 Route::middleware('guest')->group(function () {
 
-    // Login
     Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
     Route::post('/login', [LoginController::class, 'login']);
 
@@ -77,9 +78,10 @@ Route::middleware('auth')->group(function () {
     Route::post('/payment/process/{booking}', [BookingController::class, 'processPayment'])->name('payment.process');
     Route::get('/booking/success/{booking}', [BookingController::class, 'success'])->name('booking.success');
 
-    // Profile (uncomment when ready)
-    // Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
-    // Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    // Profile
+    Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
+    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
 });
 
 // ============================================
@@ -106,6 +108,11 @@ Route::prefix('operator')->name('operator.')->middleware('auth:operator')->group
     Route::put('/trips/{trip}', [TripManagementController::class, 'update'])->name('trips.update');
     Route::delete('/trips/{trip}', [TripManagementController::class, 'cancel'])->name('trips.cancel');
     Route::patch('/trips/{trip}/status', [TripManagementController::class, 'updateStatus'])->name('trips.update-status');
+
+    // Profile
+    Route::get('/profile', [OperatorProfileController::class, 'index'])->name('profile');
+    Route::put('/profile', [OperatorProfileController::class, 'update'])->name('profile.update');
+    Route::put('/profile/password', [OperatorProfileController::class, 'updatePassword'])->name('profile.password');
 
     // Logout
     Route::post('/logout', [OperatorLoginController::class, 'logout'])->name('logout');

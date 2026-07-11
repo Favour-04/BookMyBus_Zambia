@@ -262,7 +262,7 @@ $alerts = $alerts ?? [
             </a>
 
             <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant dark:text-outline hover:text-primary dark:hover:text-primary-fixed hover:bg-surface-container-highest dark:hover:bg-surface-container transition-colors duration-200"
-                href="#">
+                href="{{ route('operator.login')}}">
                 <span class="material-symbols-outlined" data-icon="account_circle">account_circle</span>
                 <span class="font-body-md text-body-md">Profile</span>
             </a>
@@ -317,9 +317,11 @@ $alerts = $alerts ?? [
 
                     <div
                         class="h-8 w-8 rounded-full bg-primary-container flex items-center justify-center overflow-hidden border border-primary/20 cursor-pointer">
-                        <img class="w-full h-full object-cover"
-                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuCC_um6BOHoYSxo-sV9I20VWjGhb-zV38rw6PHYfGSX0QMjIeGSDnnne5VQ14Dzbl5_QrVJX5_vf9Oa8BbR14Quv_NiAyAwDiq0kE0DcDQJOphyR4LIeKHbMnH-h8ZMG6u6DR33RnE2cyaFw6ZAbOHdAOBnCN1v0jT6IZfFuEKJpPprVP7AizC0wx979g01rNJ1E_sy6EkF-9fnN8eQsFlOzY2E0gyGlEvPmSuK6usojfMoTbfn4_z-_fOxaQj3y4d_f9TRJqctFUM"
-                            alt="Profile avatar">
+                        <a href="{{ route('operator.profile')}}">
+                            <img class="w-full h-full object-cover"
+                                src="https://lh3.googleusercontent.com/aida-public/AB6AXuCC_um6BOHoYSxo-sV9I20VWjGhb-zV38rw6PHYfGSX0QMjIeGSDnnne5VQ14Dzbl5_QrVJX5_vf9Oa8BbR14Quv_NiAyAwDiq0kE0DcDQJOphyR4LIeKHbMnH-h8ZMG6u6DR33RnE2cyaFw6ZAbOHdAOBnCN1v0jT6IZfFuEKJpPprVP7AizC0wx979g01rNJ1E_sy6EkF-9fnN8eQsFlOzY2E0gyGlEvPmSuK6usojfMoTbfn4_z-_fOxaQj3y4d_f9TRJqctFUM"
+                                alt="Profile avatar">
+                        </a>
                     </div>
                     <form action="{{ route('operator.logout') }}" method="POST">
                         @csrf

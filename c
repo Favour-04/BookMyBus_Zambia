@@ -31,13 +31,13 @@ The application follows a standard Laravel MVC structure with controllers organi
 - **Namespace**: `App\Http\Controllers`
 - **Purpose**: Handles web-based booking flow for travelers
 
-| Method                             | Description                                                                                                                      |
-| ---------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
-| `showSeats($id)`                   | Displays seat selection page for a specific route. Retrieves route with bus and operator details, and gets already booked seats. |
-| `store(Request $request)`          | Creates a new booking with validated route_id and seat_number. Sets amount from route fare and status to 'pending'.              |
-| `paymentTicket($bookingId)`        | Displays payment ticket page with booking details including origin, destination, departure time/date, and fare.                  |
-| `processPayment(Booking $booking)` | Updates booking status from 'pending' to 'confirmed' and redirects to success page.                                              |
-| `success(Booking $booking)`        | Displays the success page (digital ticket) with route, bus, and operator details.                                                |
+| Method                             | Description                                                                                                                                            |
+| ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `showSeats($id)`                   | Displays seat selection page for a specific route. Retrieves route with bus and operator details, and gets already booked seats.                       |
+| `store(Request $request)`          | Creates a new booking with validated route_id, seat_number, passenger_name, id_number, and phone. Sets amount from route fare and status to 'pending'. |
+| `paymentTicket($bookingId)`        | Displays payment ticket page with booking details including origin, destination, departure time/date, and fare.                                        |
+| `processPayment(Booking $booking)` | Updates booking status from 'pending' to 'confirmed' and redirects to success page.                                                                    |
+| `success(Booking $booking)`        | Displays the success page (digital ticket) with route, bus, and operator details. Uses history_page view.                                              |
 
 **Models Used**: `Route`, `Booking`
 
@@ -55,6 +55,22 @@ The application follows a standard Laravel MVC structure with controllers organi
 
 **Models Used**: `Route`
 **Dependencies**: `Stevebauman\Location\Facades\Location`
+
+---
+
+### `app/Http/Controllers/ProfileController.php`
+
+- **Namespace**: `App\Http\Controllers`
+- **Purpose**: Handles traveler profile management and booking history
+
+| Method                             | Description                                                                                       |
+| ---------------------------------- | ------------------------------------------------------------------------------------------------- |
+| `index()`                          | Display the traveler's profile with their last 20 bookings.                                       |
+| `update(Request $request)`         | Update the traveler's basic account details (full_name, email, phone_number, preferred_language). |
+| `updatePassword(Request $request)` | Update the traveler's password. Validates current password before updating.                       |
+
+**Models Used**: `User`
+**Dependencies**: `Illuminate\Support\Facades\Auth`, `Illuminate\Support\Facades\Hash`, `Illuminate\Validation\Rule`
 
 ---
 
@@ -232,6 +248,22 @@ The application follows a standard Laravel MVC structure with controllers organi
 
 ---
 
+### `app/Http/Controllers/Operator/ProfileController.php`
+
+- **Namespace**: `App\Http\Controllers\Operator`
+- **Purpose**: Handles operator business profile management
+
+| Method                             | Description                                                                                |
+| ---------------------------------- | ------------------------------------------------------------------------------------------ |
+| `index()`                          | Display the operator's business profile.                                                   |
+| `update(Request $request)`         | Update the operator's business details (company_name, email, phone_number, tpin, address). |
+| `updatePassword(Request $request)` | Update the operator's password. Validates current password before updating.                |
+
+**Models Used**: `Operator`
+**Dependencies**: `Illuminate\Support\Facades\Auth`, `Illuminate\Support\Facades\Hash`, `Illuminate\Validation\Rule`
+
+---
+
 ### `app/Http/Controllers/Operator/TripManagementController.php`
 
 - **Namespace**: `App\Http\Controllers\Operator`
@@ -278,6 +310,7 @@ The application follows a standard Laravel MVC structure with controllers organi
 | `Controller.php`                      | Base     | 0             | -                                     |
 | `BookingController.php`               | Web      | 5             | Route, Booking                        |
 | `LandingController.php`               | Web      | 2             | Route                                 |
+| `ProfileController.php`               | Web      | 3             | User                                  |
 | `LoginController.php` (Auth)          | Auth     | 3             | -                                     |
 | `LoginController.php` (Auth/Operator) | Auth     | 3             | -                                     |
 | `AdminController.php`                 | API      | 5             | User, Operator, Booking, Payment      |
@@ -288,7 +321,8 @@ The application follows a standard Laravel MVC structure with controllers organi
 | `PaymentController.php`               | API      | 3             | Booking, Payment, Ticket              |
 | `TicketController.php`                | API      | 3             | Ticket                                |
 | `DashboardController.php`             | Operator | 1             | Route, Booking, Operator, Bus         |
-| `TripManagementController.php`        | Operator | 10+           | Route, Booking, Bus, Operator, Ticket |
+| `ProfileController.php` (Operator)    | Operator | 3             | Operator                              |
+| `TripManagementController.php`        | Operator | 10            | Route, Booking, Bus, Operator, Ticket |
 
 ---
 
@@ -312,3 +346,4 @@ The application follows a standard Laravel MVC structure with controllers organi
 - All controllers follow RESTful conventions where applicable
 - The application uses Carbon for date/time handling throughout
 - Auth controllers handle web-based session authentication while API AuthController handles token-based authentication
+- `ProfileController` (Web) and `ProfileController` (Operator) provide profile management for travelers and operators respectively

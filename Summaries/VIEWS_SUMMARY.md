@@ -63,7 +63,7 @@ This document summarizes the Blade view templates in the `resources/views` direc
 - **Filters Sidebar:**
     - Time of Day filter (Dawn, Morning, Afternoon, Night)
     - Price Range slider (ZMW 150 - 800)
-    - Preferred Operator checkboxes (Power Tools, Euro Africa, Likili Motorways, Mazhandu)
+    - Preferred Operator checkboxes (dynamic from trips collection)
     - Map view ad for route tracking
 - **Results Header:**
     - Route summary (origin → destination)
@@ -74,8 +74,8 @@ This document summarizes the Blade view templates in the `resources/views` direc
     - Departure time and origin terminal
     - Visual route indicator with distance
     - Arrival time and destination station
-    - Fare and available seats count
-    - "View Seats" CTA button
+    - Fare and available seats count (with sold-out detection)
+    - "View Seats" CTA button (disabled when sold out)
 - **Empty State:** Message when no buses found
 - **Info Grid:** Verified Operators, Instant Ticket, 24/7 Support
 
@@ -86,7 +86,27 @@ This document summarizes the Blade view templates in the `resources/views` direc
 
 ---
 
-### 4. `seat_selection.blade.php`
+### 4. `_search_results.blade.php`
+
+**Purpose:** Alternative/duplicate search results view (backup version)
+
+**Notes:** This file may be a legacy backup or development artifact. It was listed in the directory but may not be actively used.
+
+**Key Features:**
+
+- Similar to `search_results.blade.php` but with static operator data
+- Uses placeholder images for operator logos
+- Static operator names (Power Tools, Euro Africa, Likili Motorways, Mazhandu)
+- Same filter sidebar and trip card layout
+
+**Data Variables:**
+
+- `$request` - Search request object
+- `$trips` - Collection of available trip objects
+
+---
+
+### 5. `seat_selection.blade.php`
 
 **Purpose:** Interactive seat selection interface for booking
 
@@ -96,8 +116,9 @@ This document summarizes the Blade view templates in the `resources/views` direc
 - **Bus Interior Visualization:**
     - Cockpit/driver area indicator
     - 5-column seat grid layout
-    - Dynamic seat rendering based on bus capacity
+    - Dynamic seat rendering based on `$route->bus->seat_capacity`
     - Color-coded seats (available, booked, selected)
+    - JavaScript seat selection with visual feedback
 - **Trip Summary Card:**
     - Route information
     - Bus class badge
@@ -110,15 +131,18 @@ This document summarizes the Blade view templates in the `resources/views` direc
     - Phone number
     - Confirm Booking button (disabled until seat selected)
 - **Security Assurance:** Encryption notice
+- **JavaScript:** Interactive seat selection, form validation, and error handling
 
 **Data Variables:**
 
-- `$route` - Route object with trip details
+- `$route` - Route object with trip details (includes `bus->seat_capacity`)
 - `$bookedSeats` - Array of already booked seat numbers
+- `$searchBackUrl` - URL to return to search results
+- `$errors` - Validation error messages
 
 ---
 
-### 5. `payment_ticket.blade.php`
+### 6. `payment_ticket.blade.php`
 
 **Purpose:** Secure payment processing page
 
@@ -128,8 +152,11 @@ This document summarizes the Blade view templates in the `resources/views` direc
     - Airtel Money (red theme)
     - MTN MoMo (yellow theme, marked as recommended)
 - **Payment Form:**
-    - Phone number input for MTN
+    - Phone number input (with validation for Zambian numbers)
     - Pay button with total fare
+    - Provider selection with dynamic form updates
+- **Reservation Countdown Timer:** Shows time remaining for seat hold
+- **Expired Booking Banner:** Warning when reservation expires
 - **Digital Ticket Display:**
     - Scenic header image
     - Status badge (Pending Payment)
@@ -138,18 +165,24 @@ This document summarizes the Blade view templates in the `resources/views` direc
     - Departure date/time
     - Booking ID and class type
     - QR code for boarding
+- **Fare Summary:** Base fare, booking fee, VAT breakdown
 - **Security Assurance:** Bank-grade security notice
+- **Layout:** Uses `@extends('layouts.app')` with `@section('content')`
+- **JavaScript:** Provider selection, countdown timer, loading state handling
 
 **Data Variables:**
 
 - `$booking` - Booking object
-- `$passenger_name`, `$seat_number`, `$total_fare`
+- `$total_fare` - Total fare amount
+- `$passenger_name`, `$seat_number`
 - `$origin`, `$destination`, `$origin_code`, `$destination_code`
 - `$departure_date`, `$departure_time`, `$class_type`, `$booking_id`
+- `$held_until` - Reservation expiry timestamp
+- `$expired` - Boolean for expired reservation
 
 ---
 
-### 6. `history_page.blade.php`
+### 7. `history_page.blade.php`
 
 **Purpose:** Digital ticket view for confirmed bookings
 
@@ -172,39 +205,6 @@ This document summarizes the Blade view templates in the `resources/views` direc
 
 ---
 
-### 7. `operator_dashboard.blade.php`
-
-**Purpose:** Operator control panel for managing bus operations
-
-**Key Features:**
-
-- **Sidebar Navigation:**
-    - Dashboard (active)
-    - Manage Trips
-    - Seat Maps
-    - Revenue
-    - Fleet Management
-    - Add New Trip button
-    - Settings, Logout
-- **Metrics Bento Grid:**
-    - Total Bookings (1,284)
-    - Revenue (ZMW 42,500)
-    - Active Trips (24)
-    - Average Occupancy (82%)
-- **Upcoming Trips Table:**
-    - Trip ID, Route, Departure, Load, Actions
-    - Interactive table with hover effects
-- **Operational Alerts:**
-    - Bus Maintenance Due notifications
-    - High Demand Route suggestions
-- **Fleet Location Map:** Live map with vehicle markers
-
-**Data Variables:**
-
-- `$trips` - Collection of trip objects
-
----
-
 ### 8. `operator-dashboard.blade.php`
 
 **Purpose:** Enhanced operator dashboard with bento grid layout and real-time monitoring
@@ -223,11 +223,12 @@ This document summarizes the Blade view templates in the `resources/views` direc
     - Total Bookings card with trend indicator
     - Revenue Generated card with daily average
     - Active Fleet card with occupancy progress
-    - Average Occupancy highlight card (82%)
+    - Average Occupancy highlight card
 - **Bento Grid Layout:**
     - **Live Fleet Status:** Real-time bus tracking with status badges and progress bars
     - **Upcoming Trips Table:** Interactive table with route, departure, occupancy, and status columns
     - **Recent Notifications & Alerts:** High-priority alerts with action buttons
+- **New Trip Drawer:** Slide-out form panel for creating trips
 - **Alert Types:**
     - Maintenance Required (tertiary styling)
     - High Demand Route (secondary styling)
@@ -252,82 +253,42 @@ This document summarizes the Blade view templates in the `resources/views` direc
 
 ### 9. `operator_profile.blade.php`
 
-**Purpose:** Operator account and business profile management
+**Purpose:** Operator account and business profile management with tabbed interface
 
 **Key Features:**
 
-- **Profile Header:**
-    - Business logo/avatar
-    - Business name and rating
-    - Verified Operator badge
-    - Edit Profile and View Public Profile buttons
+- **Profile Header Card:**
+    - Business avatar (placeholder icon)
+    - Business name and verification status badge
+    - Email address display
 - **Tabbed Interface:**
-    - Account Details (active)
-    - Fleet Information
-    - Payment Methods
-    - Billing History
-- **Business Information:**
-    - Business Name, Registration Number, Date Registered, Business Type, Address
-- **Contact Information:**
-    - Primary Contact Name, Title, Email, Phone Number
-- **Operational Statistics:**
-    - Total Trips Operated (1,847)
-    - Active Fleet (35 buses)
-    - Average Occupancy (82%)
-    - On-Time Rate (94%)
-- **Account Verification Status:**
-    - Business License Verified
-    - Tax ID Verified
-    - Insurance Certificate (valid/expiry)
-- **Danger Zone:** Suspend Account, Delete Account buttons
+    - Account Details (active) - Edit business information form
+    - Change Password - Password update form
+- **Account Details Form:**
+    - Company Name input
+    - Email Address input
+    - Phone Number input
+    - TPIN input (optional)
+    - Business Address input (optional)
+    - Save Changes button
+- **Change Password Form:**
+    - Current Password input
+    - New Password input
+    - Confirm New Password input
+    - Update Password button
+- **Status Messages:**
+    - Success flash message display
+    - Validation error display
 
 **Data Variables:**
 
-- No dynamic data variables (static content)
+- `$operator` - Operator object with company_name, email, phone_number, tpin, address, is_verified
+- `$errors` - Validation error messages
+- Session status messages
 
 ---
 
-### 10. `trip_management.blade.php`
-
-**Purpose:** Comprehensive trip management interface for operators
-
-**Key Features:**
-
-- **Header:**
-    - Page title and subtitle
-    - Search input for routes/buses
-    - Live Operations indicator
-- **Quick Stats Bento Grid:**
-    - Total Departures Today (24)
-    - Average Occupancy (82%)
-    - Pending Tasks (07)
-    - Fleet Status (32/35 ready)
-- **Active Trips Console:**
-    - Trip Info, Departure, Occupancy, Fare, Actions columns
-    - Manage Seats button per trip
-- **Interactive Seat Map:**
-    - Visual seat grid (4 columns)
-    - Color-coded seats (Available, Booked, Blocked)
-    - Selected seat details and status
-    - Block Seat and View Passenger buttons
-- **Create New Trip Form:**
-    - Route Origin & Destination dropdowns
-    - Departure Schedule (date/time)
-    - Fleet Details dropdown
-    - Pricing Strategy input
-    - Save as Draft and Publish Trip Live buttons
-
-**Data Variables:**
-
-- `$trips` - Collection of trip objects
-- `$seats` - Collection of seat objects
-- `$routes` - Collection of route objects
-- `$buses` - Collection of bus objects
-- `$selected_seat`, `$seat_status`
-
----
-
-### 11. `manage_trips.blade.php`
+### 10. `manage_trips.blade.php`
 
 **Purpose:** Advanced trip management with filtering, search, and drawer-based trip creation
 
@@ -372,6 +333,185 @@ This document summarizes the Blade view templates in the `resources/views` direc
 
 ---
 
+### 11. `profile.blade.php`
+
+**Purpose:** Traveler profile and account management page
+
+**Key Features:**
+
+- **Navigation Bar:** Fixed top navigation with links to Find Trips, My Account, Support, and Sign Out
+- **Profile Header:**
+    - Avatar placeholder with person icon
+    - User name and email display
+- **Tabbed Interface:**
+    - Account Details (active) - Edit personal information form
+    - Change Password - Password update form
+    - Booking History - List of past bookings
+- **Account Details Form:**
+    - Full Name input
+    - Email Address input
+    - Phone Number input
+    - Preferred Language selector (English, Nyanja, Bemba)
+    - Save Changes button
+- **Change Password Form:**
+    - Current Password input
+    - New Password input
+    - Confirm New Password input
+    - Update Password button
+- **Booking History Tab:**
+    - List of bookings with route, reference, date, amount, and status
+    - Status badges (confirmed, pending, cancelled)
+    - Empty state with "Find a Trip" CTA
+- **Status Messages:**
+    - Success flash message display
+    - Validation error display
+- **JavaScript:** Tab switching functionality
+
+**Data Variables:**
+
+- `$user` - User object with full_name, email, phone_number, preferred_language
+- `$bookings` - Collection of user's booking history
+- `$errors` - Validation error messages
+- Session status messages
+
+---
+
+### 12. `support_page.blade.php`
+
+**Purpose:** Customer support page with FAQ and contact options
+
+**Key Features:**
+
+- **Navigation Bar:** Fixed top navigation with links to Search Results, My Bookings, Support
+- **FAQ Section:** Expandable FAQ items with questions about booking, payment, cancellation, tickets, missed buses
+- **Contact Options:**
+    - Call Us (phone numbers)
+    - WhatsApp (chat link)
+    - Email Us (email address)
+- **Contact Form:**
+    - Name, Email, Subject, Message fields
+    - Send Message button
+- **Footer:** Copyright and policy links
+
+**Data Variables:**
+
+- No dynamic data variables (static content)
+
+---
+
+### 13. `auth/login.blade.php`
+
+**Purpose:** Traveler sign-in page
+
+**Key Features:**
+
+- **Split Layout:** Left decorative panel, right form panel
+- **Left Panel:**
+    - Gradient background (green theme)
+    - Feature highlights (Digital tickets, Choose seat, Mobile money)
+    - Link to operator portal
+- **Right Panel:**
+    - Email field with icon
+    - Password field with show/hide toggle
+    - Remember me checkbox
+    - Sign In button
+    - Registration link (disabled, "coming soon")
+- **Form Validation:** Error display for invalid credentials
+
+**Data Variables:**
+
+- `$errors` - Validation error messages
+
+---
+
+### 14. `auth/operator-login.blade.php`
+
+**Purpose:** Operator portal sign-in page
+
+**Key Features:**
+
+- **Split Layout:** Left decorative panel (orange theme), right form panel
+- **Left Panel:**
+    - Orange gradient background (distinguishes from traveler login)
+    - Operator-specific features (Seat inventory, Revenue tracking, Route publishing)
+    - Link to traveler sign-in
+- **Right Panel:**
+    - Email field with icon
+    - Password field with show/hide toggle
+    - Remember me checkbox
+    - Sign In to Portal button
+    - Pending verification notice
+- **Form Validation:** Error display for invalid credentials
+
+**Data Variables:**
+
+- `$errors` - Validation error messages
+- Session status messages
+
+---
+
+### 15. `auth/register.blade.php`
+
+**Purpose:** User registration page
+
+**Key Features:**
+
+- **Centered Card Layout:** With blur effect and gradient background
+- **Form Fields:**
+    - Full Name (floating label)
+    - Email Address (floating label)
+    - Phone Number (floating label)
+    - Password (floating label with show/hide toggle)
+    - Password Strength Indicator (4-level bar)
+    - Terms of Service checkbox
+- **Submit Button:** Create Account with icon
+- **Login Link:** Link to sign-in page
+- **Benefits Grid:** Secure Booking, Mobile Money, 24/7 Support, Digital Tickets
+
+**Data Variables:**
+
+- `$errors` - Validation error messages
+
+---
+
+### 16. `auth/forgot-password.blade.php`
+
+**Purpose:** Password reset request page
+
+**Key Features:**
+
+- **Centered Card Layout:** Clean, minimal design
+- **Form Fields:**
+    - Email Address input
+- **Submit Button:** Email Password Reset Link
+- **Back to Login Link**
+
+**Data Variables:**
+
+- None (static form)
+
+---
+
+### 17. `auth/reset-password.blade.php`
+
+**Purpose:** Password reset confirmation page
+
+**Key Features:**
+
+- **Centered Card Layout:** Clean, minimal design
+- **Form Fields:**
+    - Email Address (pre-filled, hidden)
+    - New Password input
+    - Confirm Password input
+- **Submit Button:** Reset Password
+
+**Data Variables:**
+
+- `$token` - Password reset token
+- `$email` - User email address
+
+---
+
 ## Design System
 
 ### Color Palette
@@ -408,13 +548,7 @@ landing_search → search_results → seat_selection → payment_ticket → hist
 **Operator Flow:**
 
 ```
-operator_dashboard → trip_management → operator_profile
-```
-
-**Alternative Operator Flow:**
-
-```
-operator-dashboard → manage_trips
+operator-dashboard → manage_trips → operator_profile
 ```
 
 ---
@@ -423,9 +557,10 @@ operator-dashboard → manage_trips
 
 Several views contain TODO comments indicating future work:
 
-1. All views need to extend a `layouts.app` when available
-2. `seat_selection` needs dynamic seat map rendering from Buses table
-3. `payment_ticket` needs MTN/Airtel Money integration
-4. `operator_dashboard` and `operator_profile` need dynamic data from database
-5. `trip_management` needs dynamic data for trips, seats, routes, and buses
-6. `manage_trips` needs proper form submission handling and validation
+1. ~~All views need to extend a `layouts.app` when available~~ - Partially complete: `payment_ticket.blade.php` now uses `@extends('layouts.app')`
+2. ~~`seat_selection` needs dynamic seat map rendering from Buses table~~ - **Complete**: Now uses `$route->bus->seat_capacity` for dynamic seat rendering
+3. ~~`payment_ticket` needs MTN/Airtel Money integration~~ - **Complete**: Full provider selection UI with phone validation implemented
+4. ~~`operator-dashboard` and `operator_profile` need dynamic data from database~~ - **Complete**: Both views now receive dynamic data from controllers
+5. ~~`manage_trips` needs proper form submission handling and validation~~ - **Complete**: Form submits to `operator.trips.store` route
+6. `auth/forgot-password` and `auth/reset-password` need email functionality - Still pending
+7. `_search_results.blade.php` - Consider removing or documenting as legacy backup file (file may not exist)

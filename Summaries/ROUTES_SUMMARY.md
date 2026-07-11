@@ -89,37 +89,63 @@ Defines the public web-facing routes for the front-end booking flow.
 
 - `App\Http\Controllers\LandingController`
 - `App\Http\Controllers\BookingController`
+- `App\Http\Controllers\ProfileController`
 - `App\Http\Controllers\Operator\DashboardController`
 - `App\Http\Controllers\Operator\TripManagementController`
+- `App\Http\Controllers\Operator\ProfileController`
+- `App\Http\Controllers\Auth\LoginController`
+- `App\Http\Controllers\Auth\Operator\LoginController`
+
+### Authentication Routes
+
+| Method | URI               | Named Route      | Controller Method                       | Description                 |
+| ------ | ----------------- | ---------------- | --------------------------------------- | --------------------------- |
+| GET    | `/login`          | `login`          | `LoginController@showLoginForm`         | Display traveler login form |
+| POST   | `/login`          | -                | `LoginController@login`                 | Process traveler login      |
+| GET    | `/operator/login` | `operator.login` | `OperatorLoginController@showLoginForm` | Display operator login form |
+| POST   | `/operator/login` | -                | `OperatorLoginController@login`         | Process operator login      |
+
+### Traveler Authenticated Routes
+
+| Method | URI                          | Named Route        | Controller Method                  | Description                 |
+| ------ | ---------------------------- | ------------------ | ---------------------------------- | --------------------------- |
+| POST   | `/logout`                    | `logout`           | `LoginController@logout`           | Logout traveler             |
+| GET    | `/profile`                   | `profile`          | `ProfileController@index`          | Display traveler profile    |
+| PUT    | `/profile`                   | `profile.update`   | `ProfileController@update`         | Update traveler profile     |
+| PUT    | `/profile/password`          | `profile.password` | `ProfileController@updatePassword` | Update traveler password    |
+| GET    | `/booking/{route}/seats`     | `booking.seats`    | `BookingController@showSeats`      | Seat selection page         |
+| POST   | `/booking/store`             | `bookings.store`   | `BookingController@store`          | Create booking (form POST)  |
+| GET    | `/payment/ticket/{booking}`  | `payment.ticket`   | `BookingController@paymentTicket`  | Payment ticket page         |
+| POST   | `/payment/process/{booking}` | `payment.process`  | `BookingController@processPayment` | Process payment (form POST) |
+| GET    | `/booking/success/{booking}` | `booking.success`  | `BookingController@success`        | Booking success page        |
 
 ### Front-end Routes
 
-| Method | URI                          | Named Route          | Controller Method                  | View/Description           |
-| ------ | ---------------------------- | -------------------- | ---------------------------------- | -------------------------- |
-| GET    | `/`                          | (none)               | `LandingController@index`          | `landing_search.blade.php` |
-| GET    | `/search`                    | `trips.search`       | `LandingController@search`         | `search_results.blade.php` |
-| GET    | `/booking/{route}/seats`     | `booking.seats`      | `BookingController@showSeats`      | `seat_selection.blade.php` |
-| POST   | `/booking/store`             | `bookings.store`     | `BookingController@store`          | (form submission)          |
-| GET    | `/payment/ticket/{booking}`  | `payment.ticket`     | `BookingController@paymentTicket`  | `payment_ticket.blade.php` |
-| POST   | `/payment/process/{booking}` | `payment.process`    | `BookingController@processPayment` | (form submission)          |
-| GET    | `/booking/success/{booking}` | `booking.success`    | `BookingController@success`        | `history_page.blade.php`   |
-| GET    | `/operator`                  | `operator.dashboard` | `DashboardController@index`        | Operator dashboard view    |
+| Method | URI       | Named Route    | Controller Method          | View/Description           |
+| ------ | --------- | -------------- | -------------------------- | -------------------------- |
+| GET    | `/`       | `home`         | `LandingController@index`  | `landing_search.blade.php` |
+| GET    | `/search` | `trips.search` | `LandingController@search` | `search_results.blade.php` |
 
 ### Operator Web Routes
 
-| Method | URI                                | Named Route                    | Controller Method                       | Description               |
-| ------ | ---------------------------------- | ------------------------------ | --------------------------------------- | ------------------------- |
-| GET    | `/operator/trips`                  | `operator.trips.index`         | `TripManagementController@index`        | Trip management dashboard |
-| GET    | `/operator/trips/export`           | `operator.trips.export`        | `TripManagementController@export`       | Export trips as CSV       |
-| POST   | `/operator/trips`                  | `operator.trips.store`         | `TripManagementController@store`        | Create new trip           |
-| GET    | `/operator/trips/{trip}/seat-map`  | `operator.trips.seat-map`      | `TripManagementController@seatMap`      | View seat map for a trip  |
-| GET    | `/operator/trips/{trip}/occupancy` | `operator.trips.occupancy`     | `TripManagementController@occupancy`    | Get seat occupancy (API)  |
-| GET    | `/operator/trips/{trip}`           | `operator.trips.show`          | `TripManagementController@show`         | Get trip details (API)    |
-| PUT    | `/operator/trips/{trip}`           | `operator.trips.update`        | `TripManagementController@update`       | Update trip               |
-| DELETE | `/operator/trips/{trip}`           | `operator.trips.cancel`        | `TripManagementController@cancel`       | Cancel trip               |
-| PATCH  | `/operator/trips/{trip}/status`    | `operator.trips.update-status` | `TripManagementController@updateStatus` | Update trip status (API)  |
-| GET    | `/operator/trips/stats`            | `operator.trips.stats`         | `TripManagementController@stats`        | Get trip statistics (API) |
-| GET    | `/operator/trips/upcoming`         | `operator.trips.upcoming`      | `TripManagementController@upcoming`     | Get upcoming trips (API)  |
+| Method | URI                                | Named Route                    | Controller Method                          | Description               |
+| ------ | ---------------------------------- | ------------------------------ | ------------------------------------------ | ------------------------- |
+| GET    | `/operator`                        | `operator.dashboard`           | `DashboardController@index`                | Operator dashboard view   |
+| POST   | `/operator/logout`                 | `operator.logout`              | `OperatorLoginController@logout`           | Logout operator           |
+| GET    | `/operator/trips`                  | `operator.trips.index`         | `TripManagementController@index`           | Trip management dashboard |
+| GET    | `/operator/trips/export`           | `operator.trips.export`        | `TripManagementController@export`          | Export trips as CSV       |
+| POST   | `/operator/trips`                  | `operator.trips.store`         | `TripManagementController@store`           | Create new trip           |
+| GET    | `/operator/trips/{trip}/seat-map`  | `operator.trips.seat-map`      | `TripManagementController@seatMap`         | View seat map for a trip  |
+| GET    | `/operator/trips/{trip}/occupancy` | `operator.trips.occupancy`     | `TripManagementController@occupancy`       | Get seat occupancy (API)  |
+| GET    | `/operator/trips/{trip}`           | `operator.trips.show`          | `TripManagementController@show`            | Get trip details (API)    |
+| PUT    | `/operator/trips/{trip}`           | `operator.trips.update`        | `TripManagementController@update`          | Update trip               |
+| DELETE | `/operator/trips/{trip}`           | `operator.trips.cancel`        | `TripManagementController@cancel`          | Cancel trip               |
+| PATCH  | `/operator/trips/{trip}/status`    | `operator.trips.update-status` | `TripManagementController@updateStatus`    | Update trip status (API)  |
+| GET    | `/operator/trips/stats`            | `operator.trips.stats`         | `TripManagementController@stats`           | Get trip statistics (API) |
+| GET    | `/operator/trips/upcoming`         | `operator.trips.upcoming`      | `TripManagementController@upcoming`        | Get upcoming trips (API)  |
+| GET    | `/operator/profile`                | `operator.profile`             | `OperatorProfileController@index`          | Operator profile page     |
+| PUT    | `/operator/profile`                | `operator.profile.update`      | `OperatorProfileController@update`         | Update operator profile   |
+| PUT    | `/operator/profile/password`       | `operator.profile.password`    | `OperatorProfileController@updatePassword` | Update operator password  |
 
 ### User Flow Mapping
 

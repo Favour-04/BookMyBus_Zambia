@@ -181,15 +181,18 @@ The application uses 6 Eloquent models to represent the core domain entities:
 
 ### Fillable Attributes
 
-| Attribute      | Type     | Description                               |
-| -------------- | -------- | ----------------------------------------- |
-| `user_id`      | int      | Foreign key to User                       |
-| `route_id`     | int      | Foreign key to Route                      |
-| `seat_number`  | int      | Seat number being booked                  |
-| `amount`       | decimal  | Booking amount                            |
-| `status`       | string   | Status: pending, confirmed, cancelled     |
-| `held_until`   | datetime | Seat hold expiration time                 |
-| `reference_id` | string   | Unique booking reference (auto-generated) |
+| Attribute             | Type     | Description                               |
+| --------------------- | -------- | ----------------------------------------- |
+| `user_id`             | int      | Foreign key to User                       |
+| `route_id`            | int      | Foreign key to Route                      |
+| `seat_number`         | int      | Seat number being booked                  |
+| `passenger_name`      | string   | Passenger's full name                     |
+| `passenger_id_number` | string   | Passenger's ID number                     |
+| `passenger_phone`     | string   | Passenger's phone number                  |
+| `amount`              | decimal  | Booking amount                            |
+| `status`              | string   | Status: pending, confirmed, cancelled     |
+| `held_until`          | datetime | Seat hold expiration time                 |
+| `reference_id`        | string   | Unique booking reference (auto-generated) |
 
 ### Auto-Generated Attributes
 
@@ -244,11 +247,11 @@ The application uses 6 Eloquent models to represent the core domain entities:
 
 ### Helper Methods
 
-| Method                                                           | Return Type | Description                                      |
-| ---------------------------------------------------------------- | ----------- | ------------------------------------------------ |
-| `isSuccessful()`                                                 | bool        | Checks if payment was successful                 |
-| `markSuccessful(string $transactionRef, array $gatewayResponse)` | void        | Marks payment as successful and confirms booking |
-| `markFailed(array $gatewayResponse)`                             | void        | Marks payment as failed                          |
+| Method                                                                | Return Type | Description                                      |
+| --------------------------------------------------------------------- | ----------- | ------------------------------------------------ |
+| `isSuccessful()`                                                      | bool        | Checks if payment was successful                 |
+| `markSuccessful(string $transactionRef, array $gatewayResponse = [])` | void        | Marks payment as successful and confirms booking |
+| `markFailed(array $gatewayResponse = [])`                             | void        | Marks payment as failed                          |
 
 ---
 

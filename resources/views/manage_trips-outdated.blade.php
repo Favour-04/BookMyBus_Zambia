@@ -14,91 +14,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Manrope:wght@100..900&display=swap"
         rel="stylesheet" />
 
-    <!-- Tom Select -->
-    <link href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.min.css" rel="stylesheet">
-
     <style>
-        /* ── Tom Select MD3 overrides ── */
-        .ts-wrapper { width: 100%; }
-
-        .ts-control {
-            border: 1px solid rgba(191, 202, 186, 0.3) !important;
-            border-radius: 0.75rem !important;
-            background: #f3f3f6 !important;
-            padding: 0.625rem 0.75rem !important;
-            font-family: 'Inter', sans-serif !important;
-            font-size: 12px !important;
-            color: #1a1c1e !important;
-            box-shadow: none !important;
-            min-height: unset !important;
-            cursor: text;
-        }
-        .ts-control input {
-            font-family: 'Inter', sans-serif !important;
-            font-size: 12px !important;
-            color: #1a1c1e !important;
-            line-height: 1.4 !important;
-        }
-        .ts-control input::placeholder { color: #40493e; opacity: 0.5; }
-
-        .ts-wrapper.focus .ts-control {
-            border-color: #004614 !important;
-            box-shadow: 0 0 0 2px rgba(0, 70, 20, 0.15) !important;
-            outline: none !important;
-        }
-
-        .ts-dropdown {
-            border: 1px solid rgba(191, 202, 186, 0.2) !important;
-            border-radius: 0.75rem !important;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.1) !important;
-            font-family: 'Inter', sans-serif !important;
-            font-size: 12px !important;
-            color: #1a1c1e !important;
-            background: #ffffff !important;
-            margin-top: 4px !important;
-            overflow: hidden;
-        }
-        .ts-dropdown-content { padding: 4px !important; max-height: 220px; }
-
-        /* Province group headers */
-        .ts-dropdown .optgroup-header {
-            font-family: 'Inter', sans-serif !important;
-            font-size: 10px !important;
-            font-weight: 700 !important;
-            letter-spacing: 0.1em !important;
-            text-transform: uppercase !important;
-            color: #40493e !important;
-            padding: 8px 10px 4px !important;
-            background: transparent !important;
-            border-top: 1px solid rgba(191,202,186,0.2);
-            margin-top: 2px;
-        }
-        .ts-dropdown .optgroup:first-child .optgroup-header { border-top: none; margin-top: 0; }
-
-        /* City options */
-        .ts-dropdown .option {
-            padding: 7px 10px 7px 18px !important;
-            border-radius: 6px !important;
-            color: #1a1c1e !important;
-            font-size: 12px !important;
-            cursor: pointer;
-        }
-        .ts-dropdown .option:hover,
-        .ts-dropdown .option.active { background: #f3f3f6 !important; color: #004614 !important; }
-        .ts-dropdown .option.selected { background: rgba(0,70,20,0.08) !important; color: #004614 !important; font-weight: 600; }
-
-        /* No results */
-        .ts-dropdown .no-results {
-            padding: 12px 10px !important;
-            color: #40493e !important;
-            font-size: 12px !important;
-            text-align: center;
-        }
-
-        /* Hide default Tom Select arrow — we use Material icon */
-        .ts-wrapper.single .ts-control:after { display: none !important; }
-        .ts-wrapper .clear-button { color: #40493e !important; }
-
         .material-symbols-outlined {
             font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
             vertical-align: middle;
@@ -242,7 +158,7 @@
             </a>
 
             <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant dark:text-outline hover:text-primary dark:hover:text-primary-fixed hover:bg-surface-container-highest dark:hover:bg-surface-container transition-colors duration-200"
-                href="#">
+                href="{{route('operator.profile')}}">
                 <span class="material-symbols-outlined" data-icon="account_circle">account_circle</span>
                 <span class="font-body-md text-body-md">Profile</span>
             </a>
@@ -290,9 +206,11 @@
                     </button>
                     <button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors" data-icon="schedule">schedule</button>
                     <div class="h-8 w-8 rounded-full bg-primary-container flex items-center justify-center overflow-hidden border border-primary/20 cursor-pointer">
-                        <img class="w-full h-full object-cover"
-                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuCC_um6BOHoYSxo-sV9I20VWjGhb-zV38rw6PHYfGSX0QMjIeGSDnnne5VQ14Dzbl5_QrVJX5_vf9Oa8BbR14Quv_NiAyAwDiq0kE0DcDQJOphyR4LIeKHbMnH-h8ZMG6u6DR33RnE2cyaFw6ZAbOHdAOBnCN1v0jT6IZfFuEKJpPprVP7AizC0wx979g01rNJ1E_sy6EkF-9fnN8eQsFlOzY2E0gyGlEvPmSuK6usojfMoTbfn4_z-_fOxaQj3y4d_f9TRJqctFUM"
-                            alt="Profile avatar">
+                        <a href="{{ route('operator.profile')}}">
+                            <img class="w-full h-full object-cover"
+                                src="https://lh3.googleusercontent.com/aida-public/AB6AXuCC_um6BOHoYSxo-sV9I20VWjGhb-zV38rw6PHYfGSX0QMjIeGSDnnne5VQ14Dzbl5_QrVJX5_vf9Oa8BbR14Quv_NiAyAwDiq0kE0DcDQJOphyR4LIeKHbMnH-h8ZMG6u6DR33RnE2cyaFw6ZAbOHdAOBnCN1v0jT6IZfFuEKJpPprVP7AizC0wx979g01rNJ1E_sy6EkF-9fnN8eQsFlOzY2E0gyGlEvPmSuK6usojfMoTbfn4_z-_fOxaQj3y4d_f9TRJqctFUM"
+                                alt="Profile avatar">
+                        </a>
                     </div>
                 </div>
             </div>
@@ -493,28 +411,18 @@
                 <label class="font-label-caps text-label-caps text-on-surface-variant uppercase block mb-3">Route</label>
                 <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label for="select-origin" class="font-body-sm text-body-sm text-on-surface-variant block mb-1.5">From</label>
-                        <select id="select-origin" name="origin" placeholder="Search city..." required>
-                            <option value="">Select origin</option>
-                            @foreach(config('zambia_cities') as $province => $cities)
-                                <optgroup label="{{ $province }}">
-                                    @foreach($cities as $city)
-                                        <option value="{{ $city }}">{{ $city }}</option>
-                                    @endforeach
-                                </optgroup>
+                        <label class="font-body-sm text-body-sm text-on-surface-variant block mb-1.5">From</label>
+                        <select name="origin" class="w-full rounded-xl border-outline-variant/30 bg-surface-container-low text-body-sm text-on-surface focus:ring-2 focus:ring-primary py-2.5 px-3">
+                            @foreach($routes as $route)
+                            <option value="{{ $route['from'] }}">{{ $route['from'] }}</option>
                             @endforeach
                         </select>
                     </div>
                     <div>
-                        <label for="select-destination" class="font-body-sm text-body-sm text-on-surface-variant block mb-1.5">To</label>
-                        <select id="select-destination" name="destination" placeholder="Search city..." required>
-                            <option value="">Select destination</option>
-                            @foreach(config('zambia_cities') as $province => $cities)
-                                <optgroup label="{{ $province }}">
-                                    @foreach($cities as $city)
-                                        <option value="{{ $city }}">{{ $city }}</option>
-                                    @endforeach
-                                </optgroup>
+                        <label class="font-body-sm text-body-sm text-on-surface-variant block mb-1.5">To</label>
+                        <select name="destination" class="w-full rounded-xl border-outline-variant/30 bg-surface-container-low text-body-sm text-on-surface focus:ring-2 focus:ring-primary py-2.5 px-3">
+                            @foreach($routes as $route)
+                            <option value="{{ $route['to'] }}">{{ $route['to'] }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -595,39 +503,6 @@
             </div>
         </form>
     </aside>
-
-    <!-- Tom Select JS -->
-    <script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
-    <script>
-        // ── Tom Select: Origin & Destination ──────────────────────────────
-        const tsConfig = {
-            maxOptions: null,
-            placeholder: 'Search city...',
-            allowEmptyOption: false,
-            openOnFocus: true,
-            selectOnTab: true,
-            // Prevent same city being chosen for both From and To
-            onItemAdd(value, item) {
-                const otherId = this.input.id === 'select-origin'
-                    ? 'select-destination'
-                    : 'select-origin';
-                const other = document.getElementById(otherId).tomselect;
-                if (other && other.getValue() === value) {
-                    other.clear();
-                }
-            },
-            render: {
-                no_results(data, escape) {
-                    return `<div class="no-results">No city found for "<strong>${escape(data.input)}</strong>"</div>`;
-                }
-            }
-        };
-
-        document.addEventListener('DOMContentLoaded', () => {
-            new TomSelect('#select-origin', tsConfig);
-            new TomSelect('#select-destination', tsConfig);
-        });
-    </script>
 
     <script>
         // Drawer open/close
