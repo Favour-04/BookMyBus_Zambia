@@ -18,14 +18,25 @@ class BookingController extends Controller
     public function showSeats($id)
     {
         $route = Route::with(['bus', 'operator'])->findOrFail($id);
-        
+        if(!$route->is_active){
+            abort(404, 'This route is no longer available.');
+        }
+
+        // $bookedSeats = $route->bookedSeats();
         // Get already booked seats for this route (excludes cancelled seats)
         $bookedSeats = Booking::where('route_id', $id)
             ->whereIn('status', ['pending', 'confirmed'])
             ->pluck('seat_number')
             ->toArray();
-        
-        return view('seat_selection', compact('route', 'bookedSeats'));
+
+        $searchBackUrl = route('trips.search', [
+            'origin' => $route->origin,
+            'destination' => $route->destination,
+            'travel_date' => $route->travel_date->format('Y-m-d'),
+            'passengers' => request()->query('passengers', 1),
+        ]);
+
+        return view('seat_selection', compact('route', 'bookedSeats', 'searchBackUrl'));
     }
 
     /**
@@ -56,7 +67,7 @@ class BookingController extends Controller
         }
 
         $booking = Booking::create([
-            'user_id' => null,
+            'user_id' => Auth::id(),
             'route_id' => $validated['route_id'],
             'seat_number' => $validated['seat_number'],
             'passenger_name' => $validated['passenger_name'],
@@ -74,7 +85,10 @@ class BookingController extends Controller
      */
     public function paymentTicket($bookingId)
     {
-        $booking = Booking::with(['route.bus', 'route.operator'])->findOrFail($bookingId);
+        $booking = Booking::with(['route.bus', 'route.operator'])
+            ->where('id', $bookingId)
+            ->where('user_id', Auth::id())
+            ->firstOrFail();
         
         return view('payment_ticket', [
             'booking' => $booking,
@@ -110,6 +124,9 @@ class BookingController extends Controller
             ],
         ]);
 
+        if($booking->user_id !== Auth::id()){
+            abort(403);
+        }
         // Check if booking is already confirmed
         if ($booking->isConfirmed()) {
             return redirect()->route('booking.success', $booking->id)
@@ -146,6 +163,10 @@ class BookingController extends Controller
      */
     public function success(Booking $booking)
     {
+        if($booking->user_id !== Auth::id()){
+            abort(403);
+        }
+    
         // Load relationships for the ticket display
         $booking->load(['route.bus', 'route.operator']);
         

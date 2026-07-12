@@ -117,67 +117,8 @@ class DashboardController extends Controller
     }
     private function getOperator()
     {
-        // Try all authentication methods
-        if (Auth::guard('operator_api')->check()) {
-            $operator = Auth::guard('operator_api')->user();
-            if ($operator) {
-                session(['operator_id' => $operator->id]);
-                return $operator;
-            }
-        }
-
-        if (session('operator_id')) {
-            $operator = Operator::find(session('operator_id'));
-            if ($operator) {
-                return $operator;
-            }
-        }
-
-        // ============================================
-        // FALLBACK: ALWAYS USE OPERATOR ID = 1
-        // ============================================
-        $operator = Operator::find(1);
-
-        if (!$operator) {
-            // Create operator with ID 1 if it doesn't exist
-            try {
-                $operator = Operator::create([
-                    'id' => 1,
-                    'company_name' => 'Default Operator',
-                    'email' => 'default@operator.com',
-                    'phone_number' => '0977123456',
-                    'password' => bcrypt('password'),
-                    'is_verified' => true,
-                    'verified_at' => now(),
-                    'address' => 'Lusaka, Zambia',
-                ]);
-            } catch (\Exception $e) {
-                // If ID 1 exists but was soft-deleted, restore it
-                $operator = Operator::withTrashed()->find(1);
-                if ($operator) {
-                    $operator->restore();
-                    $operator->update([
-                        'is_verified' => true,
-                        'verified_at' => now(),
-                    ]);
-                } else {
-                    // Last resort: find any operator or create without ID
-                    $operator = Operator::first() ?? Operator::create([
-                        'company_name' => 'Fallback Operator',
-                        'email' => 'fallback@operator.com',
-                        'phone_number' => '0977123456',
-                        'password' => bcrypt('password'),
-                        'is_verified' => true,
-                        'verified_at' => now(),
-                    ]);
-                }
-            }
-        }
-
-        // Store in session
-        session(['operator_id' => $operator->id]);
-
-        return $operator;
+        return Auth::guard('operator_api')->user()
+        ?? Operator::find(session('operator_id'));
     }
 
     private function getOperatorRoutes($operator)

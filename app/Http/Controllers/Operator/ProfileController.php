@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Operator;
 
 use App\Http\Controllers\Controller;
+use App\Models\Operator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -16,12 +17,15 @@ class ProfileController extends Controller
      */
     public function index()
     {
-        /** @var \App\Models\Operator $operator */
-        $operator = Auth::guard('operator')->user();
+        // $operator = Auth::guard('operator')->user();
+        $operator = $this->getOperator();
 
         return view('operator-profile', [
             'operator' => $operator,
         ]);
+    }
+    private function getOperator(){
+        return Auth::guard('operator_api')->user() ?? Operator::find(session('operator_id'));
     }
 
     /**
@@ -29,8 +33,8 @@ class ProfileController extends Controller
      */
     public function update(Request $request)
     {
-        /** @var \App\Models\Operator $operator */
-        $operator = Auth::guard('operator')->user();
+        // $operator = Auth::guard('operator')->user();
+        $operator = $this->getOperator();
 
         $validated = $request->validate([
             'company_name' => 'required|string|max:255',
@@ -50,9 +54,9 @@ class ProfileController extends Controller
      */
     public function updatePassword(Request $request)
     {
-        /** @var \App\Models\Operator $operator */    
-        $operator = Auth::guard('operator')->user();
-
+        // $operator = Auth::guard('operator')->user();
+        $operator = $this->getOperator();
+        
         $request->validate([
             'current_password' => 'required',
             'password'         => 'required|min:8|confirmed',

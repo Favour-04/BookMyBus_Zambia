@@ -10,7 +10,7 @@ use Illuminate\Http\JsonResponse;
 class RouteController extends Controller
 {
     // Search routes by origin, destination, and date. Accessible by guests and travelers.
-     
+
     public function search(Request $request): JsonResponse
     {
         // dd($request->all());
@@ -73,15 +73,14 @@ class RouteController extends Controller
     public function operatorRoutes(Request $request): JsonResponse
     {
         $routes = Route::with('bus')
-            ->where('operator_id', $request->user()->id)
-            ->orderByDesc('travel_date')
+            ->where('operator_id', auth()->guard('operator_api')->id())->orderByDesc('travel_date')
             ->get();
 
         return response()->json(['routes' => $routes]);
     }
 
     // Create a new route (operator only).
-     
+
     public function store(Request $request): JsonResponse
     {
         $data = $request->validate([
@@ -95,7 +94,7 @@ class RouteController extends Controller
         ]);
 
         $route = Route::create(array_merge($data, [
-            'operator_id' => $request->user()->id,
+            'operator_id' => auth()->guard('operator_api')->id(),
         ]));
 
         return response()->json([
@@ -105,11 +104,11 @@ class RouteController extends Controller
     }
 
     // Update fare or times for a route (operator only).
-     
+
     public function update(Request $request, int $id): JsonResponse
     {
         $route = Route::where('id', $id)
-            ->where('operator_id', $request->user()->id)
+            ->where('operator_id', auth()->guard('operator_api')->id())
             ->firstOrFail();
 
         $data = $request->validate([
@@ -131,7 +130,7 @@ class RouteController extends Controller
     public function destroy(Request $request, int $id): JsonResponse
     {
         $route = Route::where('id', $id)
-            ->where('operator_id', $request->user()->id)
+            ->where('operator_id', auth()->guard('operator_api')->id())
             ->firstOrFail();
 
         $hasConfirmedBookings = $route->bookings()
