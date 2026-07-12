@@ -79,6 +79,10 @@ Route::middleware('auth')->group(function () {
     Route::post('/payment/process/{booking}', [BookingController::class, 'processPayment'])->name('payment.process');
     Route::get('/booking/success/{booking}', [BookingController::class, 'success'])->name('booking.success');
 
+    // Booking History
+    Route::get('/my-booking', [BookingController::class, 'customerLookupView'])->name('booking.lookup');
+Route::post('/my-booking/lookup', [BookingController::class, 'customerLookup'])->name('booking.lookup.search');
+
     // Profile
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
     Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
