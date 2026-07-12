@@ -6,6 +6,7 @@ use App\Http\Controllers\BookingController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Operator\DashboardController;
 use App\Http\Controllers\Operator\TripManagementController;
+use App\Http\Controllers\Operator\BookingManagementController;
 use App\Http\Controllers\Operator\ProfileController as OperatorProfileController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
@@ -96,6 +97,9 @@ Route::prefix('operator')->name('operator.')->middleware('auth:operator')->group
     // Trip Management
     // NOTE: Static routes MUST come before {trip} wildcard routes
     Route::get('/trips', [TripManagementController::class, 'index'])->name('trips.index');
+    Route::get('/bookings', [BookingManagementController::class, 'index'])->name('bookings.index');
+    Route::get('/bookings/export', [BookingManagementController::class, 'export'])->name('bookings.export');
+    Route::get('/bookings/{booking}', [BookingManagementController::class, 'show'])->name('bookings.show');
     Route::get('/trips/export', [TripManagementController::class, 'export'])->name('trips.export');
     Route::get('/trips/stats', [TripManagementController::class, 'stats'])->name('trips.stats');
     Route::get('/trips/upcoming', [TripManagementController::class, 'upcoming'])->name('trips.upcoming');
@@ -104,6 +108,7 @@ Route::prefix('operator')->name('operator.')->middleware('auth:operator')->group
     // Wildcard {trip} routes below static ones
     Route::get('/trips/{trip}/seat-map', [TripManagementController::class, 'seatMap'])->name('trips.seat-map');
     Route::get('/trips/{trip}/occupancy', [TripManagementController::class, 'occupancy'])->name('trips.occupancy');
+    Route::get('/trips/{trip}/bookings', [BookingManagementController::class, 'tripBookings'])->name('trips.bookings');
     Route::get('/trips/{trip}', [TripManagementController::class, 'show'])->name('trips.show');
     Route::put('/trips/{trip}', [TripManagementController::class, 'update'])->name('trips.update');
     Route::delete('/trips/{trip}', [TripManagementController::class, 'cancel'])->name('trips.cancel');

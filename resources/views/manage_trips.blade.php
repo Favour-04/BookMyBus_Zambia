@@ -236,6 +236,12 @@
             </a>
 
             <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant dark:text-outline hover:text-primary dark:hover:text-primary-fixed hover:bg-surface-container-highest dark:hover:bg-surface-container transition-colors duration-200"
+                href="{{ route('operator.bookings.index') }}">
+                <span class="material-symbols-outlined" data-icon="book_online">book_online</span>
+                <span class="font-body-md text-body-md">All Bookings</span>
+            </a>
+
+            <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant dark:text-outline hover:text-primary dark:hover:text-primary-fixed hover:bg-surface-container-highest dark:hover:bg-surface-container transition-colors duration-200"
                 href="#">
                 <span class="material-symbols-outlined" data-icon="payments">payments</span>
                 <span class="font-body-md text-body-md">Revenue</span>
@@ -418,6 +424,11 @@
                                 </td>
                                 <td class="px-5 py-4">
                                     <div class="row-actions flex items-center gap-1 justify-end">
+                                        <a href="{{ route('operator.trips.bookings', $trip['route_id']) }}"
+                                           class="p-1.5 rounded-lg text-on-surface-variant hover:text-primary hover:bg-surface-container transition-colors inline-flex"
+                                           title="View bookings">
+                                            <span class="material-symbols-outlined" style="font-size:18px">book_online</span>
+                                        </a>
                                         <button class="p-1.5 rounded-lg text-on-surface-variant hover:text-primary hover:bg-surface-container transition-colors" title="Edit trip">
                                             <span class="material-symbols-outlined" style="font-size:18px">edit</span>
                                         </button>
