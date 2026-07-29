@@ -39,7 +39,7 @@ Route::get('/routes/{id}',            [RouteController::class, 'show']);
 Route::post('/payments/callback',     [PaymentController::class, 'callback']);
 
 
-// Authenticated Traveler Routes 
+// Authenticated Traveler Routes
 
 Route::middleware('auth:sanctum')->group(function () {
     // Auth
@@ -62,7 +62,7 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 
-//  Operator Routes 
+//  Operator Routes
 // Uses a custom 'operator' guard — see config/auth.php
 
 Route::middleware('auth:operator_api')->prefix('operator')->group(function () {
@@ -86,7 +86,7 @@ Route::middleware('auth:operator_api')->prefix('operator')->group(function () {
 });
 
 
-// Admin Routes 
+// Admin Routes
 
 Route::middleware(['auth:sanctum', 'role:admin'])->prefix('admin')->group(function () {
     Route::get('/dashboard',                      [AdminController::class, 'dashboard']);
@@ -96,3 +96,6 @@ Route::middleware(['auth:sanctum', 'role:admin'])->prefix('admin')->group(functi
     Route::post('/operators/{id}/suspend',        [AdminController::class, 'suspendOperator']);
     Route::get('/bookings',                       [AdminController::class, 'bookings']);
 });
+
+// System Reports (publicly accessible via web route, but API endpoint for data)
+Route::get('/system-reports',                   [AdminController::class, 'systemReports']);
