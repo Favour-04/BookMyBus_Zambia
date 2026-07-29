@@ -7,7 +7,7 @@ use App\Http\Controllers\Operator\DashboardController;
 use App\Http\Controllers\Operator\TripManagementController;
 use App\Http\Controllers\Operator\BookingManagementController;
 
-Route::get('/', [LandingController::class, 'index']);
+Route::get('/', [LandingController::class, 'index'])->name('home');
 Route::get('/search', [LandingController::class, 'search'])->name('trips.search');
 
 // ============================================
