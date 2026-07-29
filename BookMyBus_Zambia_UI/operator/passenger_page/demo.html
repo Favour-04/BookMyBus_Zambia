@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Passenger List - BookMyBus Zambia (Demo)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3, .font-headline { font-family: 'Manrope', sans-serif; }
+        .bg-surface { background: #f9f9fc; }
+        .bg-surface-container-lowest { background: #ffffff; }
+        .text-on-surface { color: #1a1c1e; }
+        .text-primary { color: #00601f; }
+        .bg-primary { background: #00601f; }
+        .text-secondary { color: #954a00; }
+        .bg-secondary { background: #954a00; }
+        .border-primary { border-color: #00601f; }
+    </style>
+</head>
+<body class="bg-surface font-body text-on-surface">
+
+<nav class="bg-white border-b border-zinc-100 sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between h-16 items-center">
+            <div class="flex items-center">
+                <span class="text-xl font-extrabold text-green-900 tracking-tighter">🚌 BookMyBus Zambia</span>
+            </div>
+            <div class="hidden md:flex items-center gap-6">
+                <a href="#" class="text-sm font-medium text-zinc-600 hover:text-primary transition-colors">Dashboard</a>
+                <a href="#" class="text-sm font-medium text-zinc-600 hover:text-primary transition-colors">Routes</a>
+                <a href="#" class="text-sm font-medium text-zinc-600 hover:text-primary transition-colors">Buses</a>
+                <a href="#" class="text-sm font-medium text-zinc-600 hover:text-primary transition-colors">Fares</a>
+                <a href="#" class="text-sm font-medium text-zinc-600 hover:text-primary transition-colors">Schedules</a>
+                <a href="#" class="text-sm font-medium text-zinc-600 hover:text-primary transition-colors">Bookings</a>
+                <a href="#" class="text-sm font-medium text-primary border-b-2 border-primary pb-1">Passengers</a>
+                <a href="#" class="text-sm font-medium text-red-600 hover:text-red-700 transition-colors">Logout</a>
+            </div>
+            <div class="flex items-center gap-3">
+                <span class="text-sm font-medium text-zinc-600">John Operator</span>
+                <div class="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
+                    <span class="material-symbols-outlined text-primary text-sm">account_circle</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <div class="mb-8">
+        <h1 class="text-3xl font-headline font-extrabold text-on-surface">Passenger List</h1>
+        <p class="text-zinc-500 mt-1">View all passengers on your buses</p>
+    </div>
+
+    <div id="alertMessage" class="hidden p-4 rounded-lg mb-6"></div>
+
+    <section class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+        <div class="bg-white p-4 rounded-xl shadow-sm border border-zinc-100">
+            <p class="text-zinc-500 text-xs font-bold uppercase tracking-tighter">Total Passengers</p>
+            <p class="text-2xl font-headline font-extrabold text-primary" id="totalPassengers">0</p>
+        </div>
+        <div class="bg-white p-4 rounded-xl shadow-sm border border-zinc-100">
+            <p class="text-zinc-500 text-xs font-bold uppercase tracking-tighter">Today's Passengers</p>
+            <p class="text-2xl font-headline font-extrabold text-secondary" id="todayPassengers">0</p>
+        </div>
+        <div class="bg-white p-4 rounded-xl shadow-sm border border-zinc-100">
+            <p class="text-zinc-500 text-xs font-bold uppercase tracking-tighter">This Week</p>
+            <p class="text-2xl font-headline font-extrabold text-on-surface" id="weekPassengers">0</p>
+        </div>
+    </section>
+
+    <div class="bg-white rounded-2xl shadow-sm border border-zinc-100 p-6 mb-6">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div>
+                <label class="block text-sm font-semibold text-on-surface-variant mb-1">Route</label>
+                <select id="filterRoute" class="w-full px-4 py-2.5 border border-zinc-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/30">
+                    <option value="">All Routes</option>
+                    <option value="1">Lusaka → Ndola</option>
+                    <option value="2">Lusaka → Livingstone</option>
+                    <option value="3">Lusaka → Kitwe</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm font-semibold text-on-surface-variant mb-1">Travel Date</label>
+                <input type="date" id="filterDate" class="w-full px-4 py-2.5 border border-zinc-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/30">
+            </div>
+            <div>
+                <label class="block text-sm font-semibold text-on-surface-variant mb-1">Bus</label>
+                <select id="filterBus" class="w-full px-4 py-2.5 border border-zinc-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/30">
+                    <option value="">All Buses</option>
+                    <option value="1">JUL-101</option>
+                    <option value="2">JUL-102</option>
+                    <option value="3">JUL-103</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm font-semibold text-on-surface-variant mb-1">Status</label>
+                <select id="filterStatus" class="w-full px-4 py-2.5 border border-zinc-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/30">
+                    <option value="">All Status</option>
+                    <option value="confirmed">Confirmed</option>
+                    <option value="cancelled">Cancelled</option>
+                    <option value="pending">Pending</option>
+                </select>
+            </div>
+        </div>
+        <button onclick="applyFilters()" class="mt-4 bg-[#00601f] text-white px-6 py-2.5 rounded-xl font-bold text-sm hover:opacity-90 transition-all">Apply Filters</button>
+        <button onclick="clearFilters()" class="mt-4 ml-2 bg-zinc-200 text-zinc-700 px-6 py-2.5 rounded-xl font-bold text-sm hover:bg-zinc-300 transition-all">Clear Filters</button>
+        <button onclick="exportList()" class="mt-4 ml-2 bg-[#954a00] text-white px-6 py-2.5 rounded-xl font-bold text-sm hover:opacity-90 transition-all float-right">⬇ Export List</button>
+    </div>
+
+    <div id="passengerContainer"></div>
+</main>
+
+<!-- Passenger Details Modal -->
+<div id="passengerModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+    <div class="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-md mx-4">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-xl font-headline font-bold text-[#00601f]">🧑 Passenger Details</h3>
+            <span onclick="closePassengerModal()" class="cursor-pointer text-2xl text-zinc-500 hover:text-zinc-800">&times;</span>
+        </div>
+        <div id="passengerDetails" class="space-y-3"></div>
+    </div>
+</div>
+
+<footer class="bg-zinc-50 border-t border-zinc-200 py-6 mt-10">
+    <div class="max-w-7xl mx-auto px-4 text-center text-sm text-zinc-500">
+        &copy; 2025 BookMyBus Zambia. All rights reserved.
+    </div>
+</footer>
+
+<script>
+    // ============================================================
+    // SAMPLE PASSENGER DATA (After travelers book)
+    // ============================================================
+    const samplePassengers = [
+        {
+            id: 1,
+            bookingId: 'BK1001',
+            passengerName: 'John Mulenga',
+            email: 'john@email.com',
+            phone: '0977123456',
+            origin: 'Lusaka',
+            destination: 'Ndola',
+            travelDate: '2025-07-25',
+            departureTime: '06:00',
+            busNumber: 'JUL-101',
+            seats: ['A12', 'A13'],
+            totalPrice: 300,
+            status: 'confirmed',
+            routeId: 1,
+            busId: 1
+        },
+        {
+            id: 2,
+            bookingId: 'BK1002',
+            passengerName: 'Sarah Kunda',
+            email: 'sarah@email.com',
+            phone: '0977123457',
+            origin: 'Lusaka',
+            destination: 'Livingstone',
+            travelDate: '2025-07-30',
+            departureTime: '07:00',
+            busNumber: 'JUL-102',
+            seats: ['B05'],
+            totalPrice: 250,
+            status: 'confirmed',
+            routeId: 2,
+            busId: 2
+        },
+        {
+            id: 3,
+            bookingId: 'BK1003',
+            passengerName: 'Peter Banda',
+            email: 'peter@email.com',
+            phone: '0977123458',
+            origin: 'Lusaka',
+            destination: 'Ndola',
+            travelDate: '2025-07-26',
+            departureTime: '10:00',
+            busNumber: 'JUL-103',
+            seats: ['C01', 'C02'],
+            totalPrice: 320,
+            status: 'confirmed',
+            routeId: 1,
+            busId: 3
+        },
+        {
+            id: 4,
+            bookingId: 'BK1004',
+            passengerName: 'Mary Phiri',
+            email: 'mary@email.com',
+            phone: '0977123459',
+            origin: 'Lusaka',
+            destination: 'Kitwe',
+            travelDate: '2025-07-28',
+            departureTime: '08:30',
+            busNumber: 'JUL-101',
+            seats: ['D05'],
+            totalPrice: 160,
+            status: 'pending',
+            routeId: 3,
+            busId: 1
+        },
+        {
+            id: 5,
+            bookingId: 'BK1005',
+            passengerName: 'David Zulu',
+            email: 'david@email.com',
+            phone: '0977123460',
+            origin: 'Lusaka',
+            destination: 'Livingstone',
+            travelDate: '2025-07-20',
+            departureTime: '09:00',
+            busNumber: 'JUL-102',
+            seats: ['E12', 'E13'],
+            totalPrice: 500,
+            status: 'cancelled',
+            routeId: 2,
+            busId: 2
+        },
+        {
+            id: 6,
+            bookingId: 'BK1006',
+            passengerName: 'Grace Mwansa',
+            email: 'grace@email.com',
+            phone: '0977123461',
+            origin: 'Lusaka',
+            destination: 'Ndola',
+            travelDate: '2025-07-27',
+            departureTime: '06:00',
+            busNumber: 'JUL-101',
+            seats: ['A01'],
+            totalPrice: 150,
+            status: 'confirmed',
+            routeId: 1,
+            busId: 1
+        },
+        {
+            id: 7,
+            bookingId: 'BK1007',
+            passengerName: 'James Chanda',
+            email: 'james@email.com',
+            phone: '0977123462',
+            origin: 'Lusaka',
+            destination: 'Kitwe',
+            travelDate: '2025-07-29',
+            departureTime: '14:00',
+            busNumber: 'JUL-103',
+            seats: ['B10'],
+            totalPrice: 160,
+            status: 'confirmed',
+            routeId: 3,
+            busId: 3
+        }
+    ];
+
+    let passengers = [];
+    let filteredPassengers = [];
+
+    window.onload = function () {
+        // Load sample data into localStorage if not exists
+        if (!localStorage.getItem('passengers')) {
+            localStorage.setItem('passengers', JSON.stringify(samplePassengers));
+        }
+        loadPassengers();
+        setDefaultDate();
+    };
+
+    function setDefaultDate() {
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('filterDate').value = today;
+    }
+
+    function loadPassengers() {
+        const stored = localStorage.getItem('passengers');
+        if (stored) {
+            passengers = JSON.parse(stored);
+        } else {
+            passengers = samplePassengers;
+            localStorage.setItem('passengers', JSON.stringify(passengers));
+        }
+        applyFilters();
+    }
+
+    function applyFilters() {
+        const routeId = document.getElementById('filterRoute').value;
+        const date = document.getElementById('filterDate').value;
+        const busId = document.getElementById('filterBus').value;
+        const status = document.getElementById('filterStatus').value;
+
+        filteredPassengers = passengers.filter(p => {
+            let match = true;
+
+            if (routeId && p.routeId != routeId) match = false;
+            if (date && p.travelDate != date) match = false;
+            if (busId && p.busId != busId) match = false;
+            if (status && p.status != status) match = false;
+
+            return match;
+        });
+
+        displayPassengers();
+        updateStats();
+    }
+
+    function clearFilters() {
+        document.getElementById('filterRoute').value = '';
+        document.getElementById('filterDate').value = '';
+        document.getElementById('filterBus').value = '';
+        document.getElementById('filterStatus').value = '';
+        applyFilters();
+    }
+
+    function displayPassengers() {
+        const container = document.getElementById('passengerContainer');
+
+        if (filteredPassengers.length === 0) {
+            container.innerHTML = `
+                <div class="bg-white p-12 rounded-2xl text-center border border-zinc-100">
+                    <span class="material-symbols-outlined text-6xl text-zinc-300 mb-4">people_outline</span>
+                    <h3 class="font-headline text-2xl font-bold text-on-surface mb-2">No passengers found</h3>
+                    <p class="text-zinc-500">Try adjusting your filters.</p>
+                    <button onclick="resetSampleData()" class="mt-4 bg-[#00601f] text-white px-6 py-2 rounded-lg font-bold text-sm hover:opacity-90 transition-all">Load Sample Data</button>
+                </div>
+            `;
+            return;
+        }
+
+        container.innerHTML = filteredPassengers.map(passenger => `
+            <div class="bg-white rounded-2xl shadow-sm border border-zinc-100 p-6 mb-4 hover:shadow-md transition-shadow">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div class="flex-1">
+                        <div class="flex items-center gap-3 mb-2 flex-wrap">
+                            <span class="text-lg font-headline font-extrabold text-on-surface">🧑 ${passenger.passengerName}</span>
+                            <span class="text-xs text-zinc-400">#${passenger.bookingId}</span>
+                            <span class="px-2 py-0.5 rounded-full text-xs font-semibold ${passenger.status === 'confirmed' ? 'bg-green-100 text-green-700' : passenger.status === 'cancelled' ? 'bg-red-100 text-red-700' : 'bg-yellow-100 text-yellow-700'}">
+                                ${(passenger.status || 'confirmed').toUpperCase()}
+                            </span>
+                        </div>
+                        <div class="flex flex-wrap items-center gap-4 text-sm">
+                            <div>
+                                <p class="text-[10px] text-zinc-400 uppercase tracking-wider font-bold">Route</p>
+                                <p class="font-medium">${passenger.origin} → ${passenger.destination}</p>
+                            </div>
+                            <div>
+                                <p class="text-[10px] text-zinc-400 uppercase tracking-wider font-bold">Date</p>
+                                <p class="font-medium">${formatDate(passenger.travelDate)}</p>
+                            </div>
+                            <div>
+                                <p class="text-[10px] text-zinc-400 uppercase tracking-wider font-bold">Time</p>
+                                <p class="font-medium">${formatTime(passenger.departureTime)}</p>
+                            </div>
+                            <div>
+                                <p class="text-[10px] text-zinc-400 uppercase tracking-wider font-bold">Bus</p>
+                                <p class="font-medium">${passenger.busNumber}</p>
+                            </div>
+                            <div>
+                                <p class="text-[10px] text-zinc-400 uppercase tracking-wider font-bold">Seats</p>
+                                <p class="font-medium">${passenger.seats ? passenger.seats.join(', ') : 'N/A'}</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-4 mt-2 text-sm">
+                            <span class="text-[10px] text-zinc-400 uppercase tracking-wider font-bold">Contact</span>
+                            <span class="text-sm text-zinc-600">📞 ${passenger.phone || 'N/A'}</span>
+                            <span class="text-sm text-zinc-600">📧 ${passenger.email || 'N/A'}</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button onclick="viewPassenger(${passenger.id})" class="px-4 py-2 bg-primary/10 text-primary rounded-xl font-bold text-xs hover:bg-[#00601f] hover:text-white transition-colors">View Details</button>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function viewPassenger(id) {
+        const passenger = filteredPassengers.find(p => p.id === id);
+        if (!passenger) {
+            showAlert('Passenger not found.', 'danger');
+            return;
+        }
+
+        const detailsHtml = `
+            <div class="space-y-3">
+                <div class="flex justify-between border-b border-zinc-100 pb-2">
+                    <span class="text-xs text-zinc-400">Name</span>
+                    <span class="font-semibold">${passenger.passengerName}</span>
+                </div>
+                <div class="flex justify-between border-b border-zinc-100 pb-2">
+                    <span class="text-xs text-zinc-400">Booking ID</span>
+                    <span class="font-semibold">${passenger.bookingId}</span>
+                </div>
+                <div class="flex justify-between border-b border-zinc-100 pb-2">
+                    <span class="text-xs text-zinc-400">Route</span>
+                    <span class="font-semibold">${passenger.origin} → ${passenger.destination}</span>
+                </div>
+                <div class="flex justify-between border-b border-zinc-100 pb-2">
+                    <span class="text-xs text-zinc-400">Date</span>
+                    <span class="font-semibold">${formatDate(passenger.travelDate)}</span>
+                </div>
+                <div class="flex justify-between border-b border-zinc-100 pb-2">
+                    <span class="text-xs text-zinc-400">Time</span>
+                    <span class="font-semibold">${formatTime(passenger.departureTime)}</span>
+                </div>
+                <div class="flex justify-between border-b border-zinc-100 pb-2">
+                    <span class="text-xs text-zinc-400">Bus</span>
+                    <span class="font-semibold">${passenger.busNumber}</span>
+                </div>
+                <div class="flex justify-between border-b border-zinc-100 pb-2">
+                    <span class="text-xs text-zinc-400">Seats</span>
+                    <span class="font-semibold">${passenger.seats ? passenger.seats.join(', ') : 'N/A'}</span>
+                </div>
+                <div class="flex justify-between border-b border-zinc-100 pb-2">
+                    <span class="text-xs text-zinc-400">Total Price</span>
+                    <span class="font-semibold text-[#00601f]">ZMW ${passenger.totalPrice}</span>
+                </div>
+                <div class="flex justify-between border-b border-zinc-100 pb-2">
+                    <span class="text-xs text-zinc-400">Status</span>
+                    <span class="font-semibold ${passenger.status === 'confirmed' ? 'text-green-600' : passenger.status === 'cancelled' ? 'text-red-600' : 'text-yellow-600'}">
+                        ${(passenger.status || 'confirmed').toUpperCase()}
+                    </span>
+                </div>
+                <div class="flex justify-between border-b border-zinc-100 pb-2">
+                    <span class="text-xs text-zinc-400">Phone</span>
+                    <span class="font-semibold">${passenger.phone || 'N/A'}</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-xs text-zinc-400">Email</span>
+                    <span class="font-semibold">${passenger.email || 'N/A'}</span>
+                </div>
+            </div>
+        `;
+
+        document.getElementById('passengerDetails').innerHTML = detailsHtml;
+        document.getElementById('passengerModal').classList.remove('hidden');
+    }
+
+    function closePassengerModal() {
+        document.getElementById('passengerModal').classList.add('hidden');
+    }
+
+    function updateStats() {
+        const total = filteredPassengers.length;
+        const today = new Date().toISOString().split('T')[0];
+        const todayCount = filteredPassengers.filter(p => p.travelDate === today).length;
+
+        const weekAgo = new Date();
+        weekAgo.setDate(weekAgo.getDate() - 7);
+        const weekAgoStr = weekAgo.toISOString().split('T')[0];
+        const weekCount = filteredPassengers.filter(p => p.travelDate >= weekAgoStr).length;
+
+        document.getElementById('totalPassengers').textContent = total;
+        document.getElementById('todayPassengers').textContent = todayCount;
+        document.getElementById('weekPassengers').textContent = weekCount;
+    }
+
+    function exportList() {
+        if (filteredPassengers.length === 0) {
+            showAlert('No passengers to export.', 'danger');
+            return;
+        }
+
+        let csv = 'Name,Booking ID,Route,Date,Time,Seats,Status,Phone,Email\n';
+        filteredPassengers.forEach(p => {
+            csv += `${p.passengerName},${p.bookingId},${p.origin} → ${p.destination},${p.travelDate},${p.departureTime || '08:00'},"${p.seats ? p.seats.join(', ') : 'N/A'}",${p.status || 'confirmed'},${p.phone || 'N/A'},${p.email || 'N/A'}\n`;
+        });
+
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'passenger-list.csv';
+        a.click();
+        window.URL.revokeObjectURL(url);
+
+        showAlert('Passenger list exported successfully!', 'success');
+    }
+
+    function resetSampleData() {
+        localStorage.setItem('passengers', JSON.stringify(samplePassengers));
+        loadPassengers();
+        showAlert('Sample data loaded successfully!', 'success');
+    }
+
+    function formatDate(dateString) {
+        const date = new Date(dateString);
+        return date.toLocaleDateString('en-GB', {
+            weekday: 'short',
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric'
+        });
+    }
+
+    function formatTime(time) {
+        if (!time) return '08:00';
+        const [hours, minutes] = time.split(':');
+        const h = parseInt(hours);
+        const ampm = h >= 12 ? 'PM' : 'AM';
+        const h12 = h % 12 || 12;
+        return `${h12}:${minutes} ${ampm}`;
+    }
+
+    function showAlert(message, type) {
+        const alertDiv = document.getElementById('alertMessage');
+        alertDiv.classList.remove('hidden');
+        alertDiv.className = `p-4 rounded-lg ${type === 'success' ? 'bg-green-100 text-green-700 border-l-4 border-green-500' : 'bg-red-100 text-red-700 border-l-4 border-red-500'}`;
+        alertDiv.textContent = message;
+        setTimeout(() => alertDiv.classList.add('hidden'), 3000);
+    }
+
+    window.onclick = function (event) {
+        const modal = document.getElementById('passengerModal');
+        if (event.target === modal) {
+            closePassengerModal();
+        }
+    };
+</script>
+</body>
+</html>

@@ -10,7 +10,7 @@ use Illuminate\Http\JsonResponse;
 class RouteController extends Controller
 {
     // Search routes by origin, destination, and date. Accessible by guests and travelers.
-     
+
     public function search(Request $request): JsonResponse
     {
         dd($request->all());
@@ -21,8 +21,8 @@ class RouteController extends Controller
         ]);
 
         $routes = Route::with(['operator', 'bus'])
-            ->where('origin', 'ilike', '%' . $data['origin'] . '%')
-            ->where('destination', 'ilike', '%' . $data['destination'] . '%')
+            ->where('origin', 'like', '%' . $data['origin'] . '%')
+            ->where('destination', 'like', '%' . $data['destination'] . '%')
             ->where('travel_date', $data['travel_date'])
             ->where('is_active', true)
             ->orderBy('fare')
@@ -80,7 +80,7 @@ class RouteController extends Controller
     }
 
     // Create a new route (operator only).
-     
+
     public function store(Request $request): JsonResponse
     {
         $data = $request->validate([
@@ -104,7 +104,7 @@ class RouteController extends Controller
     }
 
     // Update fare or times for a route (operator only).
-     
+
     public function update(Request $request, int $id): JsonResponse
     {
         $route = Route::where('id', $id)

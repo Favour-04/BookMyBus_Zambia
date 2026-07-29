@@ -19,7 +19,7 @@ class LandingController extends Controller
 
         if($detectedCity){
             $cityExistsInDB = Route::where('is_active', true)
-                -> where('origin', 'ilike', '%' . $detectedCity . '%')
+                -> where('origin', 'like', '%' . $detectedCity . '%')
                 -> exists();
             if(!$cityExistsInDB){
                 $detectedCity = null;
@@ -28,7 +28,7 @@ class LandingController extends Controller
 
         if($detectedCity){
             $routes = Route::where('is_active', true)
-                -> where('origin', 'ilike', '%' . $detectedCity . '%')
+                -> where('origin', 'like', '%' . $detectedCity . '%')
                 -> orderBy('fare', 'asc')
                 -> take(20)
                 -> get()

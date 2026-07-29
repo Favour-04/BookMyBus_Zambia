@@ -33,8 +33,8 @@ class Route extends Model
     // Query scopes
     public function scopeSearch($query, $origin, $destination, $travel_date)
     {
-        return $query->where('origin', 'ilike', '%' . $origin . '%')
-                     ->where('destination', 'ilike', '%' . $destination . '%')
+        return $query->where('origin', 'like', '%' . $origin . '%')
+                     ->where('destination', 'like', '%' . $destination . '%')
                      ->where('travel_date', $travel_date);
     }
 
@@ -58,7 +58,7 @@ class Route extends Model
     // helper methods
 
     // Get seat numbers already booked on this route (confirmed or pending).
-     
+
     public function bookedSeats(): array
     {
         return $this->bookings()
@@ -68,7 +68,7 @@ class Route extends Model
     }
 
     // Get all available seat numbers for this route.
-     
+
     public function availableSeats(): array
     {
         $total  = range(1, $this->bus->seat_capacity);
