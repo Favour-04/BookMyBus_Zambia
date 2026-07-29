@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Route;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Stevebauman\Location\Facades\Location;
 
 class LandingController extends Controller
@@ -79,6 +80,39 @@ class LandingController extends Controller
             ->with(['bus', 'operator'])
             ->get();
 
-        return view('search_results', compact('trips', 'request'));
+        $maxPrice = $trips->max('fare') ?? 0;
+
+        $operators = $this->buildOperatorsList($trips);
+
+        return view('search_results', compact('trips', 'request', 'maxPrice', 'operators'));
+    }
+
+    /**
+     * Build a unique operators list from a trips collection for filtering UI.
+     *
+     * @param  \Illuminate\Database\Eloquent\Collection|\Illuminate\Support\Collection  $trips
+     * @return \Illuminate\Support\Collection
+     */
+    private function buildOperatorsList($trips): Collection
+    {
+        $map = [];
+
+        foreach ($trips as $trip) {
+            if (! $trip->relationLoaded('operator') || ! $trip->operator) {
+                continue;
+            }
+
+            $id = (string) $trip->operator->getKey();
+
+            if (! isset($map[$id])) {
+                $map[$id] = [
+                    'id'          => $trip->operator->getKey(),
+                    'name'        => (string) ($trip->operator->company_name ?? ''),
+                    'buses_count' => (int) ($trip->operator->buses_count ?? 0),
+                ];
+            }
+        }
+
+        return new Collection(array_values($map));
     }
 }

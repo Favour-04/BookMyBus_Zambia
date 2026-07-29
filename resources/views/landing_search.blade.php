@@ -153,7 +153,7 @@
         <a class="font-headline tracking-tight font-bold text-sm text-zinc-600 dark:text-zinc-400 hover:text-green-900 dark:hover:text-green-100 transition-colors"
           href="#">Operator Portal</a>
         <a class="font-headline tracking-tight font-bold text-sm text-zinc-600 dark:text-zinc-400 hover:text-green-900 dark:hover:text-green-100 transition-colors"
-          href="#">Support</a>
+          href="/support">Support</a>
       </div>
         <a href="{{ route('login') }}"
           class="text-green-800 dark:text-green-400 font-headline font-bold text-sm px-4 py-2 hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-colors rounded-lg flex items-center gap-2">
@@ -379,10 +379,11 @@
                   Our dedicated team is always on standby to assist with
                   rebookings or travel queries.
                 </p>
-                <button
-                  class="bg-surface-container-lowest px-6 py-2 rounded-full font-bold text-sm shadow-sm hover:translate-y-[-2px] transition-transform">
+                <a href="/support"
+                  class="bg-surface-container-lowest px-6 py-2 rounded-full font-bold text-sm shadow-sm hover:translate-y-[-2px] transition-transform inline-flex items-center gap-2">
+                  <span class="material-symbols-outlined text-sm">support_agent</span>
                   Speak to us
-                </button>
+                </a>
               </div>
               <div class="flex-1 -mb-20 -mr-10">
                 <img class="rounded-xl w-full h-48 object-cover grayscale brightness-110"

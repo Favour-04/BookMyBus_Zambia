@@ -114,6 +114,15 @@ Route::get('/system-reports', function () {
     return view('admin.systems_report');
 });
 
+// Support Page
+Route::get('/support', function () {
+    return view('support_page');
+})->name('support');
+
+Route::post('/support/submit', function () {
+    return back()->with('success', 'Message sent');
+})->name('support.submit');
+
 // ============================================
 // FALLBACK ROUTE
 // ============================================
