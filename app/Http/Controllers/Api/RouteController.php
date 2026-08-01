@@ -13,11 +13,12 @@ class RouteController extends Controller
 
     public function search(Request $request): JsonResponse
     {
-        dd($request->all());
+        // dd($request->all());
         $data = $request->validate([
             'origin'      => 'required|string',
             'destination' => 'required|string',
             'travel_date' => 'required|date|after_or_equal:today',
+            'passengers'  => 'required|integer|min:1|max:5',
         ]);
 
         $routes = Route::with(['operator', 'bus'])
