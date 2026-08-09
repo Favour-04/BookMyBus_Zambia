@@ -107,19 +107,27 @@
       <span class="text-xl font-extrabold text-green-900 dark:text-green-100 tracking-tighter"><a href="/">BookMyBus
           Zambia</a></span>
       <div class="hidden md:flex items-center gap-8 font-manrope tracking-tight font-bold text-sm">
-        <a class="text-green-900 dark:text-green-100 border-b-2 border-orange-600 pb-1" href="/">Find Trips</a>
+        <a class="text-green-900 dark:text-green-100 border-b-2 border-orange-600 pb-1" href="{{ route('home') }}">Find Trips</a>
         <a class="text-zinc-600 dark:text-zinc-400 hover:text-green-900 dark:hover:text-green-100 transition-colors"
-          href="#">My Bookings</a>
+          href="{{ route('booking.lookup') }}">My Bookings</a>
         <a class="text-zinc-600 dark:text-zinc-400 hover:text-green-900 dark:hover:text-green-100 transition-colors"
-          href="#">Operator Portal</a>
+          href="{{ route('operator.login') }}">Operator Portal</a>
         <a class="text-zinc-600 dark:text-zinc-400 hover:text-green-900 dark:hover:text-green-100 transition-colors"
-          href="{{-- route('support.page') --}}">Support</a>
+          href="{{ route('support.page') }}">Support</a>
       </div>
       <div class="flex items-center gap-4">
-        <span class="material-symbols-outlined text-zinc-600 cursor-pointer">account_circle</span>
-        <button
+        @auth
+        <a href="{{ route('profile') }}"
+          class="material-symbols-outlined text-zinc-600 cursor-pointer">account_circle</a>
+        @else
+        <a href="{{ route('login') }}"
+          class="material-symbols-outlined text-zinc-600 cursor-pointer">account_circle</a>
+        @endauth
+        @guest
+        <a href="{{ route('login') }}"
           class="bg-primary text-on-primary px-4 py-2 rounded-lg font-bold text-sm hover:opacity-90 active:scale-95 transition-all">Sign
-          In</button>
+          In</a>
+        @endguest
       </div>
     </div>
   </nav>
@@ -336,13 +344,13 @@
       </div>
       <div class="flex flex-wrap gap-6 md:justify-end">
         <a class="font-inter text-xs text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 underline underline-offset-4 transition-opacity hover:opacity-80"
-          href="#">Privacy Policy</a>
+          href="{{ route('privacy-policy') }}">Privacy Policy</a>
         <a class="font-inter text-xs text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 underline underline-offset-4 transition-opacity hover:opacity-80"
-          href="#">Terms of Service</a>
+          href="{{ route('terms-of-service') }}">Terms of Service</a>
         <a class="font-inter text-xs text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 underline underline-offset-4 transition-opacity hover:opacity-80"
-          href="#">Carrier Partners</a>
+          href="{{ route('carrier-partners') }}">Carrier Partners</a>
         <a class="font-inter text-xs text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 underline underline-offset-4 transition-opacity hover:opacity-80"
-          href="#">Contact Us</a>
+          href="{{ route('contact-us') }}">Contact Us</a>
       </div>
     </div>
   </footer>

@@ -30,8 +30,9 @@
   <div class="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
     <a href="{{ url('/') }}" class="text-xl font-extrabold tracking-tight text-brand">🚌 BookMyBus Zambia</a>
     <div class="hidden items-center gap-10 md:flex">
-      <a href="{{ route('trips.search') }}" class="text-sm font-semibold text-slate-600 transition hover:text-brand">Search Results</a>
-      <a href="#" class="text-sm font-semibold text-slate-600 transition hover:text-brand">My Bookings</a>
+      <a href="{{ route('home') }}" class="text-sm font-semibold text-slate-600 transition hover:text-brand">Find Trips</a>
+      <a href="{{ route('booking.lookup') }}" class="text-sm font-semibold text-slate-600 transition hover:text-brand">My Bookings</a>
+      <a href="{{ route('operator.login') }}" class="text-sm font-semibold text-slate-600 transition hover:text-brand">Operator Portal</a>
       <a href="{{ route('support.page') }}" class="text-sm font-semibold text-brand border-b-2 border-orange-500 pb-1">Support</a>
     </div>
   </div>
@@ -150,10 +151,10 @@
     <p class="font-semibold text-slate-900">🚌 BookMyBus Zambia</p>
     <p class="mt-2">© 2025 BookMyBus Zambia. Premium Travel Excellence.</p>
     <div class="mt-4 flex flex-wrap justify-center gap-4">
-      <a href="#" class="text-slate-500 transition hover:text-slate-900">Privacy Policy</a>
-      <a href="#" class="text-slate-500 transition hover:text-slate-900">Terms of Service</a>
-      <a href="#" class="text-slate-500 transition hover:text-slate-900">Carrier Partners</a>
-      <a href="#" class="text-slate-500 transition hover:text-slate-900">Contact Us</a>
+      <a href="{{ route('privacy-policy') }}" class="text-slate-500 transition hover:text-slate-900">Privacy Policy</a>
+      <a href="{{ route('terms-of-service') }}" class="text-slate-500 transition hover:text-slate-900">Terms of Service</a>
+      <a href="{{ route('carrier-partners') }}" class="text-slate-500 transition hover:text-slate-900">Carrier Partners</a>
+      <a href="{{ route('contact-us') }}" class="text-slate-500 transition hover:text-slate-900">Contact Us</a>
     </div>
   </div>
 </footer>
@@ -196,4 +197,7 @@
     }
 
     showToast('✅ Message sent! We will respond within 24 hours.');
+  }
+</script>
+</body>
 </html>

@@ -18,11 +18,17 @@ class Bus extends Model
         'bus_class',
         'amenities',
         'is_active',
+        'last_maintenance_date',
+        'next_maintenance_date',
+        'mileage_km',
+        'notes',
     ];
 
     protected $casts = [
         'amenities' => 'array',
         'is_active' => 'boolean',
+        'last_maintenance_date' => 'datetime',
+        'next_maintenance_date' => 'datetime',
     ];
 
     // relationship definitions

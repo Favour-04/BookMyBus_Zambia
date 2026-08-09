@@ -13,6 +13,8 @@ class Route extends Model
     protected $fillable = [
         'operator_id',
         'bus_id',
+        'driver_id',
+        'route_template_id',
         'origin',
         'destination',
         'distance_km',
@@ -21,6 +23,11 @@ class Route extends Model
         'fare',
         'travel_date',
         'is_active',
+        'delayed_at',
+        'delay_minutes',
+        'delay_reason',
+        'departed_at',
+        'arrived_at',
     ];
 
     protected $casts = [
@@ -28,13 +35,16 @@ class Route extends Model
         'distance_km' => 'decimal:2',
         'travel_date' => 'date',
         'is_active'   => 'boolean',
+        'delayed_at'  => 'datetime',
+        'departed_at' => 'datetime',
+        'arrived_at'  => 'datetime',
     ];
 
     // Query scopes
     public function scopeSearch($query, $origin, $destination, $travel_date)
     {
-        return $query->where('origin', 'ilike', '%' . $origin . '%')
-                     ->where('destination', 'ilike', '%' . $destination . '%')
+        return $query->where('origin', 'like', '%' . $origin . '%')
+                     ->where('destination', 'like', '%' . $destination . '%')
                      ->where('travel_date', $travel_date);
     }
 
@@ -48,6 +58,16 @@ class Route extends Model
     public function bus()
     {
         return $this->belongsTo(Bus::class);
+    }
+
+    public function driver()
+    {
+        return $this->belongsTo(Driver::class);
+    }
+
+    public function routeTemplate()
+    {
+        return $this->belongsTo(RouteTemplate::class);
     }
 
     public function bookings()
@@ -80,5 +100,20 @@ class Route extends Model
     public function availableSeatsCount(): int
     {
         return count($this->availableSeats());
+    }
+
+    public function isDelayed(): bool
+    {
+        return !is_null($this->delayed_at);
+    }
+
+    public function hasDeparted(): bool
+    {
+        return !is_null($this->departed_at);
+    }
+
+    public function hasArrived(): bool
+    {
+        return !is_null($this->arrived_at);
     }
 }

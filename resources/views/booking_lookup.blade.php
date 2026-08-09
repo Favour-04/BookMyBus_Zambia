@@ -34,7 +34,7 @@
 <body class="bg-surface text-on-surface min-h-screen">
     <!-- Navigation Bar -->
     <header class="h-16 bg-surface-container-low border-b border-outline-variant/15 flex items-center px-8 sticky top-0 z-20">
-        <a href="{{ route('trips.search') }}" class="font-headline text-xl font-extrabold text-primary tracking-tighter">
+        <a href="{{ route('home') }}" class="font-headline text-xl font-extrabold text-primary tracking-tighter">
             BookMyBus<span class="text-on-surface"> Zambia</span>
         </a>
         <nav class="ml-auto flex items-center gap-6">

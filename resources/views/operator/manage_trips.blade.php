@@ -224,15 +224,21 @@
 
             <!-- Active: Manage Trips -->
             <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-primary dark:text-primary-fixed font-bold border-r-4 border-primary dark:border-primary-fixed bg-surface-container-high dark:bg-surface-container transition-all duration-150"
-                href="#">
+                href="{{ route('operator.trips.index') }}">
                 <span class="material-symbols-outlined" data-icon="directions_bus">directions_bus</span>
                 <span class="font-body-md text-body-md">Manage Trips</span>
             </a>
 
             <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant dark:text-outline hover:text-primary dark:hover:text-primary-fixed hover:bg-surface-container-highest dark:hover:bg-surface-container transition-colors duration-200"
-                href="#">
-                <span class="material-symbols-outlined" data-icon="event_seat">event_seat</span>
-                <span class="font-body-md text-body-md">Seat Maps</span>
+                href="{{ route('operator.trips.calendar') }}">
+                <span class="material-symbols-outlined" data-icon="calendar_month">calendar_month</span>
+                <span class="font-body-md text-body-md">Trip Calendar</span>
+            </a>
+
+            <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant dark:text-outline hover:text-primary dark:hover:text-primary-fixed hover:bg-surface-container-highest dark:hover:bg-surface-container transition-colors duration-200"
+                href="{{ route('operator.buses.index') }}">
+                <span class="material-symbols-outlined" data-icon="fleet">fleet</span>
+                <span class="font-body-md text-body-md">Fleet</span>
             </a>
 
             <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant dark:text-outline hover:text-primary dark:hover:text-primary-fixed hover:bg-surface-container-highest dark:hover:bg-surface-container transition-colors duration-200"
@@ -242,13 +248,31 @@
             </a>
 
             <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant dark:text-outline hover:text-primary dark:hover:text-primary-fixed hover:bg-surface-container-highest dark:hover:bg-surface-container transition-colors duration-200"
-                href="#">
+                href="{{ route('operator.revenue') }}">
                 <span class="material-symbols-outlined" data-icon="payments">payments</span>
                 <span class="font-body-md text-body-md">Revenue</span>
             </a>
 
             <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant dark:text-outline hover:text-primary dark:hover:text-primary-fixed hover:bg-surface-container-highest dark:hover:bg-surface-container transition-colors duration-200"
-                href="#">
+                href="{{ route('operator.fare-rules.index') }}">
+                <span class="material-symbols-outlined" data-icon="sell">sell</span>
+                <span class="font-body-md text-body-md">Fare Rules</span>
+            </a>
+
+            <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant dark:text-outline hover:text-primary dark:hover:text-primary-fixed hover:bg-surface-container-highest dark:hover:bg-surface-container transition-colors duration-200"
+                href="{{ route('operator.promo-codes.index') }}">
+                <span class="material-symbols-outlined" data-icon="confirmation_number">confirmation_number</span>
+                <span class="font-body-md text-body-md">Promo Codes</span>
+            </a>
+
+            <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant dark:text-outline hover:text-primary dark:hover:text-primary-fixed hover:bg-surface-container-highest dark:hover:bg-surface-container transition-colors duration-200"
+                href="{{ route('operator.audit-log.index') }}">
+                <span class="material-symbols-outlined" data-icon="history">history</span>
+                <span class="font-body-md text-body-md">Audit Log</span>
+            </a>
+
+            <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant dark:text-outline hover:text-primary dark:hover:text-primary-fixed hover:bg-surface-container-highest dark:hover:bg-surface-container transition-colors duration-200"
+                href="{{ route('operator.profile') }}">
                 <span class="material-symbols-outlined" data-icon="account_circle">account_circle</span>
                 <span class="font-body-md text-body-md">Profile</span>
             </a>
@@ -260,11 +284,11 @@
                 <span class="material-symbols-outlined" data-icon="add_circle">add_circle</span>
                 <span class="font-body-md text-body-md">New Trip</span>
             </button>
-            <a class="flex items-center gap-3 px-4 py-2 rounded-lg text-on-surface-variant hover:text-primary transition-colors" href="#">
+            <a class="flex items-center gap-3 px-4 py-2 rounded-lg text-on-surface-variant hover:text-primary transition-colors" href="{{ route('operator.profile') }}">
                 <span class="material-symbols-outlined" data-icon="settings">settings</span>
                 <span class="font-body-md text-body-md">Settings</span>
             </a>
-            <a class="flex items-center gap-3 px-4 py-2 rounded-lg text-on-surface-variant hover:text-primary transition-colors" href="#">
+            <a class="flex items-center gap-3 px-4 py-2 rounded-lg text-on-surface-variant hover:text-primary transition-colors" href="mailto:support@bookmybus.co.zm">
                 <span class="material-symbols-outlined" data-icon="help">help</span>
                 <span class="font-body-md text-body-md">Support</span>
             </a>

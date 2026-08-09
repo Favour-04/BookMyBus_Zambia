@@ -51,12 +51,15 @@
             <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-primary font-bold border-r-4 border-primary bg-surface-container-highest" href="{{ route('operator.bookings.index') }}">
                 <span class="material-symbols-outlined">book_online</span><span>All Bookings</span>
             </a>
-            <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:text-primary hover:bg-surface-container-highest transition-colors" href="#">
+            <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:text-primary hover:bg-surface-container-highest transition-colors" href="{{ route('operator.revenue') }}">
                 <span class="material-symbols-outlined">payments</span><span>Revenue</span>
+            </a>
+            <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:text-primary hover:bg-surface-container-highest transition-colors" href="{{ route('operator.audit-log.index') }}">
+                <span class="material-symbols-outlined">history</span><span>Audit Log</span>
             </a>
         </nav>
         <div class="mt-auto pt-6 border-t border-outline-variant/20">
-            <a class="flex items-center gap-3 px-4 py-2 rounded-lg text-on-surface-variant hover:text-primary transition-colors" href="#">
+            <a class="flex items-center gap-3 px-4 py-2 rounded-lg text-on-surface-variant hover:text-primary transition-colors" href="{{ route('operator.profile') }}">
                 <span class="material-symbols-outlined">settings</span><span>Settings</span>
             </a>
         </div>
@@ -132,12 +135,35 @@
                 </form>
             </div>
 
+            <!-- Bulk Actions Bar -->
+            <form id="bulk-action-form" method="POST" action="{{ route('operator.bookings.bulk-action') }}" class="mb-4">
+                @csrf
+                <div class="flex items-center gap-3 bg-surface-container-lowest rounded-xl border border-outline-variant/15 p-3">
+                    <span class="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Bulk Actions:</span>
+                    <select name="action" class="px-3 py-1.5 bg-surface-container-low border border-outline-variant/30 rounded-lg text-sm text-on-surface-variant">
+                        <option value="">Select action...</option>
+                        <option value="board">Mark as Boarded</option>
+                        <option value="cancel">Cancel Selected</option>
+                    </select>
+                    <button type="submit" onclick="return confirm('Apply bulk action to selected bookings?')"
+                        class="px-4 py-1.5 bg-primary text-on-primary rounded-lg text-xs font-bold hover:bg-primary/90 transition-colors">
+                        Apply
+                    </button>
+                    <span class="text-xs text-on-surface-variant ml-auto">
+                        <span id="selected-count">0</span> selected
+                    </span>
+                </div>
+            </form>
+
             <!-- Bookings Table -->
             <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/15 overflow-hidden">
                 <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse">
                         <thead class="bg-surface-container-low border-b border-outline-variant/15">
                             <tr>
+                                <th class="px-5 py-4 w-10">
+                                    <input type="checkbox" id="select-all" class="rounded border-outline-variant/50 text-primary focus:ring-primary">
+                                </th>
                                 <th class="px-5 py-4 text-xs font-bold uppercase text-on-surface-variant">Ref ID</th>
                                 <th class="px-5 py-4 text-xs font-bold uppercase text-on-surface-variant">Passenger</th>
                                 <th class="px-5 py-4 text-xs font-bold uppercase text-on-surface-variant">Route</th>
@@ -152,7 +178,14 @@
                             @forelse($bookings as $booking)
                             <tr class="hover:bg-surface-container-low/60 transition-colors">
                                 <td class="px-5 py-4">
+                                    <input type="checkbox" name="booking_ids[]" value="{{ $booking->id }}"
+                                        class="booking-checkbox rounded border-outline-variant/50 text-primary focus:ring-primary">
+                                </td>
+                                <td class="px-5 py-4">
                                     <span class="font-mono text-sm font-bold">{{ $booking->reference_id }}</span>
+                                    @if($booking->isBoarded())
+                                        <span class="ml-1.5 px-1.5 py-0.5 rounded bg-primary/10 text-primary text-[10px] font-bold uppercase">Boarded</span>
+                                    @endif
                                 </td>
                                 <td class="px-5 py-4">
                                     <span class="font-medium">{{ $booking->passenger_name ?? 'N/A' }}</span>
@@ -190,13 +223,13 @@
                                 <td class="px-5 py-4">
                                     <div class="flex items-center gap-1">
                                         <a href="{{ route('operator.bookings.show', $booking->id) }}"
-                                           class="p-1.5 rounded-lg text-on-surface-variant hover:text-primary hover:bg-surface-container transition-colors inline-block"
-                                           title="View booking details">
+                                            class="p-1.5 rounded-lg text-on-surface-variant hover:text-primary hover:bg-surface-container transition-colors inline-block"
+                                            title="View booking details">
                                             <span class="material-symbols-outlined" style="font-size:18px">visibility</span>
                                         </a>
                                         <a href="{{ route('operator.trips.bookings', $booking->route_id) }}"
-                                           class="p-1.5 rounded-lg text-on-surface-variant hover:text-primary hover:bg-surface-container transition-colors inline-block"
-                                           title="View trip bookings">
+                                            class="p-1.5 rounded-lg text-on-surface-variant hover:text-primary hover:bg-surface-container transition-colors inline-block"
+                                            title="View trip bookings">
                                             <span class="material-symbols-outlined" style="font-size:18px">directions_bus</span>
                                         </a>
                                     </div>
@@ -204,7 +237,7 @@
                             </tr>
                             @empty
                             <tr>
-                                <td colspan="8" class="py-16 text-center">
+                                <td colspan="9" class="py-16 text-center">
                                     <span class="material-symbols-outlined text-5xl text-outline-variant block mb-3">book_online</span>
                                     <p class="font-medium text-on-surface-variant">No bookings found.</p>
                                 </td>
@@ -232,6 +265,21 @@
                     </div>
                 </div>
             </div>
+
+            <script>
+                // Select all / deselect all checkboxes
+                document.getElementById('select-all').addEventListener('change', function() {
+                    document.querySelectorAll('.booking-checkbox').forEach(cb => cb.checked = this.checked);
+                    updateSelectedCount();
+                });
+                document.querySelectorAll('.booking-checkbox').forEach(cb => {
+                    cb.addEventListener('change', updateSelectedCount);
+                });
+                function updateSelectedCount() {
+                    const count = document.querySelectorAll('.booking-checkbox:checked').length;
+                    document.getElementById('selected-count').textContent = count;
+                }
+            </script>
         </div>
     </main>
 </body>

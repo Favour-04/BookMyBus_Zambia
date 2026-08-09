@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Auth\Operator;
 
 use App\Http\Controllers\Controller;
+use App\Models\OperatorAuditLog;
+use App\Services\OperatorAuditService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
@@ -42,6 +44,9 @@ class LoginController extends Controller
             }
 
             $request->session()->regenerate();
+
+            OperatorAuditService::log('login', 'Operator logged in', $operator);
+
             return redirect()->intended(route('operator.dashboard'));
         }
 
@@ -62,6 +67,12 @@ class LoginController extends Controller
     $request->session()->flush();          // ← clear all session data first
     $request->session()->invalidate();     // ← invalidate current session
     $request->session()->regenerate(true); // ← force generate a brand new session ID
+
+    try {
+        OperatorAuditService::log('logout', 'Operator logged out');
+    } catch (\Exception $e) {
+        // Logging can fail here because session is already destroyed
+    }
 
     return redirect(route('operator.login'));
 }

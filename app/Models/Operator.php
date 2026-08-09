@@ -22,6 +22,20 @@ class Operator extends Authenticatable
         'verified_at',
         'verified_by',
         'address',
+        'contact_person_name',
+        'contact_person_title',
+        'business_registration_number',
+        'business_registration_date',
+        'business_type',
+        'logo_path',
+        'description',
+        'website',
+        'insurance_certificate_path',
+        'insurance_expiry_date',
+        'business_license_path',
+        'business_license_verified_at',
+        'tax_id_path',
+        'tax_id_verified_at',
     ];
 
     protected $hidden = [
@@ -33,6 +47,10 @@ class Operator extends Authenticatable
         'password'    => 'hashed',
         'is_verified' => 'boolean',
         'verified_at' => 'datetime',
+        'business_registration_date' => 'date',
+        'insurance_expiry_date' => 'date',
+        'business_license_verified_at' => 'datetime',
+        'tax_id_verified_at' => 'datetime',
     ];
 
     // relationship definitions

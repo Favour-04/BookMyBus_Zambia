@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Route;
 use App\Models\Booking;
 use App\Models\Operator;
+use App\Models\PromoCode;
+use App\Services\FareCalculationService;
 use App\Services\PaymentService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -22,8 +24,6 @@ class BookingController extends Controller
             abort(404, 'This route is no longer available.');
         }
 
-        // $bookedSeats = $route->bookedSeats();
-        // Get already booked seats for this route (excludes cancelled seats)
         $bookedSeats = Booking::where('route_id', $id)
             ->whereIn('status', ['pending', 'confirmed'])
             ->pluck('seat_number')
@@ -42,7 +42,7 @@ class BookingController extends Controller
     /**
      * Store a new booking.
      */
-    public function store(Request $request)
+    public function store(Request $request, FareCalculationService $fareService)
     {
         $validated = $request->validate([
             'route_id' => 'required|exists:routes,id',
@@ -66,6 +66,9 @@ class BookingController extends Controller
                 ->withInput();
         }
 
+        // Calculate the fare using FareCalculationService
+        $fareResult = $fareService->calculate($route);
+
         $booking = Booking::create([
             'user_id' => Auth::id(),
             'route_id' => $validated['route_id'],
@@ -73,7 +76,11 @@ class BookingController extends Controller
             'passenger_name' => $validated['passenger_name'],
             'passenger_id_number' => $validated['id_number'],
             'passenger_phone' => $validated['phone'],
-            'amount' => $route->fare,
+            'amount' => $fareResult['total'],
+            'base_fare' => $fareResult['base_fare'],
+            'service_fee_total' => $fareResult['service_fee_total'],
+            'discount_amount' => $fareResult['discount'],
+            'promo_code_id' => $fareResult['promo_code_id'],
             'status' => 'pending',
         ]);
 
@@ -85,16 +92,26 @@ class BookingController extends Controller
      */
     public function paymentTicket($bookingId)
     {
-        $booking = Booking::with(['route.bus', 'route.operator'])
+        $booking = Booking::with(['route.bus', 'route.operator', 'promoCode'])
             ->where('id', $bookingId)
             ->where('user_id', Auth::id())
             ->firstOrFail();
         
+        // Get fare breakdown from booking
+        $baseFare = $booking->base_fare ?? $booking->amount;
+        $serviceFeeTotal = $booking->service_fee_total ?? 0;
+        $discountAmount = $booking->discount_amount ?? 0;
+        $totalFare = $booking->amount;
+
         return view('payment_ticket', [
             'booking' => $booking,
             'passenger_name' => $booking->passenger_name,
             'seat_number' => $booking->seat_number,
-            'total_fare' => $booking->amount,
+            'total_fare' => $totalFare,
+            'base_fare' => $baseFare,
+            'service_fee_total' => $serviceFeeTotal,
+            'discount_amount' => $discountAmount,
+            'applied_promo' => $booking->promoCode ? $booking->promoCode->code : null,
             'origin' => $booking->route->origin,
             'destination' => $booking->route->destination,
             'departure_time' => $booking->route->departure_time,
@@ -159,6 +176,32 @@ class BookingController extends Controller
     }
 
     /**
+     * Validate a promo code via AJAX.
+     */
+    public function validatePromoCode(Request $request, FareCalculationService $fareService)
+    {
+        $request->validate([
+            'code' => 'required|string|max:20',
+            'route_id' => 'required|exists:routes,id',
+        ]);
+
+        $route = Route::findOrFail($request->route_id);
+        $operatorId = $route->operator_id;
+        $baseFare = (float) $route->fare;
+
+        // Calculate subtotal with service fees
+        $subtotal = $baseFare;
+        $fees = \App\Models\ServiceFee::where('operator_id', $operatorId)->active()->get();
+        foreach ($fees as $fee) {
+            $subtotal += $fee->calculateFee($baseFare);
+        }
+
+        $result = $fareService->validatePromoCode($request->code, $operatorId, $subtotal);
+
+        return response()->json($result);
+    }
+
+    /**
      * Display the success page (digital ticket).
      */
     public function success(Booking $booking)
@@ -203,7 +246,7 @@ class BookingController extends Controller
 
             if ($request->filled('phone_number')) {
                 $phone = preg_replace('/[^0-9]/', '', $request->phone_number);
-                $query->where('phone_number', 'like', '%' . $phone . '%');
+                $query->where('passenger_phone', 'like', '%' . $phone . '%');
             }
 
             $booking = $query->first();

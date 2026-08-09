@@ -256,9 +256,9 @@
                             required>
                         <label for="terms" class="text-xs text-on-surface-variant">
                             I agree to the
-                            <a href="#" class="text-primary font-medium hover:underline">Terms of Service</a>
+                            <a href="{{ route('terms-of-service') }}" class="text-primary font-medium hover:underline">Terms of Service</a>
                             and
-                            <a href="#" class="text-primary font-medium hover:underline">Privacy Policy</a>
+                            <a href="{{ route('privacy-policy') }}" class="text-primary font-medium hover:underline">Privacy Policy</a>
                         </label>
                     </div>
                     @error('terms')

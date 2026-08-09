@@ -80,7 +80,11 @@
         <a class="font-headline tracking-tight font-bold text-sm text-green-900 dark:text-green-100 border-b-2 border-orange-600 pb-1"
           href="{{ route('profile') }}">My Account</a>
         <a class="font-headline tracking-tight font-bold text-sm text-zinc-600 dark:text-zinc-400 hover:text-green-900 dark:hover:text-green-100 transition-colors"
-          href="#">Support</a>
+          href="{{ route('booking.lookup') }}">My Bookings</a>
+        <a class="font-headline tracking-tight font-bold text-sm text-zinc-600 dark:text-zinc-400 hover:text-green-900 dark:hover:text-green-100 transition-colors"
+          href="{{ route('operator.login') }}">Operator Portal</a>
+        <a class="font-headline tracking-tight font-bold text-sm text-zinc-600 dark:text-zinc-400 hover:text-green-900 dark:hover:text-green-100 transition-colors"
+          href="{{ route('support.page') }}">Support</a>
       </div>
       <form action="{{ route('logout') }}" method="POST">
         @csrf

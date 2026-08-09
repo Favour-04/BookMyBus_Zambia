@@ -76,42 +76,6 @@ $alerts = $alerts ?? [
             gap: 24px;
         }
 
-        .custom-scrollbar::-webkit-scrollbar {
-            width: 4px;
-        }
-
-        .custom-scrollbar::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: #bfcaba;
-            border-radius: 10px;
-        }
-
-        .material-symbols-outlined {
-            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-            vertical-align: middle;
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f9f9fc;
-        }
-
-        .custom-scrollbar::-webkit-scrollbar {
-            width: 4px;
-        }
-
-        .custom-scrollbar::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: #bfcaba;
-            border-radius: 10px;
-        }
-
         /* Drawer transition */
         #trip-drawer {
             transform: translateX(100%);
@@ -238,31 +202,43 @@ $alerts = $alerts ?? [
         <nav class="flex-grow space-y-1">
             <!-- Dashboard (Active) -->
             <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-primary dark:text-primary-fixed font-bold border-r-4 border-primary dark:border-primary-fixed bg-surface-container-high dark:bg-surface-container transition-all duration-150"
-                href="#">
+                href="{{ route('operator.dashboard') }}">
                 <span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
                 <span class="font-body-md text-body-md">Dashboard</span>
             </a>
 
             <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant dark:text-outline hover:text-primary dark:hover:text-primary-fixed hover:bg-surface-container-highest dark:hover:bg-surface-container transition-colors duration-200"
-                href="{{ route('operator.trips.index') }}">
-                <span class="material-symbols-outlined" data-icon="directions_bus">directions_bus</span>
-                <span class="font-body-md text-body-md">Manage Trips</span>
+                href="{{ route('operator.buses.index') }}">
+                <span class="material-symbols-outlined" data-icon="fleet">fleet</span>
+                <span class="font-body-md text-body-md">Fleet</span>
             </a>
 
             <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant dark:text-outline hover:text-primary dark:hover:text-primary-fixed hover:bg-surface-container-highest dark:hover:bg-surface-container transition-colors duration-200"
-                href="#">
-                <span class="material-symbols-outlined" data-icon="event_seat">event_seat</span>
-                <span class="font-body-md text-body-md">Seat Maps</span>
-            </a>
-
-            <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant dark:text-outline hover:text-primary dark:hover:text-primary-fixed hover:bg-surface-container-highest dark:hover:bg-surface-container transition-colors duration-200"
-                href="#">
+                href="{{ route('operator.revenue') }}">
                 <span class="material-symbols-outlined" data-icon="payments">payments</span>
                 <span class="font-body-md text-body-md">Revenue</span>
             </a>
 
             <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant dark:text-outline hover:text-primary dark:hover:text-primary-fixed hover:bg-surface-container-highest dark:hover:bg-surface-container transition-colors duration-200"
-                href="{{ route('operator.login')}}">
+                href="{{ route('operator.fare-rules.index') }}">
+                <span class="material-symbols-outlined" data-icon="sell">sell</span>
+                <span class="font-body-md text-body-md">Fare Rules</span>
+            </a>
+
+            <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant dark:text-outline hover:text-primary dark:hover:text-primary-fixed hover:bg-surface-container-highest dark:hover:bg-surface-container transition-colors duration-200"
+                href="{{ route('operator.promo-codes.index') }}">
+                <span class="material-symbols-outlined" data-icon="confirmation_number">confirmation_number</span>
+                <span class="font-body-md text-body-md">Promo Codes</span>
+            </a>
+
+            <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant dark:text-outline hover:text-primary dark:hover:text-primary-fixed hover:bg-surface-container-highest dark:hover:bg-surface-container transition-colors duration-200"
+                href="{{ route('operator.audit-log.index') }}">
+                <span class="material-symbols-outlined" data-icon="history">history</span>
+                <span class="font-body-md text-body-md">Audit Log</span>
+            </a>
+
+            <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant dark:text-outline hover:text-primary dark:hover:text-primary-fixed hover:bg-surface-container-highest dark:hover:bg-surface-container transition-colors duration-200"
+                href="{{ route('operator.profile') }}">
                 <span class="material-symbols-outlined" data-icon="account_circle">account_circle</span>
                 <span class="font-body-md text-body-md">Profile</span>
             </a>
@@ -275,12 +251,12 @@ $alerts = $alerts ?? [
                 <span class="font-body-md text-body-md">New Trip</span>
             </button>
             <a class="flex items-center gap-3 px-4 py-2 rounded-lg text-on-surface-variant hover:text-primary transition-colors"
-                href="#">
+                href="{{ route('operator.profile') }}">
                 <span class="material-symbols-outlined" data-icon="settings">settings</span>
                 <span class="font-body-md text-body-md">Settings</span>
             </a>
             <a class="flex items-center gap-3 px-4 py-2 rounded-lg text-on-surface-variant hover:text-primary transition-colors"
-                href="#">
+                href="{{ route('support.page') }}">
                 <span class="material-symbols-outlined" data-icon="help">help</span>
                 <span class="font-body-md text-body-md">Support</span>
             </a>
@@ -388,8 +364,39 @@ $alerts = $alerts ?? [
                         </p>
                     </div>
                 </div>
-                {{--
-            </div> --}}
+
+                <!-- Today's Bookings -->
+                <div
+                    class="bg-surface-container-low dark:bg-surface-container rounded-2xl p-5 border border-outline-variant/10 shadow-sm flex flex-col justify-between">
+                    <div class="flex justify-between items-start">
+                        <span class="text-label-md font-bold text-on-surface-variant uppercase tracking-wider">Today's
+                            Bookings</span>
+                        <span class="material-symbols-outlined text-primary text-headline-sm">event_available</span>
+                    </div>
+                    <div class="mt-4">
+                        <h3 class="text-headline-lg font-black tracking-tight text-on-surface">{{
+                            number_format($today_bookings) }}</h3>
+                        <p class="text-body-sm text-on-surface-variant mt-1 flex items-center gap-1">
+                            <span class="text-primary font-bold">{{ $pending_bookings }} pending</span> awaiting payment
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Cancelled Bookings -->
+                <div
+                    class="bg-surface-container-low dark:bg-surface-container rounded-2xl p-5 border border-outline-variant/10 shadow-sm flex flex-col justify-between">
+                    <div class="flex justify-between items-start">
+                        <span class="text-label-md font-bold text-on-surface-variant uppercase tracking-wider">Cancelled
+                            (Month)</span>
+                        <span class="material-symbols-outlined text-tertiary text-headline-sm">cancel</span>
+                    </div>
+                    <div class="mt-4">
+                        <h3 class="text-headline-lg font-black tracking-tight text-on-surface">{{
+                            number_format($cancelled_bookings) }}</h3>
+                        <p class="text-body-sm text-on-surface-variant mt-1">This month</p>
+                    </div>
+                </div>
+            </div>
 
             <!-- Revenue Card (ZMW) -->
             <div
@@ -581,7 +588,88 @@ $alerts = $alerts ?? [
                 </div>
             </div>
 
-            <!-- Section 3: Recent Notifications & Critical Operational Alerts -->
+            <!-- Section 3: Recent Bookings -->
+            <div
+                class="col-span-12 lg:col-span-6 bg-surface-container-lowest rounded-xl border border-outline-variant/15 flex flex-col h-[400px] overflow-hidden">
+                <div class="p-6 border-b border-outline-variant/15 flex items-center justify-between">
+                    <h3 class="font-headline-md text-headline-md text-on-surface">Recent Bookings</h3>
+                    <a href="{{ route('operator.bookings.index') }}"
+                        class="text-primary text-body-sm font-bold flex items-center gap-1 hover:underline">
+                        View All <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                    </a>
+                </div>
+
+                <div class="flex-grow overflow-auto custom-scrollbar">
+                    <table class="w-full text-left border-collapse">
+                        <thead class="bg-surface-container-high sticky top-0 z-10">
+                            <tr>
+                                <th class="px-6 py-3 font-label-caps text-label-caps text-on-surface-variant uppercase">Reference</th>
+                                <th class="px-6 py-3 font-label-caps text-label-caps text-on-surface-variant uppercase">Passenger</th>
+                                <th class="px-6 py-3 font-label-caps text-label-caps text-on-surface-variant uppercase">Route</th>
+                                <th class="px-6 py-3 font-label-caps text-label-caps text-on-surface-variant uppercase">Seat</th>
+                                <th class="px-6 py-3 font-label-caps text-label-caps text-on-surface-variant uppercase">Amount</th>
+                                <th class="px-6 py-3 font-label-caps text-label-caps text-on-surface-variant uppercase">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-outline-variant/10">
+                            @forelse($recent_bookings as $booking)
+                            <tr class="hover:bg-surface-container-low transition-colors">
+                                <td class="py-3 px-4 font-bold text-on-surface text-body-sm">{{ $booking['reference'] }}</td>
+                                <td class="py-3 px-4 text-body-sm text-on-surface">{{ $booking['passenger'] }}</td>
+                                <td class="py-3 px-4 text-body-sm text-on-surface-variant">{{ $booking['route'] }}</td>
+                                <td class="py-3 px-4 text-body-sm font-semibold text-on-surface">{{ $booking['seat'] }}</td>
+                                <td class="py-3 px-4 text-body-sm font-bold text-on-surface">ZMW {{ number_format($booking['amount'], 2) }}</td>
+                                <td class="py-3 px-4">
+                                    <span class="text-label-sm font-bold px-2.5 py-1 rounded-full 
+                                        {{ $booking['status'] === 'confirmed' ? 'bg-primary/10 text-primary' : ($booking['status'] === 'pending' ? 'bg-secondary-container/10 text-secondary' : 'bg-tertiary-container/10 text-tertiary') }}">
+                                        {{ ucfirst($booking['status']) }}
+                                    </span>
+                                </td>
+                            </tr>
+                            @empty
+                            <tr>
+                                <td colspan="6" class="py-6 px-4 text-center text-on-surface-variant text-body-sm">
+                                    No recent bookings found.
+                                </td>
+                            </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Section 4: Top Routes -->
+            <div
+                class="col-span-12 lg:col-span-6 bg-surface-container-lowest rounded-xl border border-outline-variant/15 flex flex-col h-[400px] overflow-hidden">
+                <div class="p-6 border-b border-outline-variant/15 flex items-center justify-between">
+                    <h3 class="font-headline-md text-headline-md text-on-surface">Top Routes</h3>
+                    <span class="text-body-sm text-on-surface-variant font-medium">By bookings</span>
+                </div>
+
+                <div class="flex-grow overflow-auto custom-scrollbar p-6 space-y-4">
+                    @forelse($top_routes as $index => $route)
+                    <div class="flex items-center gap-4">
+                        <div class="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                            <span class="font-bold text-primary text-body-sm">#{{ $index + 1 }}</span>
+                        </div>
+                        <div class="flex-grow min-w-0">
+                            <div class="flex justify-between items-center mb-1">
+                                <span class="font-bold text-body-sm text-on-surface truncate">{{ $route['route'] }}</span>
+                                <span class="text-body-sm font-semibold text-on-surface-variant">{{ $route['bookings_count'] }} bookings</span>
+                            </div>
+                            <div class="w-full bg-surface-container-highest rounded-full h-1.5 overflow-hidden">
+                                <div class="bg-primary h-1.5 rounded-full"
+                                    style="width: {{ min(($route['bookings_count'] / max($top_routes[0]['bookings_count'] ?? 1, 1)) * 100, 100) }}%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    @empty
+                    <p class="text-body-md text-on-surface-variant text-center py-4">No route data available yet.</p>
+                    @endforelse
+                </div>
+            </div>
+
+            <!-- Section 5: Recent Notifications & Critical Operational Alerts -->
             <div class="col-span-12 bg-surface-container-lowest p-6 rounded-xl border border-outline-variant/15">
                 <div class="flex items-center justify-between mb-6">
                     <h3 class="font-headline-md text-headline-md text-on-surface">Recent Notifications & Alerts</h3>
@@ -710,6 +798,19 @@ $alerts = $alerts ?? [
                     </label>
                     @endforeach
                 </div>
+            </div>
+
+            <!-- Driver assignment -->
+            <div>
+                <label class="font-label-caps text-label-caps text-on-surface-variant uppercase block mb-3">Assign
+                    driver <span class="normal-case text-on-surface-variant/50">(optional)</span></label>
+                <select name="driver_id"
+                    class="w-full rounded-xl border-outline-variant/30 bg-surface-container-low text-body-sm text-on-surface focus:ring-2 focus:ring-primary py-2.5 px-3">
+                    <option value="">Select driver...</option>
+                    @foreach($drivers as $driver)
+                    <option value="{{ $driver['id'] }}">{{ $driver['full_name'] }} ({{ $driver['license_number'] }})</option>
+                    @endforeach
+                </select>
             </div>
 
             <!-- Trip class & Fare -->

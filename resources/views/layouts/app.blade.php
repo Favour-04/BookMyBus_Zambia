@@ -103,15 +103,22 @@
             </div>
             <div class="hidden md:flex items-center space-x-8 font-headline tracking-tight font-bold text-sm">
                 <a class="text-zinc-600 dark:text-zinc-400 hover:text-green-900 dark:hover:text-green-100 transition-colors"
-                    href="#">Find Trips</a>
-                <a class="text-green-900 dark:text-green-100 border-b-2 border-orange-600 pb-1" href="#">My Bookings</a>
+                    href="{{ route('home') }}">Find Trips</a>
+                <a class="text-green-900 dark:text-green-100 border-b-2 border-orange-600 pb-1"
+                    href="{{ route('booking.lookup') }}">My Bookings</a>
                 <a class="text-zinc-600 dark:text-zinc-400 hover:text-green-900 dark:hover:text-green-100 transition-colors"
-                    href="#">Operator Portal</a>
+                    href="{{ route('operator.login') }}">Operator Portal</a>
                 <a class="text-zinc-600 dark:text-zinc-400 hover:text-green-900 dark:hover:text-green-100 transition-colors"
-                    href="#">Support</a>
+                    href="{{ route('support.page') }}">Support</a>
             </div>
             <div class="flex items-center space-x-4">
-                <span class="material-symbols-outlined text-green-800 dark:text-green-400 cursor-pointer">account_circle</span>
+                @auth
+                <a href="{{ route('profile') }}"
+                    class="material-symbols-outlined text-green-800 dark:text-green-400 cursor-pointer">account_circle</a>
+                @else
+                <a href="{{ route('login') }}"
+                    class="material-symbols-outlined text-green-800 dark:text-green-400 cursor-pointer">account_circle</a>
+                @endauth
             </div>
         </div>
     </nav>
@@ -129,10 +136,10 @@
                 <div class="font-inter text-xs text-zinc-500 dark:text-zinc-400">© 2024 BookMyBus Zambia. Premium Travel Excellence.</div>
             </div>
             <div class="flex flex-wrap gap-6 md:justify-end">
-                <a class="font-inter text-xs text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 underline underline-offset-4 transition-opacity hover:opacity-80" href="#">Privacy Policy</a>
-                <a class="font-inter text-xs text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 underline underline-offset-4 transition-opacity hover:opacity-80" href="#">Terms of Service</a>
-                <a class="font-inter text-xs text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 underline underline-offset-4 transition-opacity hover:opacity-80" href="#">Carrier Partners</a>
-                <a class="font-inter text-xs text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 underline underline-offset-4 transition-opacity hover:opacity-80" href="#">Contact Us</a>
+                <a class="font-inter text-xs text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 underline underline-offset-4 transition-opacity hover:opacity-80" href="{{ route('privacy-policy') }}">Privacy Policy</a>
+                <a class="font-inter text-xs text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 underline underline-offset-4 transition-opacity hover:opacity-80" href="{{ route('terms-of-service') }}">Terms of Service</a>
+                <a class="font-inter text-xs text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 underline underline-offset-4 transition-opacity hover:opacity-80" href="{{ route('carrier-partners') }}">Carrier Partners</a>
+                <a class="font-inter text-xs text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 underline underline-offset-4 transition-opacity hover:opacity-80" href="{{ route('contact-us') }}">Contact Us</a>
             </div>
         </div>
     </footer>

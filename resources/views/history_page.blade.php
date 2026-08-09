@@ -110,39 +110,47 @@
         <div
           class="text-xl font-extrabold text-green-900 dark:text-green-100 tracking-tighter font-headline"
         >
-          <a href="/">BookMyBus Zambia</a>
+          <a href="{{ route('home') }}">BookMyBus Zambia</a>
         </div>
         <div class="hidden md:flex items-center gap-8">
           <a
             class="font-headline tracking-tight font-bold text-sm text-zinc-600 dark:text-zinc-400 hover:text-green-900 dark:hover:text-green-100 transition-colors"
-            href="#"
+            href="{{ route('home') }}"
             >Find Trips</a
           >
           <a
             class="font-headline tracking-tight font-bold text-sm text-green-900 border-b-2 border-orange-600 pb-1"
-            href="#history"
-            >Travel History</a
-          >
-          <a
-            class="font-headline tracking-tight font-bold text-sm text-zinc-600 dark:text-zinc-400 hover:text-green-900 dark:hover:text-green-100 transition-colors"
-            href="#past-bookings"
+            href="{{ route('booking.lookup') }}"
             >My Bookings</a
           >
           <a
             class="font-headline tracking-tight font-bold text-sm text-zinc-600 dark:text-zinc-400 hover:text-green-900 dark:hover:text-green-100 transition-colors"
-            href="#support"
+            href="{{ route('operator.login') }}"
+            >Operator Portal</a
+          >
+          <a
+            class="font-headline tracking-tight font-bold text-sm text-zinc-600 dark:text-zinc-400 hover:text-green-900 dark:hover:text-green-100 transition-colors"
+            href="{{ route('support.page') }}"
             >Support</a
           >
         </div>
         <div class="flex items-center gap-4">
-          <button
+          @auth
+          <a href="{{ route('profile') }}"
+            class="material-symbols-outlined text-zinc-600 cursor-pointer"
+            >account_circle</a
+          >
+          @else
+          <a href="{{ route('login') }}"
+            class="material-symbols-outlined text-zinc-600 cursor-pointer"
+            >account_circle</a
+          >
+          <a href="{{ route('login') }}"
             class="text-green-800 font-headline font-bold text-sm px-4 py-2 hover:bg-zinc-50 rounded-lg transition-colors"
           >
             Sign In
-          </button>
-          <span class="material-symbols-outlined text-zinc-600 cursor-pointer"
-            >account_circle</span
-          >
+          </a>
+          @endauth
         </div>
       </div>
     </nav>

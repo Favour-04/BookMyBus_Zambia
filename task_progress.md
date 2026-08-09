@@ -1,25 +1,15 @@
-# Task Progress
+# Task Progress — System Completeness Fixes
 
-## Initial Setup
-- [x] Pull branch feat(operator)--add-trip-management-view-and-wire-operator-dashboard-to-live-data
-- [x] Identify errors in payment_ticket flow
-- [x] Fix missing $expired, $held_until, and other undefined variables in paymentTicket()
-- [x] Verify the fix compiles correctly
+## Critical Issues
+- [ ] Fix auth guard in operator controllers (use `operator` session guard instead of `operator_api` Sanctum guard for web routes)
+- [ ] Create missing `operator.seat_map` view
+- [ ] Fix booking lookup to search `passenger_phone` instead of `phone_number`
+- [ ] Enable traveler registration routes and views
+- [ ] Enable password reset routes and views
+- [ ] Build admin login panel (at minimum a working admin login)
 
-## View Bookings — All Features
-
-### Feature 1: Trip-specific Bookings List
-- [ ] Add "View Bookings" action button to trip rows in manage_trips.blade.php
-- [ ] Create a bookings list view for a specific trip (passenger names, seats, statuses)
-- [ ] Add route for trip-specific bookings
-
-### Feature 2: Operator View Bookings (full dashboard page)
-- [ ] Create BookingManagementController with listing, filtering, search
-- [ ] Create operator_bookings.blade.php view with filterable table
-- [ ] Add sidebar link and routes
-- [ ] Wire up status filters, date filters, search
-
-### Feature 3: Customer My Bookings Lookup
-- [ ] Create customer_my_bookings.blade.php — reference ID / phone lookup form
-- [ ] Create customer_booking_detail.blade.php — displays found booking
-- [ ] Add routes and controller method
+## Enhancement Items
+- [ ] Fix inconsistent view naming (operator views split between root and subdirectory)
+- [ ] Standardize operator layout to use a shared sidebar layout
+- [ ] Add tests or verify existing tests pass
+- [ ] Verify migrations and seeders run cleanly

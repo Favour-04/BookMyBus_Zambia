@@ -112,20 +112,27 @@
                     href="/">BookMyBus Zambia</a></span>
             <div class="hidden md:flex gap-8 items-center">
                 <a class="font-manrope tracking-tight font-bold text-sm text-green-900 dark:text-green-100 border-b-2 border-orange-600 pb-1"
-                    href="{{ url('/') }}">Find Trips</a>
+                    href="{{ route('home') }}">Find Trips</a>
                 <a class="font-manrope tracking-tight font-bold text-sm text-zinc-600 dark:text-zinc-400 hover:text-green-900 dark:hover:text-green-100"
-                    href="#">My Bookings</a>
+                    href="{{ route('booking.lookup') }}">My Bookings</a>
                 <a class="font-manrope tracking-tight font-bold text-sm text-zinc-600 dark:text-zinc-400 hover:text-green-900 dark:hover:text-green-100"
-                    href="#">Operator Portal</a>
+                    href="{{ route('operator.login') }}">Operator Portal</a>
                 <a class="font-manrope tracking-tight font-bold text-sm text-zinc-600 dark:text-zinc-400 hover:text-green-900 dark:hover:text-green-100"
-                    href="#">Support</a>
+                    href="{{ route('support.page') }}">Support</a>
             </div>
             <div class="flex items-center gap-4">
-                <button class="material-symbols-outlined text-zinc-600 dark:text-zinc-400"
-                    data-icon="account_circle">account_circle</button>
-                <button
+                @auth
+                <a href="{{ route('profile') }}" class="material-symbols-outlined text-zinc-600 dark:text-zinc-400"
+                    data-icon="account_circle">account_circle</a>
+                @else
+                <a href="{{ route('login') }}" class="material-symbols-outlined text-zinc-600 dark:text-zinc-400"
+                    data-icon="account_circle">account_circle</a>
+                @endauth
+                @guest
+                <a href="{{ route('login') }}"
                     class="bg-primary text-on-primary px-4 py-2 rounded-lg font-bold text-sm transition-transform active:scale-95">Sign
-                    In</button>
+                    In</a>
+                @endguest
             </div>
         </div>
     </nav>
@@ -331,13 +338,13 @@
             </div>
             <div class="flex flex-wrap gap-6 md:justify-end">
                 <a class="font-inter text-xs text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 underline underline-offset-4 transition-opacity"
-                    href="#">Privacy Policy</a>
+                    href="{{ route('privacy-policy') }}">Privacy Policy</a>
                 <a class="font-inter text-xs text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 underline underline-offset-4 transition-opacity"
-                    href="#">Terms of Service</a>
+                    href="{{ route('terms-of-service') }}">Terms of Service</a>
                 <a class="font-inter text-xs text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 underline underline-offset-4 transition-opacity"
-                    href="#">Carrier Partners</a>
+                    href="{{ route('carrier-partners') }}">Carrier Partners</a>
                 <a class="font-inter text-xs text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 underline underline-offset-4 transition-opacity"
-                    href="#">Contact Us</a>
+                    href="{{ route('contact-us') }}">Contact Us</a>
             </div>
         </div>
     </footer>

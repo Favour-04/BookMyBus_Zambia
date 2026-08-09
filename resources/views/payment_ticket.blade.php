@@ -248,16 +248,20 @@
                 <div class="space-y-2 text-sm">
                     <div class="flex justify-between">
                         <span class="text-on-surface-variant">Base Fare</span>
-                        <span class="font-bold">ZMW {{ number_format($total_fare * 0.9, 2) }}</span>
+                        <span class="font-bold">ZMW {{ number_format($base_fare, 2) }}</span>
                     </div>
+                    @if($service_fee_total > 0)
                     <div class="flex justify-between">
-                        <span class="text-on-surface-variant">Booking Fee</span>
-                        <span class="font-bold">ZMW {{ number_format($total_fare * 0.05, 2) }}</span>
+                        <span class="text-on-surface-variant">Service Fees</span>
+                        <span class="font-bold">ZMW {{ number_format($service_fee_total, 2) }}</span>
                     </div>
-                    <div class="flex justify-between">
-                        <span class="text-on-surface-variant">VAT (5%)</span>
-                        <span class="font-bold">ZMW {{ number_format($total_fare * 0.05, 2) }}</span>
+                    @endif
+                    @if($discount_amount > 0)
+                    <div class="flex justify-between text-primary">
+                        <span>Discount @if($applied_promo)({{ $applied_promo }})@endif</span>
+                        <span class="font-bold">-ZMW {{ number_format($discount_amount, 2) }}</span>
                     </div>
+                    @endif
                     <div class="border-t border-dashed border-outline-variant pt-2 mt-2">
                         <div class="flex justify-between font-headline font-extrabold text-lg">
                             <span>Total</span>

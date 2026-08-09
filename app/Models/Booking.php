@@ -19,16 +19,32 @@ class Booking extends Model
         'passenger_id_number',
         'passenger_phone',
         'amount',
+        'base_fare',
+        'service_fee_total',
+        'discount_amount',
+        'promo_code_id',
+        'cancellation_rule_id',
+        'refund_amount',
+        'cancelled_at',
         'status',
         'held_until',
         'reference_id',
         'id_number',
         'phone_number',
+        'boarded_at',
+        'boarded_by',
+        'notes',
     ];
 
     protected $casts = [
         'held_until' => 'datetime',
+        'boarded_at' => 'datetime',
+        'cancelled_at' => 'datetime',
         'amount' => 'decimal:2',
+        'base_fare' => 'decimal:2',
+        'service_fee_total' => 'decimal:2',
+        'discount_amount' => 'decimal:2',
+        'refund_amount' => 'decimal:2',
     ];
 
     // boot
@@ -66,6 +82,16 @@ class Booking extends Model
         return $this->hasOne(Ticket::class);
     }
 
+    public function promoCode()
+    {
+        return $this->belongsTo(PromoCode::class);
+    }
+
+    public function cancellationRule()
+    {
+        return $this->belongsTo(CancellationRule::class);
+    }
+
     // function helpers
 
     public function isExpired(): bool
@@ -78,8 +104,30 @@ class Booking extends Model
         return $this->status === 'confirmed';
     }
 
+    public function isBoarded(): bool
+    {
+        return !is_null($this->boarded_at);
+    }
+
     public function cancel(): void
     {
         $this->update(['status' => 'cancelled']);
+    }
+
+    public function markBoarded(string $boardedBy = 'operator'): void
+    {
+        $this->update([
+            'status' => 'confirmed',
+            'boarded_at' => now(),
+            'boarded_by' => $boardedBy,
+        ]);
+    }
+
+    public function undoBoarded(): void
+    {
+        $this->update([
+            'boarded_at' => null,
+            'boarded_by' => null,
+        ]);
     }
 }

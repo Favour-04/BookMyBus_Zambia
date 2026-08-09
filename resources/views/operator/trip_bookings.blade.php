@@ -65,13 +65,17 @@
                 <span class="material-symbols-outlined">book_online</span>
                 <span>All Bookings</span>
             </a>
-            <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:text-primary hover:bg-surface-container-highest transition-colors" href="#">
+            <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:text-primary hover:bg-surface-container-highest transition-colors" href="{{ route('operator.revenue') }}">
                 <span class="material-symbols-outlined">payments</span>
                 <span>Revenue</span>
             </a>
+            <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:text-primary hover:bg-surface-container-highest transition-colors" href="{{ route('operator.audit-log.index') }}">
+                <span class="material-symbols-outlined">history</span>
+                <span>Audit Log</span>
+            </a>
         </nav>
         <div class="mt-auto pt-6 border-t border-outline-variant/20">
-            <a class="flex items-center gap-3 px-4 py-2 rounded-lg text-on-surface-variant hover:text-primary transition-colors" href="#">
+            <a class="flex items-center gap-3 px-4 py-2 rounded-lg text-on-surface-variant hover:text-primary transition-colors" href="{{ route('operator.profile') }}">
                 <span class="material-symbols-outlined">settings</span>
                 <span>Settings</span>
             </a>

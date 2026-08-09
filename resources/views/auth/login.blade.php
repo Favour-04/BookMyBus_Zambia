@@ -202,7 +202,7 @@
                 <div>
                     <div class="flex justify-between items-center mb-2">
                         <label for="password" class="block text-[10px] uppercase font-bold text-outline tracking-widest">Password</label>
-                        {{-- <a href="{{ route('password.request') }}" class="text-xs text-primary font-semibold hover:underline">Forgot password?</a> --}}
+                        <a href="{{ route('password.request') }}" class="text-xs text-primary font-semibold hover:underline">Forgot password?</a>
                     </div>
                     <div class="relative">
                         <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-lg">lock</span>
@@ -240,8 +240,7 @@
             <!-- Register link -->
             <p class="mt-6 text-center text-sm text-on-surface-variant font-body">
                 Don't have an account?
-                {{-- <a href="{{ route('register') }}" class="text-primary font-semibold hover:underline">Create one</a> --}}
-                <span class="text-outline">Registration coming soon.</span>
+                <a href="{{ route('register') }}" class="text-primary font-semibold hover:underline">Create one</a>
             </p>
 
             <!-- Divider -->

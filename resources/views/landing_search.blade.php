@@ -143,20 +143,20 @@
   <nav class="fixed top-0 w-full z-50 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md shadow-sm dark:shadow-none">
     <div class="flex justify-between items-center px-6 py-4 max-w-7xl mx-auto w-full">
       <div class="text-xl font-extrabold text-green-900 dark:text-green-100 tracking-tighter font-headline">
-        <a href="#">BookMyBus Zambia</a>
+        <a href="{{ route('home') }}">BookMyBus Zambia</a>
       </div>
       <div class="hidden md:flex items-center gap-8">
         <a class="font-headline tracking-tight font-bold text-sm text-green-900 dark:text-green-100 border-b-2 border-orange-600 pb-1"
-          href="#">Find Trips</a>
+          href="{{ route('home') }}">Find Trips</a>
         <a class="font-headline tracking-tight font-bold text-sm text-zinc-600 dark:text-zinc-400 hover:text-green-900 dark:hover:text-green-100 transition-colors"
-          href="#">My Bookings</a>
+          href="{{ route('booking.lookup') }}">My Bookings</a>
         <a class="font-headline tracking-tight font-bold text-sm text-zinc-600 dark:text-zinc-400 hover:text-green-900 dark:hover:text-green-100 transition-colors"
-          href="#">Operator Portal</a>
+          href="{{ route('operator.login') }}">Operator Portal</a>
         <a class="font-headline tracking-tight font-bold text-sm text-zinc-600 dark:text-zinc-400 hover:text-green-900 dark:hover:text-green-100 transition-colors"
-          href="#">Support</a>
+          href="{{ route('support.page') }}">Support</a>
       </div class="flex justify-center">
       @auth
-      <a
+      <a href="{{ route('booking.lookup') }}"
         class="text-green-800 dark:text-green-400 font-headline font-bold text-sm px-4 py-2 hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-colors rounded-lg flex items-center gap-2">
         <span>My Bookings</span>
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
@@ -517,13 +517,13 @@
             </div>
             <div class="flex flex-wrap md:justify-end gap-6 md:gap-12">
               <a class="font-inter text-xs text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 underline underline-offset-4 transition-opacity hover:opacity-80"
-                href="#">Privacy Policy</a>
+                href="{{ route('privacy-policy') }}">Privacy Policy</a>
               <a class="font-inter text-xs text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 underline underline-offset-4 transition-opacity hover:opacity-80"
-                href="#">Terms of Service</a>
+                href="{{ route('terms-of-service') }}">Terms of Service</a>
               <a class="font-inter text-xs text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 underline underline-offset-4 transition-opacity hover:opacity-80"
-                href="#">Carrier Partners</a>
+                href="{{ route('carrier-partners') }}">Carrier Partners</a>
               <a class="font-inter text-xs text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 underline underline-offset-4 transition-opacity hover:opacity-80"
-                href="#">Contact Us</a>
+                href="{{ route('contact-us') }}">Contact Us</a>
             </div>
           </div>
         </footer>
