@@ -48,6 +48,7 @@ class AdminAuditLog extends Model
             'user.activated'     => 'Activated User',
             'user.viewed'        => 'Viewed User',
             'user.deleted'       => 'Removed User',
+            'booking.viewed'     => 'Viewed Booking',
             'login'              => 'Logged In',
             'logout'             => 'Logged Out',
         ];

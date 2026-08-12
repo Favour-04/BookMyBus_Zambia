@@ -10,6 +10,9 @@
 <a class="flex items-center gap-3 px-4 py-3 rounded-lg {{ (request()->routeIs('admin.users.*')) ? 'text-primary font-bold border-r-4 border-primary bg-surface-container-highest' : 'text-on-surface-variant hover:text-primary hover:bg-surface-container-highest' }} transition-colors" href="{{ route('admin.users.index') }}">
     <span class="material-symbols-outlined">group</span><span>Travelers</span>
 </a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg {{ (request()->routeIs('admin.bookings.*')) ? 'text-primary font-bold border-r-4 border-primary bg-surface-container-highest' : 'text-on-surface-variant hover:text-primary hover:bg-surface-container-highest' }} transition-colors" href="{{ route('admin.bookings.index') }}">
+    <span class="material-symbols-outlined">book_online</span><span>Bookings</span>
+</a>
 <a class="flex items-center gap-3 px-4 py-3 rounded-lg {{ (request()->routeIs('admin.audit-log.*')) ? 'text-primary font-bold border-r-4 border-primary bg-surface-container-highest' : 'text-on-surface-variant hover:text-primary hover:bg-surface-container-highest' }} transition-colors" href="{{ route('admin.audit-log.index') }}">
     <span class="material-symbols-outlined">history</span><span>Audit Log</span>
 </a>

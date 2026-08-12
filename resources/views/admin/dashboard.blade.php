@@ -202,7 +202,9 @@
     </div>
 <!-- Recent Bookings -->
     <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/15 p-6">
-        <h3 class="font-headline font-bold text-lg mb-4">Recent Bookings</h3>
+        <h3 class="font-headline font-bold text-lg mb-4">
+                <a href="{{ route('admin.bookings.index') }}" class="hover:text-primary hover:underline">Recent Bookings →</a>
+            </h3>
         <div class="overflow-x-auto">
             <table class="w-full text-sm">
                 <thead>
