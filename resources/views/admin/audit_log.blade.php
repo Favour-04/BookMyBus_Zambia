@@ -64,9 +64,13 @@
                     @forelse($logs as $log)
                     <tr class="border-b border-outline-variant/10 hover:bg-surface-container-low">
                         <td class="py-3 px-4">
-                            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-primary/10 text-primary">{{ $log->eventLabel() }}</span>
+                            <a href="{{ route('admin.audit-log.show', $log->id) }}">
+                                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-primary/10 text-primary">{{ $log->eventLabel() }}</span>
+                            </a>
                         </td>
-                        <td class="py-3 px-4">{{ $log->description }}</td>
+                        <td class="py-3 px-4">
+                            <a href="{{ route('admin.audit-log.show', $log->id) }}" class="hover:text-primary">{{ $log->description ?? '—' }}</a>
+                        </td>
                         <td class="py-3 px-4 text-xs text-on-surface-variant">{{ class_basename($log->auditable_type ?? '') }}{{ $log->auditable_id ? ' #' . $log->auditable_id : '' }}</td>
                         <td class="py-3 px-4">{{ $log->admin?->full_name ?? $log->admin?->email ?? '—' }}</td>
                         <td class="py-3 px-4 text-xs text-on-surface-variant">

@@ -239,6 +239,7 @@ Route::prefix('admin')->name('admin.')->middleware('auth:admin')->group(function
 
     // Admin audit log
     Route::get('/audit-log', [App\Http\Controllers\Admin\AuditLogController::class, 'index'])->name('audit-log.index');
+    Route::get('/audit-log/{id}', [App\Http\Controllers\Admin\AuditLogController::class, 'show'])->name('audit-log.show');
 
     // Admin profile / settings
     Route::get('/profile', [App\Http\Controllers\Admin\ProfileController::class, 'index'])->name('profile');

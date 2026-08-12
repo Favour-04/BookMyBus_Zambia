@@ -114,7 +114,7 @@
                     <tbody>
                         @forelse($bookings as $booking)
                         <tr class="border-b border-outline-variant/10 hover:bg-surface-container-low">
-                            <td class="py-3 px-2 font-mono text-xs">{{ $booking->reference_id }}</td>
+                            <td class="py-3 px-2 font-mono text-xs"><a href="{{ route('admin.bookings.show', $booking->id) }}" class="font-bold hover:text-primary">{{ $booking->reference_id }}</a></td>
                             <td class="py-3 px-2">{{ $booking->route->origin ?? 'N/A' }} → {{ $booking->route->destination ?? 'N/A' }}</td>
                             <td class="py-3 px-2 font-bold">ZMW {{ number_format($booking->amount, 2) }}</td>
                             <td class="py-3 px-2">

@@ -108,7 +108,7 @@
                     @forelse($top_operators as $index => $operator)
                     <tr class="border-b border-outline-variant/10 hover:bg-surface-container-low">
                         <td class="py-3 px-2 text-on-surface-variant">{{ $index + 1 }}</td>
-                        <td class="py-3 px-2 font-bold">{{ $operator->company_name }}</td>
+                        <td class="py-3 px-2 font-bold"><a href="{{ route('admin.operators.show', $operator->id) }}" class="hover:text-primary hover:underline">{{ $operator->company_name }}</a></td>
                         <td class="py-3 px-2">{{ $operator->bus_count }}</td>
                         <td class="py-3 px-2">{{ $operator->total_bookings }}</td>
                         <td class="py-3 px-2 font-bold">ZMW {{ number_format($operator->revenue, 2) }}</td>
@@ -143,7 +143,7 @@
                 <tbody>
                     @forelse($recent_operators as $operator)
                     <tr class="border-b border-outline-variant/10 hover:bg-surface-container-low">
-                        <td class="py-3 px-2 font-bold">{{ $operator->company_name ?? $operator->name ?? 'N/A' }}</td>
+                        <td class="py-3 px-2 font-bold"><a href="{{ route('admin.operators.show', $operator->id) }}" class="hover:text-primary hover:underline">{{ $operator->company_name ?? $operator->name ?? 'N/A' }}</a></td>
                         <td class="py-3 px-2">{{ $operator->email }}</td>
                         <td class="py-3 px-2">
                             @if($operator->is_verified)

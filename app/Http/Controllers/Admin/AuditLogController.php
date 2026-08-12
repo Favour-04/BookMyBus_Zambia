@@ -49,4 +49,14 @@ class AuditLogController extends Controller
             'lastActivity'
         ));
     }
+
+    /**
+     * Show a single audit log entry with recorded state changes.
+     */
+    public function show($id)
+    {
+        $log = AdminAuditLog::with('admin')->findOrFail($id);
+
+        return view('admin.audit_log_detail', compact('log'));
+    }
 }

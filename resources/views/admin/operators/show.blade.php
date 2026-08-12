@@ -157,7 +157,10 @@
     </div>
 <!-- Recent bookings -->
     <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/15 p-6">
-        <h3 class="font-headline font-bold text-lg mb-4">Recent Bookings</h3>
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="font-headline font-bold text-lg">Recent Bookings</h3>
+            <a href="{{ route('admin.bookings.index', ['operator_id' => $operator->id]) }}" class="text-sm font-bold text-primary hover:underline">All bookings for this operator →</a>
+        </div>
         <div class="overflow-x-auto">
             <table class="w-full text-sm">
                 <thead>
@@ -172,8 +175,14 @@
                 <tbody>
                     @forelse($recentBookings as $booking)
                     <tr class="border-b border-outline-variant/10 hover:bg-surface-container-low">
-                        <td class="py-3 px-2 font-mono text-xs">{{ $booking->reference_id }}</td>
-                        <td class="py-3 px-2">{{ $booking->passenger_name ?? $booking->user->full_name ?? 'Guest' }}</td>
+                        <td class="py-3 px-2 font-mono text-xs"><a href="{{ route('admin.bookings.show', $booking->id) }}" class="font-bold hover:text-primary">{{ $booking->reference_id }}</a></td>
+                        <td class="py-3 px-2">
+                            @if($booking->user)
+                                <a href="{{ route('admin.users.show', $booking->user->id) }}" class="hover:text-primary">{{ $booking->passenger_name ?? $booking->user->full_name }}</a>
+                            @else
+                                {{ $booking->passenger_name ?? 'Guest' }}
+                            @endif
+                        </td>
                         <td class="py-3 px-2">{{ $booking->route->origin ?? 'N/A' }} → {{ $booking->route->destination ?? 'N/A' }}</td>
                         <td class="py-3 px-2 font-bold">ZMW {{ number_format($booking->amount, 2) }}</td>
                         <td class="py-3 px-2">
