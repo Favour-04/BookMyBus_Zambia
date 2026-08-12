@@ -3026,7 +3026,8 @@ php artisan serve
 
 The application will be available at `http://localhost:8000`.
 
-**Default Admin Credentials (after seeding):**
+**Default Credentials (after seeding):**
+- Admin: `admin@bookmybus.zm` / `Admin@1234`
 - Traveler: `traveler@example.com` / `password`
 - Operator: `operator@example.com` / `password`
 
@@ -3154,6 +3155,19 @@ The application will be available at `http://localhost:8000`.
 1. Click "All Bookings" in the navigation menu
 2. View all system-wide bookings
 3. Filter by operator, route, or date
+
+**C.3.4 How to Manage Travelers**
+
+1. Click "Travelers" in the navigation menu
+2. Search travelers, or filter by account status (All / Active / Suspended)
+3. Open a traveler's profile to view their booking history and details
+4. Click "Suspend" to deactivate an account (the traveler can no longer log in), or "Activate" to re-enable it
+
+**C.3.5 How to Review the Audit Log**
+
+1. Click "Audit Log" in the navigation menu
+2. Review a chronological history of admin activity (operator verification, traveler suspension/activation, booking views)
+3. Filter by event type, date range, or search text
 
 ---
 
