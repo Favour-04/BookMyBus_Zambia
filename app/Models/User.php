@@ -19,6 +19,7 @@ class User extends Authenticatable
         'password',
         'role',
         'preferred_language',
+        'is_active',
     ];
 
     protected $hidden = [
@@ -28,6 +29,7 @@ class User extends Authenticatable
 
     protected $casts = [
         'password' => 'hashed',
+        'is_active' => 'boolean',
     ];
 
     // relationship definitions
@@ -52,5 +54,10 @@ class User extends Authenticatable
     public function isTraveler(): bool
     {
         return $this->role === 'traveler';
+    }
+
+    public function isActive(): bool
+    {
+        return (bool) $this->is_active;
     }
 }

@@ -229,6 +229,24 @@ Route::prefix('operator')->name('operator.')->middleware('auth:operator')->group
 
 Route::prefix('admin')->name('admin.')->middleware('auth:admin')->group(function () {
     Route::get('/dashboard', [App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
+
+    // Operator verification & management
+    Route::get('/operators', [App\Http\Controllers\Admin\OperatorController::class, 'index'])->name('operators.index');
+    Route::get('/operators/{id}', [App\Http\Controllers\Admin\OperatorController::class, 'show'])->name('operators.show');
+    Route::post('/operators/{id}/verify', [App\Http\Controllers\Admin\OperatorController::class, 'verify'])->name('operators.verify');
+    Route::post('/operators/{id}/suspend', [App\Http\Controllers\Admin\OperatorController::class, 'suspend'])->name('operators.suspend');
+    Route::delete('/operators/{id}', [App\Http\Controllers\Admin\OperatorController::class, 'destroy'])->name('operators.destroy');
+
+    // Admin audit log
+    Route::get('/audit-log', [App\Http\Controllers\Admin\AuditLogController::class, 'index'])->name('audit-log.index');
+
+    // Traveler / user management
+    Route::get('/users', [App\Http\Controllers\Admin\UserController::class, 'index'])->name('users.index');
+    Route::get('/users/{id}', [App\Http\Controllers\Admin\UserController::class, 'show'])->name('users.show');
+    Route::post('/users/{id}/suspend', [App\Http\Controllers\Admin\UserController::class, 'suspend'])->name('users.suspend');
+    Route::post('/users/{id}/activate', [App\Http\Controllers\Admin\UserController::class, 'activate'])->name('users.activate');
+    Route::delete('/users/{id}', [App\Http\Controllers\Admin\UserController::class, 'destroy'])->name('users.destroy');
+
     Route::post('/logout', [App\Http\Controllers\Auth\Admin\LoginController::class, 'logout'])->name('logout');
 });
 

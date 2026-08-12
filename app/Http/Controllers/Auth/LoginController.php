@@ -39,6 +39,16 @@ class LoginController extends Controller
             $request->only('email', 'password'),
             $request->filled('remember')
         )) {
+            $user = Auth::guard('web')->user();
+
+            // Block suspended accounts
+            if (!$user->isActive()) {
+                Auth::guard('web')->logout();
+                throw ValidationException::withMessages([
+                    'email' => 'This account has been suspended. Please contact support.',
+                ]);
+            }
+
             $request->session()->regenerate();
             return redirect()->intended(route('home'));
         }
