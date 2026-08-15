@@ -73,7 +73,7 @@ class RouteController extends Controller
     public function operatorRoutes(Request $request): JsonResponse
     {
         $routes = Route::with('bus')
-            ->where('operator_id', auth()->guard('operator_api')->id())->orderByDesc('travel_date')
+            ->where('operator_id', auth()->guard('operator')->id())->orderByDesc('travel_date')
             ->get();
 
         return response()->json(['routes' => $routes]);
@@ -94,7 +94,7 @@ class RouteController extends Controller
         ]);
 
         $route = Route::create(array_merge($data, [
-            'operator_id' => auth()->guard('operator_api')->id(),
+            'operator_id' => auth()->guard('operator')->id(),
         ]));
 
         return response()->json([
@@ -108,7 +108,7 @@ class RouteController extends Controller
     public function update(Request $request, int $id): JsonResponse
     {
         $route = Route::where('id', $id)
-            ->where('operator_id', auth()->guard('operator_api')->id())
+            ->where('operator_id', auth()->guard('operator')->id())
             ->firstOrFail();
 
         $data = $request->validate([
@@ -130,7 +130,7 @@ class RouteController extends Controller
     public function destroy(Request $request, int $id): JsonResponse
     {
         $route = Route::where('id', $id)
-            ->where('operator_id', auth()->guard('operator_api')->id())
+            ->where('operator_id', auth()->guard('operator')->id())
             ->firstOrFail();
 
         $hasConfirmedBookings = $route->bookings()

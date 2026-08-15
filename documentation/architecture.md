@@ -2,7 +2,7 @@
 
 ## Overview
 
-BookMyBus Zambia is a multi-tenant bus ticketing system built on **Laravel 11**. It supports two primary user roles:
+BookMyBus Zambia is a multi-tenant bus ticketing system built on **Laravel 12**. It supports two primary user roles:
 
 - **Travelers** – Browse routes, book seats, pay via mobile money
 - **Operators** – Manage buses, routes/trips, and monitor bookings

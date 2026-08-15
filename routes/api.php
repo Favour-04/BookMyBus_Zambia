@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Route;
 
 Guards:
 auth:sanctum          → Traveler (User model)
-auth:operator_api     → Operator (Operator model)  *custom guard*
+auth:operator     → Operator (Operator model)  *session guard*
 admin                 → Traveler with role = admin
 
 */
@@ -63,9 +63,9 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
 //  Operator Routes 
-// Uses a custom 'operator' guard — see config/auth.php
+// Uses the 'operator' session guard — see config/auth.php
 
-Route::middleware('auth:operator_api')->prefix('operator')->group(function () {
+Route::middleware('auth:operator')->prefix('operator')->group(function () {
     // Fleet management
     Route::get('/buses',              [BusController::class, 'index']);
     Route::post('/buses',             [BusController::class, 'store']);

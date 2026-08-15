@@ -254,10 +254,24 @@
                   'pending'   => 'bg-secondary-container/30 text-on-secondary-container',
                   'cancelled' => 'bg-error-container text-error',
                 ];
+                $departure = $booking->route
+                    ? \Carbon\Carbon::parse($booking->route->travel_date)->setTimeFromTimeString((string) $booking->route->departure_time)
+                    : now();
+                $canCancel = in_array($booking->status, ['pending', 'confirmed'], true) && now()->lt($departure);
               @endphp
               <span class="text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-full {{ $statusStyles[$booking->status] ?? 'bg-surface-container text-on-surface-variant' }}">
                 {{ $booking->status }}
               </span>
+              @if($canCancel)
+              <form method="POST" action="{{ route('bookings.cancel', $booking) }}" class="inline-block"
+                    onsubmit="return confirm('Cancel this booking?{{ $booking->status === 'confirmed' ? ' A refund will be calculated based on the operator cancellation policy.' : '' }}');">
+                @csrf
+                <button type="submit" class="px-3 py-1.5 rounded-lg border border-error/30 text-error text-xs font-bold uppercase tracking-wider hover:bg-error-container/40 transition-colors flex items-center gap-1">
+                  <span class="material-symbols-outlined text-sm">cancel</span>
+                  Cancel
+                </button>
+              </form>
+              @endif
             </div>
           </div>
         @empty
@@ -291,6 +305,12 @@
     @if($errors->has('current_password') || ($errors->has('password') && !$errors->has('full_name')))
       document.addEventListener('DOMContentLoaded', () => {
         document.querySelectorAll('.tab-btn')[1].click();
+      });
+    @endif
+
+    @if(session('active_tab') === 'bookings')
+      document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('.tab-btn')[2].click();
       });
     @endif
   </script>

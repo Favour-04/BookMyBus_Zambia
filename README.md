@@ -31,9 +31,9 @@ A **Laravel**-based web application for booking bus tickets across Zambia. Passe
 
 | Layer        | Technology                        |
 |-------------|-----------------------------------|
-| Backend     | Laravel 11 (PHP 8.x)              |
+| Backend     | Laravel 12 (PHP 8.x)              |
 | Frontend    | Blade templates, JavaScript, CSS  |
-| Database    | MySQL / MariaDB                   |
+| Database    | PostgreSQL                   |
 | Cache       | File-based (configurable to Redis)|
 | Auth        | Laravel Sanctum (traveler), Session-based (operator) |
 | Payments    | Simulated MTN MoMo & Airtel Money |
@@ -94,7 +94,7 @@ BookMyBus_Zambia/
 
 - PHP 8.1+
 - Composer
-- MySQL / MariaDB
+- PostgreSQL
 - Node.js & npm (for frontend assets)
 - XAMPP / WAMP / Laragon (Windows) or Valet (macOS)
 
@@ -115,9 +115,12 @@ npm install
 cp .env.example .env
 php artisan key:generate
 
-# 5. Configure database in .env
-#    DB_DATABASE=bookmybus
-#    DB_USERNAME=root
+# 5. Configure database in .env (PostgreSQL)
+#    DB_CONNECTION=pgsql
+#    DB_HOST=127.0.0.1
+#    DB_PORT=5432
+#    DB_DATABASE=bookmybus_zambia_db
+#    DB_USERNAME=postgres
 #    DB_PASSWORD=
 
 # 6. Run migrations

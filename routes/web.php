@@ -93,6 +93,12 @@ Route::middleware('auth')->group(function () {
     Route::post('/payment/process/{booking}', [BookingController::class, 'processPayment'])->name('payment.process');
     Route::get('/booking/success/{booking}', [BookingController::class, 'success'])->name('booking.success');
 
+    // Digital Ticket (traveler can re-open their ticket after booking)
+    Route::get('/tickets/{qrCode}', [BookingController::class, 'showTicket'])->name('tickets.show');
+
+    // Cancel a booking (traveler self-cancellation with refund calculation)
+    Route::post('/bookings/{booking}/cancel', [BookingController::class, 'cancel'])->name('bookings.cancel');
+
     // Booking History
     Route::get('/my-booking', [BookingController::class, 'customerLookupView'])->name('booking.lookup');
 Route::post('/my-booking/lookup', [BookingController::class, 'customerLookup'])->name('booking.lookup.search');
@@ -257,6 +263,7 @@ Route::prefix('admin')->name('admin.')->middleware('auth:admin')->group(function
     // Reports & analytics
     Route::get('/reports', [App\Http\Controllers\Admin\ReportController::class, 'index'])->name('reports.index');
     Route::get('/reports/export', [App\Http\Controllers\Admin\ReportController::class, 'export'])->name('reports.export');
+    Route::get('/reports/data', [App\Http\Controllers\Admin\ReportController::class, 'data'])->name('reports.data');
 
     // Traveler / user management
     Route::get('/users', [App\Http\Controllers\Admin\UserController::class, 'index'])->name('users.index');

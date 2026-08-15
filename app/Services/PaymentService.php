@@ -4,7 +4,11 @@ namespace App\Services;
 
 use App\Models\Booking;
 use App\Models\Payment;
+use App\Models\Ticket;
+use App\Notifications\TicketIssued;
+use App\Services\MobileMoney\GatewayInterface;
 use App\Services\MobileMoney\SimulatedGateway;
+use Illuminate\Support\Facades\DB;
 
 class PaymentService
 {
@@ -28,7 +32,7 @@ class PaymentService
 
         // Create the gateway instance for the selected provider
         try {
-            $gateway = SimulatedGateway::forProvider($provider);
+            $gateway = $this->resolveGateway($provider);
         } catch (\InvalidArgumentException $e) {
             return [
                 'success' => false,
@@ -66,11 +70,31 @@ class PaymentService
         $result = $gateway->charge($phoneDigits, (float) $booking->amount, $booking->reference_id);
 
         if ($result['success']) {
-            // Mark payment as successful — this also confirms the booking
-            $payment->markSuccessful(
-                $result['transaction_reference'],
-                $result['gateway_response']
-            );
+            // Confirm the payment and issue the digital ticket atomically.
+            // Mirrors Api\PaymentController@callback so the web and API flows
+            // stay consistent.
+            DB::transaction(function () use ($payment, $booking, $result) {
+                // Mark payment as successful — this also confirms the booking
+                $payment->markSuccessful(
+                    $result['transaction_reference'],
+                    $result['gateway_response']
+                );
+
+                // Issue a digital ticket (idempotent guard in case the service
+                // is ever invoked more than once for the same booking).
+                if (! Ticket::where('booking_id', $booking->id)->exists()) {
+                    Ticket::create([
+                        'booking_id' => $booking->id,
+                        'user_id'    => $booking->user_id,
+                    ]);
+                }
+            });
+
+            // Notify the traveler that their ticket has been issued.
+            $freshBooking = $booking->fresh();
+            if ($freshBooking->ticket && $freshBooking->user) {
+                $freshBooking->user->notify(new TicketIssued($freshBooking, $freshBooking->ticket));
+            }
 
             return [
                 'success' => true,
@@ -87,5 +111,17 @@ class PaymentService
             'payment' => $payment->fresh(),
             'message' => $result['message'],
         ];
+    }
+
+    /**
+     * Resolve the payment gateway for the given provider.
+     *
+     * Extracted as a protected seam so tests can substitute a deterministic
+     * gateway without exercising the real SimulatedGateway (which relies on
+     * rand + usleep and would make tests slow and flaky).
+     */
+    protected function resolveGateway(string $provider): GatewayInterface
+    {
+        return SimulatedGateway::forProvider($provider);
     }
 }

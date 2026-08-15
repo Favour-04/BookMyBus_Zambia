@@ -79,4 +79,49 @@
             </form>
         </div>
     </div>
+
+    <!-- Recent Activity -->
+    <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/15 p-6 mt-6">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="font-headline font-bold text-lg">Recent Activity</h3>
+            <span class="text-xs text-on-surface-variant">Last {{ $activities->count() }} actions</span>
+        </div>
+
+        @forelse($activities as $activity)
+            @php
+                $icons = [
+                    'login' => 'login', 'logout' => 'logout',
+                    'profile.updated' => 'manage_accounts',
+                    'profile.password_changed' => 'lock_reset',
+                    'operator.verified' => 'verified', 'operator.suspended' => 'block',
+                    'operator.created' => 'business', 'operator.deleted' => 'delete',
+                    'operator.viewed' => 'visibility',
+                    'user.suspended' => 'block', 'user.activated' => 'check_circle',
+                    'user.created' => 'person_add', 'user.viewed' => 'visibility',
+                    'user.deleted' => 'delete', 'booking.viewed' => 'receipt_long',
+                ];
+                $icon = $icons[$activity->event] ?? 'task_alt';
+            @endphp
+            <div class="flex items-start gap-3 py-3 border-b border-outline-variant/10 last:border-0">
+                <div class="h-9 w-9 rounded-xl bg-primary/15 flex items-center justify-center flex-shrink-0">
+                    <span class="material-symbols-outlined text-primary text-base">{{ $icon }}</span>
+                </div>
+                <div class="flex-grow min-w-0">
+                    <p class="text-sm font-bold text-on-surface">{{ $activity->eventLabel() }}</p>
+                    <p class="text-xs text-on-surface-variant">{{ $activity->description ?? $activity->event }}</p>
+                </div>
+                <div class="text-right flex-shrink-0">
+                    <p class="text-xs text-on-surface-variant">{{ $activity->created_at->diffForHumans() }}</p>
+                    @if($activity->ip_address)
+                        <p class="text-[10px] text-on-surface-variant/70">{{ $activity->ip_address }}</p>
+                    @endif
+                </div>
+            </div>
+        @empty
+            <div class="flex flex-col items-center justify-center py-8 text-center">
+                <span class="material-symbols-outlined text-4xl text-outline mb-2">history</span>
+                <p class="text-sm text-on-surface-variant">No recent activity yet.</p>
+            </div>
+        @endforelse
+    </div>
 @endsection

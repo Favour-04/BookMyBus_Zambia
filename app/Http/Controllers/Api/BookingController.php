@@ -103,7 +103,7 @@ class BookingController extends Controller
     public function routeManifest(Request $request, int $routeId): JsonResponse
     {
         $route = Route::where('id', $routeId)
-            ->where('operator_id', auth()->guard('operator_api')->id())
+            ->where('operator_id', auth()->guard('operator')->id())
             ->firstOrFail();    
 
         $bookings = Booking::with('user')

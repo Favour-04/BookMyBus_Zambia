@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\AdminAuditLog;
 use App\Models\User;
 use App\Services\AdminAuditService;
 use Illuminate\Http\Request;
@@ -19,7 +20,13 @@ class ProfileController extends Controller
     public function index()
     {
         $admin = $this->getAdmin();
-        return view('admin.profile', compact('admin'));
+
+        $activities = AdminAuditLog::where('admin_id', $admin->id)
+            ->latest()
+            ->limit(10)
+            ->get();
+
+        return view('admin.profile', compact('admin', 'activities'));
     }
 
     /**

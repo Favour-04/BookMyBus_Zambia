@@ -13,7 +13,7 @@ Defines the API endpoints for BookMyBus Zambia, including public search endpoint
 | Guard                         | Model    | Description                                   |
 | ----------------------------- | -------- | --------------------------------------------- |
 | `auth:sanctum`                | User     | Traveler authentication using Laravel Sanctum |
-| `auth:operator_api`           | Operator | Custom operator guard (see `config/auth.php`) |
+| `auth:operator`               | Operator | Session guard for operator authentication (see `config/auth.php`) |
 | `auth:sanctum` + `role:admin` | User     | Admin users with admin role                   |
 
 ### Controllers Used

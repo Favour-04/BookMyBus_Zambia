@@ -8,6 +8,7 @@ following SICT Project Guidelines:
 - Arabic numeral page numbering (bottom-right) for main body
 """
 
+import os
 import re
 from docx import Document
 from docx.shared import Pt, Inches, RGBColor
@@ -18,7 +19,7 @@ from docx.oxml.ns import qn, nsdecls
 from docx.oxml import parse_xml, OxmlElement
 
 INPUT_FILE = "GROUP_29_PROJECT_REPORT_CORRECTED.md"
-OUTPUT_FILE = "GROUP_29_PROJECT_REPORT_CORRECTED.docx"
+OUTPUT_FILE = "The Original Report document.docx"
 
 # ── Helpers ──────────────────────────────────────────────────────────────
 
@@ -106,6 +107,22 @@ def add_inline_formatting(paragraph, text, font_size=Pt(12)):
             set_run_font(run, size=font_size)
 
 
+def add_image(doc, path, width_inches=6.0):
+    """Embed a screenshot centered, sized to fit the page. Skips if missing."""
+    if not os.path.isfile(path):
+        print(f"[skip] missing screenshot: {path}")
+        return False
+    try:
+        paragraph = doc.add_paragraph()
+        paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        run = paragraph.add_run()
+        run.add_picture(path, width=Inches(width_inches))
+        return True
+    except Exception as e:
+        print(f"[skip] could not embed {path}: {e}")
+        return False
+
+
 def set_cell_shading(cell, color_hex):
     """Apply background shading to a table cell."""
     shading_elm = parse_xml(f'<w:shd {nsdecls("w")} w:fill="{color_hex}"/>')
@@ -173,6 +190,49 @@ def add_list_item(doc, text, numbered=False, level=0):
 
 # ── Main conversion ──────────────────────────────────────────────────────
 
+def add_toc_field(doc):
+    """Insert a live, auto-updating Word Table of Contents field."""
+    p = doc.add_paragraph()
+    r1 = p.add_run()
+    f1 = OxmlElement('w:fldChar'); f1.set(qn('w:fldCharType'), 'begin')
+    it = OxmlElement('w:instrText'); it.set(qn('xml:space'), 'preserve')
+    it.text = r'TOC \o "1-3" \h \z \u'
+    f2 = OxmlElement('w:fldChar'); f2.set(qn('w:fldCharType'), 'separate')
+    for el in (f1, it, f2):
+        r1._r.append(el)
+    r2 = p.add_run()
+    t = OxmlElement('w:t')
+    t.text = 'Update this field (right-click -> Update Field, or press F9) to build the Table of Contents.'
+    r2._r.append(t)
+    r3 = p.add_run()
+    f3 = OxmlElement('w:fldChar'); f3.set(qn('w:fldCharType'), 'end')
+    r3._r.append(f3)
+    for r in (r1, r2, r3):
+        set_run_font(r, size=Pt(12))
+    return p
+
+
+def set_update_fields_on_open(doc):
+    """Force Word to update all fields (TOC, PAGE) when the document opens."""
+    settings = doc.settings.element
+    upd = settings.find(qn('w:updateFields'))
+    if upd is None:
+        upd = OxmlElement('w:updateFields')
+        settings.append(upd)
+    upd.set(qn('w:val'), 'true')
+
+
+def add_centered_bold_paragraph(doc, text, level=1):
+    """Centered bold paragraph for title-page lines (excluded from the TOC)."""
+    p = doc.add_paragraph()
+    p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    sizes = {1: Pt(20), 2: Pt(16), 3: Pt(14), 4: Pt(12)}
+    run = p.add_run(text)
+    run.bold = True
+    set_run_font(run, size=sizes.get(level, Pt(12)))
+    return p
+
+
 def convert():
     with open(INPUT_FILE, 'r', encoding='utf-8') as f:
         lines = f.readlines()
@@ -229,6 +289,7 @@ def convert():
 
     # ── State tracking ──
     in_front_matter = True
+    in_title_page = True
     in_abstract = False
     in_references = False
     main_section = None
@@ -280,6 +341,7 @@ def convert():
         # ── Track abstract section for single spacing ──
         if stripped.startswith('## ABSTRACT'):
             in_abstract = True
+            in_title_page = False
         elif in_abstract and stripped.startswith('## '):
             in_abstract = False
 
@@ -295,6 +357,38 @@ def convert():
             i += 1
             continue
 
+        # Image detection: ![caption](path)
+        image_match = re.match(r'^!\[([^\]]*)\]\(([^)]+)\)', stripped)
+        if image_match:
+            caption = image_match.group(1)
+            img_path = image_match.group(2)
+            # Resolve relative paths
+            if not os.path.isabs(img_path):
+                img_path = os.path.join(os.path.dirname(os.path.abspath(INPUT_FILE)), img_path)
+            add_image(doc, img_path, width_inches=6.0)
+            # Add caption below image
+            if caption:
+                cap_p = doc.add_paragraph()
+                cap_p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+                cap_run = cap_p.add_run(caption)
+                cap_run.italic = True
+                cap_run.font.size = Pt(10)
+                set_run_font(cap_run, size=Pt(10), italic=True)
+            i += 1
+            continue
+
+        # Table of Contents -> insert live Word TOC field; skip the static table
+        if stripped == '## TABLE OF CONTENTS':
+            add_toc_field(doc)
+            set_update_fields_on_open(doc)
+            i += 1
+            while i < n:
+                nxt = lines[i].strip()
+                if nxt.startswith('## ') and nxt != '## TABLE OF CONTENTS':
+                    break
+                i += 1
+            continue
+
         # Headings
         heading_match = re.match(r'^(#{1,4})\s+(.*)', stripped)
         if heading_match:
@@ -303,7 +397,10 @@ def convert():
             text = re.sub(r'\*\*(.+?)\*\*', r'\1', text)
             text = re.sub(r'\*(.+?)\*', r'\1', text)
             text = re.sub(r'`(.+?)`', r'\1', text)
-            doc.add_heading(text, level=level)
+            if in_title_page:
+                add_centered_bold_paragraph(doc, text, level=level)
+            else:
+                doc.add_heading(text, level=level)
             i += 1
             continue
 

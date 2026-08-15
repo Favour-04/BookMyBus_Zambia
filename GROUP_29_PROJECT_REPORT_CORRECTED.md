@@ -1835,15 +1835,35 @@ UAT was conducted with:
 
 ### 5.6.1 Screenshots
 
+![Figure 16: Homepage Search Results](documentation/screenshots/01_landing_page.png)
+
 *Figure 16: Homepage Search Results*
+
+The homepage displays the bus search form with origin, destination, date, and passenger selection.
+
+![Figure 17: Seat Selection Interface](documentation/screenshots/42_seat_selection.png)
 
 *Figure 17: Seat Selection Interface*
 
+The seat selection interface shows available (green), selected (orange), and booked (grey) seats.
+
+![Figure 18: Payment Interface](documentation/screenshots/43_payment_ticket.png)
+
 *Figure 18: Payment Interface*
+
+The payment page shows mobile money options: Airtel Money and MTN MoMo.
+
+![Figure 19: Digital Ticket](documentation/screenshots/43_payment_ticket.png)
 
 *Figure 19: Digital Ticket*
 
+The digital ticket displays booking details, reference ID, and print/download options.
+
+![Figure 20: Operator Dashboard](documentation/screenshots/22_operator_dashboard.png)
+
 *Figure 20: Operator Dashboard*
+
+The operator dashboard shows KPIs, fleet status, upcoming trips, and recent bookings.
 
 ### 5.6.2 System Performance Metrics
 
@@ -2184,21 +2204,31 @@ This chapter presents the evaluation and testing of the BookMyBus Zambia Managem
 
 ### 6.5.2 Screenshots
 
+![Figure 16: Homepage Search Results](documentation/screenshots/01_landing_page.png)
+
 *Figure 16: Homepage Search Results*
 
 The homepage displays the bus search form with origin, destination, date, and passenger selection.
+
+![Figure 17: Seat Selection Interface](documentation/screenshots/42_seat_selection.png)
 
 *Figure 17: Seat Selection Interface*
 
 The seat selection interface shows available (green), selected (orange), and booked (grey) seats.
 
+![Figure 18: Payment Interface](documentation/screenshots/43_payment_ticket.png)
+
 *Figure 18: Payment Interface*
 
 The payment page shows mobile money options: Airtel Money and MTN MoMo.
 
+![Figure 19: Digital Ticket](documentation/screenshots/43_payment_ticket.png)
+
 *Figure 19: Digital Ticket*
 
 The digital ticket displays booking details, reference ID, and print/download options.
+
+![Figure 20: Operator Dashboard](documentation/screenshots/22_operator_dashboard.png)
 
 *Figure 20: Operator Dashboard*
 
@@ -3465,48 +3495,190 @@ class Booking extends Model
 
 ## APPENDIX 6: SYSTEM SCREENSHOTS
 
-*Figure 16: Homepage*
+This appendix presents the complete set of system screenshots for the BookMyBus Zambia Management System, organized by user role and functional area. The screenshots illustrate the implemented user interface across the public site, traveler portal, operator portal, and admin backend.
 
-The homepage displays the bus search form with origin, destination, date, and passenger selection.
+### A.6.1 Public Pages
 
-*Figure 17: Search Results*
+![Homepage - landing and bus search form.](documentation/screenshots/01_landing_page.png)
 
-Search results showing available buses with operator name, departure time, price, and book now button.
+*Homepage - landing and bus search form.*
 
-*Figure 18: Seat Selection*
+![Search Page - route search entry.](documentation/screenshots/02_search_page.png)
 
-Interactive seat map showing available (green), selected (orange), and booked (grey) seats.
+*Search Page - route search entry.*
 
-*Figure 19: Payment Page*
+![Search Results - available buses and fares.](documentation/screenshots/41_search_results.png)
 
-Payment page with mobile money options: Airtel Money and MTN MoMo.
+*Search Results - available buses and fares.*
 
-*Figure 20: Digital Ticket*
+![Support Page - help and contact options.](documentation/screenshots/08_support_page.png)
 
-Digital ticket with booking details, reference ID, and print/download options.
+*Support Page - help and contact options.*
 
-*Figure 21: Operator Dashboard*
+![Carrier Partners - registered operators.](documentation/screenshots/09_carrier_partners.png)
 
-The operator dashboard presents a comprehensive overview of bus operator operations including:
-- **KPI Cards Row**: Total Bookings (with month-over-month trend), Revenue Generated (ZMW with daily average), Active Fleet (trips today with occupancy), Today's Bookings (with pending count), and Cancelled Bookings for the month
-- **Live Fleet Status Panel**: Real-time view of each active bus with registration number, assigned route, ACTIVE/INACTIVE status badge, and occupancy progress bars showing percentage of seats used
-- **Upcoming Trips Table**: Next 5 scheduled trips with Trip ID, route, departure time, occupancy (booked/capacity with visual progress bar), and status
-- **Recent Bookings Table**: Latest bookings with reference ID, passenger name, route, seat number, amount, and status badge
-- **Top Routes Panel**: Ranked list of the 5 most popular routes by confirmed bookings with comparative progress bars
-- **Notifications & Alerts**: Contextual cards for maintenance reminders, high demand routes, and driver rest alerts
-- **New Trip Drawer**: Slide-in form for inline trip creation with route selection, date/time, bus assignment, driver assignment, fare, and notes
+*Carrier Partners - registered operators.*
 
-*Figure 22: Route Management*
+![Contact Us - direct contact channels.](documentation/screenshots/10_contact_us.png)
 
-Route management page with add route form and routes table.
+*Contact Us - direct contact channels.*
 
-*Figure 23: Admin Dashboard*
+![Privacy Policy - data handling.](documentation/screenshots/11_privacy_policy.png)
 
-Admin dashboard showing system overview with operator, user, and booking statistics.
+*Privacy Policy - data handling.*
 
-*Figure 24: My Bookings*
+![Terms of Service - usage terms.](documentation/screenshots/12_terms_of_service.png)
 
-My bookings page displaying all user bookings with view ticket option.
+*Terms of Service - usage terms.*
+
+### A.6.2 Traveler Account & Booking
+
+![Traveler Login.](documentation/screenshots/03_traveler_login.png)
+
+*Traveler Login.*
+
+![Traveler Registration.](documentation/screenshots/04_traveler_register.png)
+
+*Traveler Registration.*
+
+![Forgot Password - reset flow.](documentation/screenshots/05_forgot_password.png)
+
+*Forgot Password - reset flow.*
+
+![Traveler Profile - account details.](documentation/screenshots/38_traveler_profile.png)
+
+*Traveler Profile - account details.*
+
+![My Bookings - booking history.](documentation/screenshots/39_traveler_booking_history.png)
+
+*My Bookings - booking history.*
+
+![Booking Lookup - retrieve by reference.](documentation/screenshots/40_booking_lookup.png)
+
+*Booking Lookup - retrieve by reference.*
+
+![Seat Selection - interactive seat map.](documentation/screenshots/42_seat_selection.png)
+
+*Seat Selection - interactive seat map.*
+
+![Payment & Digital Ticket - Airtel/MTN payment.](documentation/screenshots/43_payment_ticket.png)
+
+*Payment & Digital Ticket - Airtel/MTN payment.*
+
+### A.6.3 Authentication Portals
+
+![Operator Login.](documentation/screenshots/06_operator_login.png)
+
+*Operator Login.*
+
+![Admin Login.](documentation/screenshots/07_admin_login.png)
+
+*Admin Login.*
+
+### A.6.4 Operator Portal
+
+![Operator Dashboard - KPIs and fleet status.](documentation/screenshots/22_operator_dashboard.png)
+
+*Operator Dashboard - KPIs and fleet status.*
+
+![Manage Trips - create and schedule trips.](documentation/screenshots/23_operator_manage_trips.png)
+
+*Manage Trips - create and schedule trips.*
+
+![Trip Calendar.](documentation/screenshots/24_operator_trip_calendar.png)
+
+*Trip Calendar.*
+
+![All Bookings - operator listing.](documentation/screenshots/25_operator_all_bookings.png)
+
+*All Bookings - operator listing.*
+
+![Fleet / Buses - vehicle management.](documentation/screenshots/26_operator_fleet_buses.png)
+
+*Fleet / Buses - vehicle management.*
+
+![Drivers - driver records.](documentation/screenshots/27_operator_drivers.png)
+
+*Drivers - driver records.*
+
+![Customers - traveler directory.](documentation/screenshots/28_operator_customers.png)
+
+*Customers - traveler directory.*
+
+![Revenue - earnings overview.](documentation/screenshots/29_operator_revenue.png)
+
+*Revenue - earnings overview.*
+
+![Fare Rules.](documentation/screenshots/30_operator_fare_rules.png)
+
+*Fare Rules.*
+
+![Promo Codes.](documentation/screenshots/31_operator_promo_codes.png)
+
+*Promo Codes.*
+
+![Route Templates.](documentation/screenshots/32_operator_route_templates.png)
+
+*Route Templates.*
+
+![Passenger List - manifest per trip.](documentation/screenshots/33_operator_passenger_list.png)
+
+*Passenger List - manifest per trip.*
+
+![Operator Audit Log.](documentation/screenshots/34_operator_audit_log.png)
+
+*Operator Audit Log.*
+
+![Operator Profile - company settings.](documentation/screenshots/35_operator_profile.png)
+
+*Operator Profile - company settings.*
+
+![Seat Map - operator view.](documentation/screenshots/36_operator_seat_map.png)
+
+*Seat Map - operator view.*
+
+![Printable Schedule - timetable.](documentation/screenshots/37_operator_printable_schedule.png)
+
+*Printable Schedule - timetable.*
+
+### A.6.5 Admin Backend
+
+![Admin Dashboard - system overview.](documentation/screenshots/13_admin_dashboard.png)
+
+*Admin Dashboard - system overview.*
+
+![Manage Operators - verification.](documentation/screenshots/14_admin_operators.png)
+
+*Manage Operators - verification.*
+
+![Manage Users - traveler accounts.](documentation/screenshots/15_admin_users.png)
+
+*Manage Users - traveler accounts.*
+
+![Manage Bookings - platform records.](documentation/screenshots/16_admin_bookings.png)
+
+*Manage Bookings - platform records.*
+
+![Manage Payments - transaction monitoring.](documentation/screenshots/17_admin_payments.png)
+
+*Manage Payments - transaction monitoring.*
+
+![Manage Trips - platform administration.](documentation/screenshots/18_admin_trips.png)
+
+*Manage Trips - platform administration.*
+
+![Reports - analytics.](documentation/screenshots/19_admin_reports.png)
+
+*Reports - analytics.*
+
+![Admin Audit Log.](documentation/screenshots/20_admin_audit_log.png)
+
+*Admin Audit Log.*
+
+![Admin Profile - admin settings.](documentation/screenshots/21_admin_profile.png)
+
+*Admin Profile - admin settings.*
+
 
 ---
 

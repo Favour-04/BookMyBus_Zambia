@@ -81,6 +81,51 @@ class UserController extends Controller
     }
 
     /**
+     * Show the form to create a new user account.
+     */
+    public function create()
+    {
+        return view('admin.users.create');
+    }
+
+    /**
+     * Store a newly created user (traveler or admin).
+     */
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'full_name'     => 'required|string|max:255',
+            'email'         => 'required|email|unique:users,email',
+            'phone_number'  => 'required|string|unique:users,phone_number',
+            'password'      => 'required|string|min:8|confirmed',
+            'role'          => 'required|in:traveler,admin',
+            'preferred_language' => 'nullable|string|max:10',
+        ]);
+
+        $user = User::create([
+            'full_name'          => $validated['full_name'],
+            'email'              => $validated['email'],
+            'phone_number'       => $validated['phone_number'],
+            'password'           => $validated['password'],
+            'role'               => $validated['role'],
+            'preferred_language' => $validated['preferred_language'] ?? 'en',
+            'is_active'          => true,
+        ]);
+
+        AdminAuditService::log(
+            'user.created',
+            "Created {$user->role} {$user->full_name}",
+            $user,
+            null,
+            ['role' => $user->role],
+            $request
+        );
+
+        return redirect()->route('admin.users.show', $user->id)
+            ->with('success', "Account for {$user->full_name} created successfully.");
+    }
+
+    /**
      * Suspend (deactivate) a traveler account.
      */
     public function suspend(Request $request, $id)

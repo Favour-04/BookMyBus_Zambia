@@ -9,12 +9,14 @@ use App\Models\Driver;
 use App\Models\Operator;
 use App\Models\Route;
 use App\Models\Ticket;
+use App\Notifications\TripStatusChanged;
 use App\Services\OperatorAuditService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Notification;
 
 class TripManagementController extends Controller
 {
@@ -774,6 +776,8 @@ class TripManagementController extends Controller
             'delay_reason' => $validated['delay_reason'] ?? null,
         ]);
         OperatorAuditService::log('trip.delayed', "Trip TRP-" . str_pad($route->id, 4, '0', STR_PAD_LEFT) . " delayed by {$validated['delay_minutes']}mins", $route);
+        Notification::send($route->confirmedPassengers(), new TripStatusChanged($route, 'delayed'));
+
         return back()->with('success', 'Trip marked as delayed. Passengers will be notified.');
     }
 
@@ -786,6 +790,8 @@ class TripManagementController extends Controller
         $route = Route::where('operator_id', $operator->id)->findOrFail($tripId);
         $route->update(['departed_at' => now()]);
         OperatorAuditService::log('trip.departed', "Trip TRP-" . str_pad($route->id, 4, '0', STR_PAD_LEFT) . " marked as departed", $route);
+        Notification::send($route->confirmedPassengers(), new TripStatusChanged($route, 'departed'));
+
         return back()->with('success', 'Trip marked as departed.');
     }
 
@@ -798,6 +804,8 @@ class TripManagementController extends Controller
         $route = Route::where('operator_id', $operator->id)->findOrFail($tripId);
         $route->update(['arrived_at' => now()]);
         OperatorAuditService::log('trip.arrived', "Trip TRP-" . str_pad($route->id, 4, '0', STR_PAD_LEFT) . " marked as arrived", $route);
+        Notification::send($route->confirmedPassengers(), new TripStatusChanged($route, 'arrived'));
+
         return back()->with('success', 'Trip marked as arrived.');
     }
 
@@ -854,6 +862,7 @@ class TripManagementController extends Controller
     {
         $operator = $this->getOperator();
         $route = Route::where('operator_id', $operator->id)->findOrFail($tripId);
+        $passengers = $route->confirmedPassengers();
         $confirmedBookings = $route->bookings()->where('status', 'confirmed')->get();
         $pendingCount = $route->bookings()->where('status', 'pending')->count();
 
@@ -870,6 +879,8 @@ class TripManagementController extends Controller
             $message = "Trip {$tripLabel} cancelled. ";
             $message .= "{$confirmedBookings->count()} confirmed and {$pendingCount} pending booking(s) were cancelled.";
             OperatorAuditService::log('trip.cancelled_with_notification', $message, $route);
+
+            Notification::send($passengers, new TripStatusChanged($route, 'cancelled'));
 
             return redirect()->route('operator.trips.index')->with('success', $message);
         } catch (\Exception $e) {

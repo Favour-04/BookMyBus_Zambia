@@ -13,7 +13,7 @@ class BusController extends Controller
      
     public function index(Request $request): JsonResponse
     {
-        $buses = Bus::where('operator_id', auth()->guard('operator_api')->id())
+        $buses = Bus::where('operator_id', auth()->guard('operator')->id())
             ->withCount('routes')
             ->get();
 
@@ -34,7 +34,7 @@ class BusController extends Controller
         ]);
 
         $bus = Bus::create(array_merge($data, [
-            'operator_id' => auth()->guard('operator_api')->id(),
+            'operator_id' => auth()->guard('operator')->id(),
         ]));
 
         return response()->json([
@@ -47,7 +47,7 @@ class BusController extends Controller
     public function update(Request $request, int $id): JsonResponse
     {
         $bus = Bus::where('id', $id)
-            ->where('operator_id', auth()->guard('operator_api')->id())
+            ->where('operator_id', auth()->guard('operator')->id())
             ->firstOrFail();
 
         $data = $request->validate([
@@ -71,7 +71,7 @@ class BusController extends Controller
     public function destroy(Request $request, int $id): JsonResponse
     {
         $bus = Bus::where('id', $id)
-            ->where('operator_id', auth()->guard('operator_api')->id())
+            ->where('operator_id', auth()->guard('operator')->id())
             ->firstOrFail();
 
         $hasActiveRoutes = $bus->routes()->where('is_active', true)->exists();

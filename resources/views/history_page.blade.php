@@ -156,6 +156,10 @@
     </nav>
 
     <main class="pt-24 pb-16">
+      @php
+          $ticket = $booking->ticket ?? null;
+          $qrData = $ticket?->qr_code ?? $booking->reference_id;
+      @endphp
       @if($booking && $booking->isConfirmed())
       <!-- Payment Successful Banner -->
       <section class="bg-primary-container py-6 mb-8">
@@ -251,7 +255,7 @@
                   <div class="w-32 h-32 bg-white flex items-center justify-center border-4 border-white">
                     <img alt="Ticket QR Code" 
                          class="w-full h-full" 
-                         src="https://api.qrserver.com/v1/create-qr-code/?size=128x128&data={{ urlencode($booking->reference_id) }}"/>
+                         src="https://api.qrserver.com/v1/create-qr-code/?size=128x128&data={{ urlencode($qrData) }}"/>
                   </div>
                 </div>
                 <p class="mt-4 text-[10px] font-bold text-on-surface-variant uppercase tracking-[0.2em]">Scan at boarding</p>
@@ -272,10 +276,24 @@
               <p class="text-xs uppercase tracking-widest text-on-surface-variant font-bold">Total Fare</p>
               <p class="text-2xl font-extrabold font-headline text-primary">ZMW {{ number_format($booking->amount, 2) }}</p>
             </div>
-            <a href="{{ route('trips.search') }}" 
-               class="px-6 py-3 rounded-xl bg-primary text-white font-bold text-sm hover:bg-primary-container transition-colors">
-              Book Another Trip
-            </a>
+            <div class="flex items-center gap-3">
+              @if($ticket)
+              <a href="{{ route('tickets.show', $ticket->qr_code) }}"
+                 class="px-5 py-3 rounded-xl border border-primary text-primary font-bold text-sm hover:bg-primary/5 transition-colors flex items-center gap-2">
+                <span class="material-symbols-outlined text-sm">ticket</span>
+                View Ticket
+              </a>
+              @endif
+              <button onclick="window.print()"
+                      class="px-5 py-3 rounded-xl border border-outline-variant/30 text-on-surface-variant font-bold text-sm hover:bg-surface-container-low transition-colors flex items-center gap-2">
+                <span class="material-symbols-outlined text-sm">print</span>
+                Print
+              </button>
+              <a href="{{ route('trips.search') }}"
+                 class="px-6 py-3 rounded-xl bg-primary text-white font-bold text-sm hover:bg-primary-container transition-colors">
+                Book Another Trip
+              </a>
+            </div>
           </div>
         </div>
       </section>

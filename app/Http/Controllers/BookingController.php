@@ -6,8 +6,11 @@ use App\Models\Route;
 use App\Models\Booking;
 use App\Models\Operator;
 use App\Models\PromoCode;
+use App\Models\Ticket;
+use App\Notifications\BookingCancelled;
 use App\Services\FareCalculationService;
 use App\Services\PaymentService;
+use App\Services\RefundCalculationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
@@ -211,9 +214,72 @@ class BookingController extends Controller
         }
     
         // Load relationships for the ticket display
-        $booking->load(['route.bus', 'route.operator']);
+        $booking->load(['route.bus', 'route.operator', 'ticket']);
         
         return view('history_page', compact('booking'));
+    }
+
+    /**
+     * Display the traveler's digital ticket by QR code.
+     * Lets a traveler re-open their ticket after booking.
+     */
+    public function showTicket(string $qrCode)
+    {
+        $ticket = Ticket::with(['booking.route.bus', 'booking.route.operator'])
+            ->where('qr_code', $qrCode)
+            ->where('user_id', Auth::id())
+            ->firstOrFail();
+
+        $booking = $ticket->booking;
+
+        return view('ticket', compact('ticket', 'booking'));
+    }
+
+    /**
+     * Cancel a traveler's booking.
+     *
+     * Pending (unpaid) bookings are simply released. Confirmed bookings are
+     * cancelled with a refund calculated via RefundCalculationService (per the
+     * operator's cancellation rules). Past trips (departure already passed)
+     * and already-cancelled bookings cannot be cancelled.
+     */
+    public function cancel(Booking $booking, RefundCalculationService $refundService)
+    {
+        if ($booking->user_id !== Auth::id()) {
+            abort(403);
+        }
+
+        $booking->load('route');
+
+        if ($booking->status === 'cancelled') {
+            return back()->withErrors(['cancel' => 'This booking has already been cancelled.'])
+                ->with('active_tab', 'bookings');
+        }
+
+        // Past trips (departure already passed) cannot be cancelled.
+        if ($route = $booking->route) {
+            $departure = Carbon::parse($route->travel_date)->setTimeFromTimeString((string) $route->departure_time);
+            if (now()->isAfter($departure)) {
+                return back()->withErrors(['cancel' => 'This trip has already departed and can no longer be cancelled.'])
+                    ->with('active_tab', 'bookings');
+            }
+        }
+
+        // Confirmed bookings are cancelled with a refund calculation; pending
+        // (unpaid) bookings are simply released.
+        if ($booking->status === 'confirmed') {
+            $refund = $refundService->processCancellation($booking);
+            $booking->user?->notify(new BookingCancelled($booking));
+
+            return back()->with('status', 'Booking cancelled. ' . $refund['message'])
+                ->with('active_tab', 'bookings');
+        }
+
+        $booking->cancel();
+        $booking->user?->notify(new BookingCancelled($booking));
+
+        return back()->with('status', 'Booking cancelled successfully.')
+            ->with('active_tab', 'bookings');
     }
 
     /**
@@ -238,7 +304,7 @@ class BookingController extends Controller
         $error = null;
 
         if ($request->filled('reference_id') || $request->filled('phone_number')) {
-            $query = Booking::with(['route.bus', 'route.operator']);
+            $query = Booking::with(['route.bus', 'route.operator', 'ticket']);
 
             if ($request->filled('reference_id')) {
                 $query->where('reference_id', 'like', '%' . $request->reference_id . '%');

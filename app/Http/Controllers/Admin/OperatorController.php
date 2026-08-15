@@ -52,6 +52,68 @@ class OperatorController extends Controller
     }
 
     /**
+     * Show the form to create a new operator.
+     */
+    public function create()
+    {
+        return view('admin.operators.create');
+    }
+
+    /**
+     * Store a newly created operator.
+     */
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'company_name'                => 'required|string|max:255',
+            'email'                       => 'required|email|unique:operators,email',
+            'phone_number'                => 'required|string|unique:operators,phone_number',
+            'password'                    => 'required|string|min:8|confirmed',
+            'tpin'                        => 'nullable|string|max:50',
+            'address'                     => 'nullable|string|max:255',
+            'contact_person_name'         => 'nullable|string|max:255',
+            'contact_person_title'        => 'nullable|string|max:255',
+            'business_registration_number'=> 'nullable|string|max:100',
+            'business_registration_date'  => 'nullable|date',
+            'business_type'               => 'nullable|string|max:100',
+            'description'                 => 'nullable|string|max:1000',
+            'website'                     => 'nullable|url|max:255',
+            'mark_verified'               => 'nullable',
+        ]);
+
+        $operator = Operator::create([
+            'company_name'                => $validated['company_name'],
+            'email'                       => $validated['email'],
+            'phone_number'                => $validated['phone_number'],
+            'password'                    => $validated['password'],
+            'tpin'                        => $validated['tpin'] ?? null,
+            'address'                     => $validated['address'] ?? null,
+            'contact_person_name'         => $validated['contact_person_name'] ?? null,
+            'contact_person_title'        => $validated['contact_person_title'] ?? null,
+            'business_registration_number'=> $validated['business_registration_number'] ?? null,
+            'business_registration_date'  => $validated['business_registration_date'] ?? null,
+            'business_type'               => $validated['business_type'] ?? null,
+            'description'                 => $validated['description'] ?? null,
+            'website'                     => $validated['website'] ?? null,
+            'is_verified'                 => $request->boolean('mark_verified'),
+            'verified_at'                 => $request->boolean('mark_verified') ? now() : null,
+            'verified_by'                 => $request->boolean('mark_verified') ? Auth::guard('admin')->id() : null,
+        ]);
+
+        AdminAuditService::log(
+            'operator.created',
+            "Created operator {$operator->company_name}",
+            $operator,
+            null,
+            ['is_verified' => $operator->is_verified],
+            $request
+        );
+
+        return redirect()->route('admin.operators.show', $operator->id)
+            ->with('success', "Operator {$operator->company_name} created successfully.");
+    }
+
+    /**
      * Show a single operator's profile, documents and activity.
      */
     public function show($id)

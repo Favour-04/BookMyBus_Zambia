@@ -20,7 +20,7 @@ class RefundCalculationService
         $operatorId = $route->operator_id;
 
         // Calculate hours until departure
-        $departureDateTime = Carbon::parse($route->travel_date . ' ' . $route->departure_time);
+        $departureDateTime = Carbon::parse($route->travel_date)->setTimeFromTimeString((string) $route->departure_time);
         $hoursUntilDeparture = now()->diffInHours($departureDateTime, false);
 
         // If departure has already passed, no refund

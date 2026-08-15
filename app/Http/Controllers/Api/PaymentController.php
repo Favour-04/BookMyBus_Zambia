@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Booking;
 use App\Models\Payment;
 use App\Models\Ticket;
+use App\Notifications\TicketIssued;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
@@ -77,7 +78,9 @@ class PaymentController extends Controller
             return response()->json(['message' => 'Payment already processed.'], 409);
         }
 
-        DB::transaction(function () use ($payment, $data) {
+        $ticket = null;
+
+        DB::transaction(function () use ($payment, $data, &$ticket) {
             if ($data['status'] === 'successful') {
                 $payment->markSuccessful(
                     $data['transaction_reference'],
@@ -85,7 +88,7 @@ class PaymentController extends Controller
                 );
 
                 // Issue digital ticket
-                Ticket::create([
+                $ticket = Ticket::create([
                     'booking_id' => $payment->booking->id,
                     'user_id'    => $payment->booking->user_id,
                 ]);
@@ -93,6 +96,11 @@ class PaymentController extends Controller
                 $payment->markFailed($data['gateway_response'] ?? []);
             }
         });
+
+        // Notify the traveler that their ticket has been issued.
+        if ($ticket && $payment->booking->user) {
+            $payment->booking->user->notify(new TicketIssued($payment->booking, $ticket));
+        }
 
         return response()->json([
             'message' => $data['status'] === 'successful'

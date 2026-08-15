@@ -181,7 +181,7 @@ class BookingManagementController extends Controller
 
         $validated = $request->validate([
             'passenger_name' => 'required|string|max:255',
-            'phone_number'   => 'required|string|max:20',
+            'passenger_phone'   => 'required|string|max:20',
             'passenger_id_number' => 'nullable|string|max:50',
             'seat_number'    => [
                 'required',
@@ -206,7 +206,7 @@ class BookingManagementController extends Controller
         $original = $booking->getOriginal();
         $booking->update([
             'passenger_name' => $validated['passenger_name'],
-            'passenger_phone' => $validated['phone_number'],
+            'passenger_phone' => $validated['passenger_phone'],
             'passenger_id_number' => $validated['passenger_id_number'] ?? null,
             'seat_number'    => $validated['seat_number'],
             'amount'         => $validated['amount'],
@@ -396,7 +396,7 @@ class BookingManagementController extends Controller
 
             if ($request->filled('phone_number')) {
                 $phone = preg_replace('/[^0-9]/', '', $request->phone_number);
-                $query->where('phone_number', 'like', '%' . $phone . '%');
+                $query->where('passenger_phone', 'like', '%' . $phone . '%');
             }
 
             $booking = $query->first();

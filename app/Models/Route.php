@@ -116,4 +116,14 @@ class Route extends Model
     {
         return !is_null($this->arrived_at);
     }
+
+    /**
+     * The users who have a confirmed booking on this route.
+     */
+    public function confirmedPassengers()
+    {
+        $userIds = $this->bookings()->where('status', 'confirmed')->pluck('user_id')->unique();
+
+        return User::whereIn('id', $userIds)->get();
+    }
 }

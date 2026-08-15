@@ -48,7 +48,7 @@ class TicketController extends Controller
             ->firstOrFail();
 
         // Ensure ticket belongs to a route this operator owns
-        if ($ticket->booking->route->operator_id !== auth()->guard('operator_api')->id()) {
+        if ($ticket->booking->route->operator_id !== auth()->guard('operator')->id()) {
             return response()->json(['message' => 'This ticket does not belong to your route.'], 403);
         }
 

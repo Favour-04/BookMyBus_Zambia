@@ -149,23 +149,23 @@
 
                         <!-- Phone Number -->
                         <div class="mb-5">
-                            <label for="phone_number" class="block text-xs font-bold uppercase text-on-surface-variant tracking-wider mb-2">Phone Number</label>
-                            <input type="text" id="phone_number" name="phone_number"
-                                   value="{{ old('phone_number', $booking->phone_number) }}"
-                                   class="w-full px-4 py-3 bg-surface-container-low border border-outline-variant/30 rounded-xl text-sm focus:ring-2 focus:ring-primary focus:border-transparent transition-all @error('phone_number') border-error @enderror"
+                            <label for="passenger_phone" class="block text-xs font-bold uppercase text-on-surface-variant tracking-wider mb-2">Phone Number</label>
+                            <input type="text" id="passenger_phone" name="passenger_phone"
+                                   value="{{ old('passenger_phone', $booking->passenger_phone) }}"
+                                   class="w-full px-4 py-3 bg-surface-container-low border border-outline-variant/30 rounded-xl text-sm focus:ring-2 focus:ring-primary focus:border-transparent transition-all @error('passenger_phone') border-error @enderror"
                                    required>
-                            @error('phone_number')
+                            @error('passenger_phone')
                                 <p class="text-xs text-error mt-1">{{ $message }}</p>
                             @enderror
                         </div>
 
                         <!-- ID Number -->
                         <div class="mb-5">
-                            <label for="id_number" class="block text-xs font-bold uppercase text-on-surface-variant tracking-wider mb-2">ID Number <span class="text-on-surface-variant/50">(optional)</span></label>
-                            <input type="text" id="id_number" name="id_number"
-                                   value="{{ old('id_number', $booking->id_number) }}"
-                                   class="w-full px-4 py-3 bg-surface-container-low border border-outline-variant/30 rounded-xl text-sm focus:ring-2 focus:ring-primary focus:border-transparent transition-all @error('id_number') border-error @enderror">
-                            @error('id_number')
+                            <label for="passenger_id_number" class="block text-xs font-bold uppercase text-on-surface-variant tracking-wider mb-2">ID Number <span class="text-on-surface-variant/50">(optional)</span></label>
+                            <input type="text" id="passenger_id_number" name="passenger_id_number"
+                                   value="{{ old('passenger_id_number', $booking->passenger_id_number) }}"
+                                   class="w-full px-4 py-3 bg-surface-container-low border border-outline-variant/30 rounded-xl text-sm focus:ring-2 focus:ring-primary focus:border-transparent transition-all @error('passenger_id_number') border-error @enderror">
+                            @error('passenger_id_number')
                                 <p class="text-xs text-error mt-1">{{ $message }}</p>
                             @enderror
                         </div>

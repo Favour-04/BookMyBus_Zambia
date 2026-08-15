@@ -40,12 +40,14 @@ class AdminAuditLog extends Model
     public function eventLabel(): string
     {
         $labels = [
-            'operator.verified'  => 'Verified Operator',
-            'operator.suspended' => 'Suspended Operator',
+            'operator.verified'     => 'Verified Operator',
+            'operator.suspended'    => 'Suspended Operator',
+            'operator.created'      => 'Created Operator',
             'operator.deleted'   => 'Removed Operator',
             'operator.viewed'    => 'Viewed Operator',
             'user.suspended'     => 'Suspended User',
             'user.activated'     => 'Activated User',
+            'user.created'       => 'Created User',
             'user.viewed'        => 'Viewed User',
             'user.deleted'       => 'Removed User',
             'booking.viewed'     => 'Viewed Booking',
