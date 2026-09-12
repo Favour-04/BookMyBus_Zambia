@@ -187,21 +187,7 @@
     <!-- Hero Section -->
     <section
       style="position: relative; width: 100%; min-height: 650px; display: flex; align-items: center; background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://lh3.googleusercontent.com/aida-public/AB6AXuDk0Dlz3kz8govksGNNICUM9-j8vL7Yon5vj-d_62Af9GeHSg1Xug_R0TlK9veZpFbgC_oejPsCpAQr0l8wvuUN_iOXbwgj4WRvh1fVY3FX3BZoWNw2sz9d4mW33rERvAfkJ_63pxYzhVQB46HITvif6J4bFr2yh4PYyGlUt3Kw4J9BJ7JhORkiTuUg1gplwcGy3laWI4Uvvnd6t1tnX1V9GktQ9QqNQVifCYfXCi60Wi4uTGLJ96VPI73U0OijKpre_xvwA1JOg7PX'); background-size: cover; background-position: center; overflow: hidden; padding-top: 5rem; padding-bottom: 5rem;">
-      {{-- <section
-        style="position: relative; width: 100%; min-height: 600px; display: flex; align-items: center; background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://lh3.googleusercontent.com/aida-public/AB6AXuDk0Dlz3kz8govksGNNICUM9-j8vL7Yon5vj-d_62Af9GeHSg1Xug_R0TlK9veZpFbgC_oejPsCpAQr0l8wvuUN_iOXbwgj4WRvh1fVY3FX3BZoWNw2sz9d4mW33rERvAfkJ_63pxYzhVQB46HITvif6J4bFr2yh4PYyGlUt3Kw4J9BJ7JhORkiTuUg1gplwcGy3laWI4Uvvnd6t1tnX1V9GktQ9QqNQVifCYfXCi60Wi4uTGLJ96VPI73U0OijKpre_xvwA1JOg7PX'); background-size: cover; background-position: center; overflow: hidden;">
-        --}}
-        {{-- <section
-          style="position: relative; width: 100%; min-height: 550px; background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDk0Dlz3kz8govksGNNICUM9-j8vL7Yon5vj-d_62Af9GeHSg1Xug_R0TlK9veZpFbgC_oejPsCpAQr0l8wvuUN_iOXbwgj4WRvh1fVY3FX3BZoWNw2sz9d4mW33rERvAfkJ_63pxYzhVQB46HITvif6J4bFr2yh4PYyGlUt3Kw4J9BJ7JhORkiTuUg1gplwcGy3laWI4Uvvnd6t1tnX1V9GktQ9QqNQVifCYfXCi60Wi4uTGLJ96VPI73U0OijKpre_xvwA1JOg7PX'); background-size: cover; background-position: center; background-color: #000; overflow: hidden;">
-          --}}
-          {{-- <div
-            style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none;">
-            <img
-              src="https://lh3.googleusercontent.com/aida-public/AB6AXuDk0Dlz3kz8govksGNNICUM9-j8vL7Yon5vj-d_62Af9GeHSg1Xug_R0TlK9veZpFbgC_oejPsCpAQr0l8wvuUN_iOXbwgj4WRvh1fVY3FX3BZoWNw2sz9d4mW33rERvAfkJ_63pxYzhVQB46HITvif6J4bFr2yh4PYyGlUt3Kw4J9BJ7JhORkiTuUg1gplwcGy3laWI4Uvvnd6t1tnX1V9GktQ9QqNQVifCYfXCi60Wi4uTGLJ96VPI73U0OijKpre_xvwA1JOg7PX"
-              style="width: 100%; height: 100%; object-fit: cover; opacity: 0.6; display: block;">
-          </div> --}}
-          <div style="position: relative; z-index: 10; width: 100%;"> {{-- <div
-              style="position: relative; z-index: 10; width: 100%; min-height: 550px; display: flex; flex-direction: column; justify-content: center;">
-              --}}
+          <div style="position: relative; z-index: 10; width: 100%;">
               <div class="max-w-7xl mx-auto w-full px-6">
                 <div class="max-w-3xl mb-12">
                   <h1

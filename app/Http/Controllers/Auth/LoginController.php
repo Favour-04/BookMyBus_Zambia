@@ -27,14 +27,6 @@ class LoginController extends Controller
             'password' => 'required',
         ]);
 
-    //     dd([
-    //     'session_id'       => session()->getId(),
-    //     'session_all'      => session()->all(),
-    //     'operator_check'   => Auth::guard('operator')->check(),
-    //     'operator_user'    => Auth::guard('operator')->user(),
-    //     'web_check'        => Auth::guard('web')->check(),
-    // ]);
-
         if (Auth::guard('web')->attempt(
             $request->only('email', 'password'),
             $request->filled('remember')
