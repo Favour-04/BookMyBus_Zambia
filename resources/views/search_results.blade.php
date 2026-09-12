@@ -97,6 +97,58 @@
     h3 {
       font-family: 'Manrope', sans-serif;
     }
+
+    /* Dual-handle price range slider */
+    .range-slider-wrap {
+      position: relative;
+      height: 4px;
+    }
+
+    .range-slider-wrap input[type="range"] {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      margin: 0;
+      background: transparent;
+      pointer-events: none;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+
+    .range-slider-wrap input[type="range"]::-webkit-slider-thumb {
+      pointer-events: auto;
+      -webkit-appearance: none;
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 9999px;
+      background: #00601f;
+      border: 2px solid white;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+      cursor: pointer;
+      margin-top: 0;
+    }
+
+    .range-slider-wrap input[type="range"]::-moz-range-thumb {
+      pointer-events: auto;
+      width: 16px;
+      height: 16px;
+      border-radius: 9999px;
+      background: #00601f;
+      border: 2px solid white;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+      cursor: pointer;
+    }
+
+    .range-slider-wrap input[type="range"]::-webkit-slider-runnable-track {
+      background: transparent;
+    }
+
+    .range-slider-wrap input[type="range"]::-moz-range-track {
+      background: transparent;
+    }
   </style>
 </head>
 
@@ -135,64 +187,92 @@
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
       <!-- Filters Sidebar -->
       <aside class="lg:col-span-3 space-y-8">
-        <div class="bg-surface-container-low p-6 rounded-2xl">
-          <h3 class="font-headline font-extrabold text-lg mb-6">Filters</h3>
+        <form id="filterForm" method="GET" action="{{ route('trips.search') }}" class="bg-surface-container-low p-6 rounded-2xl">
+          <div class="flex items-center justify-between mb-6">
+            <h3 class="font-headline font-extrabold text-lg">Filters</h3>
+            @if(request()->hasAny(['min_price', 'max_price', 'time_of_day', 'operators']))
+            <a href="{{ route('trips.search', request()->only(['origin', 'destination', 'travel_date', 'passengers'])) }}"
+              class="text-[10px] font-bold uppercase tracking-wide text-secondary hover:underline">Clear</a>
+            @endif
+          </div>
+
+          <!-- Preserve the original search criteria across filter submissions -->
+          <input type="hidden" name="origin" value="{{ request('origin') }}" />
+          <input type="hidden" name="destination" value="{{ request('destination') }}" />
+          <input type="hidden" name="travel_date" value="{{ request('travel_date') }}" />
+          <input type="hidden" name="passengers" value="{{ request('passengers', 1) }}" />
+
           <!-- Time of Day -->
           <div class="mb-8">
             <label class="text-[10px] uppercase tracking-widest font-bold text-zinc-400 mb-4 block">Time of Day</label>
             <div class="grid grid-cols-2 gap-2">
-              <button
-                class="flex flex-col items-center justify-center p-3 rounded-lg bg-surface-container-lowest hover:bg-primary/5 transition-colors group">
-                <span class="material-symbols-outlined text-zinc-400 group-hover:text-primary mb-1">wb_twilight</span>
-                <span class="text-[10px] font-bold">Dawn</span>
-              </button>
-              <button
-                class="flex flex-col items-center justify-center p-3 rounded-lg bg-primary/10 text-primary transition-colors">
-                <span class="material-symbols-outlined mb-1">light_mode</span>
-                <span class="text-[10px] font-bold">Morning</span>
-              </button>
-              <button
-                class="flex flex-col items-center justify-center p-3 rounded-lg bg-surface-container-lowest hover:bg-primary/5 transition-colors group">
-                <span class="material-symbols-outlined text-zinc-400 group-hover:text-primary mb-1">wb_sunny</span>
-                <span class="text-[10px] font-bold">Afternoon</span>
-              </button>
-              <button
-                class="flex flex-col items-center justify-center p-3 rounded-lg bg-surface-container-lowest hover:bg-primary/5 transition-colors group">
-                <span class="material-symbols-outlined text-zinc-400 group-hover:text-primary mb-1">bedtime</span>
-                <span class="text-[10px] font-bold">Night</span>
-              </button>
+              @php
+                $periods = [
+                  'dawn' => ['icon' => 'wb_twilight', 'label' => 'Dawn'],
+                  'morning' => ['icon' => 'light_mode', 'label' => 'Morning'],
+                  'afternoon' => ['icon' => 'wb_sunny', 'label' => 'Afternoon'],
+                  'night' => ['icon' => 'bedtime', 'label' => 'Night'],
+                ];
+                $selectedPeriods = (array) request('time_of_day', []);
+              @endphp
+              @foreach($periods as $key => $period)
+                @php $isActive = in_array($key, $selectedPeriods); @endphp
+                <label
+                  class="time-of-day-btn flex flex-col items-center justify-center p-3 rounded-lg cursor-pointer transition-colors group {{ $isActive ? 'bg-primary/10 text-primary' : 'bg-surface-container-lowest hover:bg-primary/5' }}">
+                  <input type="checkbox" name="time_of_day[]" value="{{ $key }}" class="time-of-day-checkbox sr-only"
+                    {{ $isActive ? 'checked' : '' }} />
+                  <span
+                    class="material-symbols-outlined mb-1 {{ $isActive ? '' : 'text-zinc-400 group-hover:text-primary' }}">{{ $period['icon'] }}</span>
+                  <span class="text-[10px] font-bold">{{ $period['label'] }}</span>
+                </label>
+              @endforeach
             </div>
           </div>
+
           <!-- Price Range -->
           <div class="mb-8">
             <label class="text-[10px] uppercase tracking-widest font-bold text-zinc-400 mb-4 block">Price Range
               (ZMW)</label>
-            <input class="w-full accent-primary h-1 bg-zinc-300 rounded-lg appearance-none cursor-pointer" max="800"
-              min="150" type="range" />
-            <div class="flex justify-between mt-2 text-xs font-bold text-zinc-600">
-              <span>K150</span>
-              <span>K800</span>
+            @php
+              $priceFloor = 150;
+              $priceCeil = 800;
+              $minPrice = (int) request('min_price', $priceFloor);
+              $maxPrice = (int) request('max_price', $priceCeil);
+            @endphp
+            <div class="range-slider-wrap mt-4">
+              <div class="absolute inset-0 h-1 bg-zinc-300 rounded-lg"></div>
+              <div id="priceRangeTrack" class="absolute h-1 bg-primary rounded-lg"></div>
+              <input type="range" id="minPriceSlider" name="min_price" min="{{ $priceFloor }}" max="{{ $priceCeil }}"
+                step="10" value="{{ $minPrice }}" />
+              <input type="range" id="maxPriceSlider" name="max_price" min="{{ $priceFloor }}" max="{{ $priceCeil }}"
+                step="10" value="{{ $maxPrice }}" />
+            </div>
+            <div class="flex justify-between mt-3 text-xs font-bold text-zinc-600">
+              <span id="minPriceLabel">K{{ $minPrice }}</span>
+              <span id="maxPriceLabel">K{{ $maxPrice }}</span>
             </div>
           </div>
+
           <!-- Operators -->
           <div>
             <label class="text-[10px] uppercase tracking-widest font-bold text-zinc-400 mb-4 block">Preferred
               Operator</label>
             <div class="space-y-3">
               @php
-                $uniqueOperators = $trips->unique('operator_id')->pluck('operator');
+                $selectedOperators = array_map('intval', (array) request('operators', []));
               @endphp
-              @forelse($uniqueOperators as $operator)
+              @forelse($allOperators ?? [] as $operator)
               <label class="flex items-center gap-3 cursor-pointer group">
-                <input type="checkbox" class="w-5 h-5 rounded accent-primary" />
-                <span class="text-sm font-medium">{{ $operator->name }}</span>
+                <input type="checkbox" name="operators[]" value="{{ $operator->id }}" class="filter-auto-submit w-5 h-5 rounded accent-primary"
+                  {{ in_array($operator->id, $selectedOperators) ? 'checked' : '' }} />
+                <span class="text-sm font-medium">{{ $operator->company_name }}</span>
               </label>
               @empty
               <p class="text-xs text-zinc-500">No operators available</p>
               @endforelse
             </div>
           </div>
-        </div>
+        </form>
         <!-- Quick Map View Ad -->
         <div class="relative overflow-hidden rounded-2xl h-48 group cursor-pointer">
           <img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
@@ -235,11 +315,11 @@
             <!-- Operator Info -->
             <div class="flex md:flex-col items-center md:items-start gap-4 md:gap-2 w-full md:w-32 flex-shrink-0">
               <div class="w-14 h-14 bg-surface-container-high rounded-full flex items-center justify-center p-2">
-                <img class="w-full h-full object-contain rounded-full" alt="{{ $trip->operator->name ?? 'Operator' }} logo"
-                  src="https://placehold.co/56x56?text={{ urlencode($trip->operator->name ?? 'Operator') }}" />
+                <img class="w-full h-full object-contain rounded-full" alt="{{ $trip->operator->company_name ?? 'Operator' }} logo"
+                  src="https://placehold.co/56x56?text={{ urlencode($trip->operator->company_name ?? 'Operator') }}" />
               </div>
               <div>
-                <h4 class="font-headline font-extrabold text-sm text-on-surface">{{ $trip->operator->name ?? 'Unknown Operator' }}</h4>
+                <h4 class="font-headline font-extrabold text-sm text-on-surface">{{ $trip->operator->company_name ?? 'Unknown Operator' }}</h4>
                 <div class="flex items-center gap-1 text-[10px] text-zinc-400 font-bold uppercase">
                   <span class="material-symbols-outlined text-[12px] text-secondary"
                     style="font-variation-settings: 'FILL' 1;">star</span>
@@ -370,6 +450,84 @@
       <span class="text-[10px] font-bold">Profile</span>
     </button>
   </div>
+
+  <script>
+    (function () {
+      var form = document.getElementById('filterForm');
+
+      // --- Time of day toggle buttons: restyle on check/uncheck, then re-submit ---
+      document.querySelectorAll('.time-of-day-checkbox').forEach(function (checkbox) {
+        checkbox.addEventListener('change', function () {
+          var label = checkbox.closest('.time-of-day-btn');
+          var icon = label.querySelector('.material-symbols-outlined');
+
+          if (checkbox.checked) {
+            label.classList.remove('bg-surface-container-lowest', 'hover:bg-primary/5');
+            label.classList.add('bg-primary/10', 'text-primary');
+            icon.classList.remove('text-zinc-400', 'group-hover:text-primary');
+          } else {
+            label.classList.add('bg-surface-container-lowest', 'hover:bg-primary/5');
+            label.classList.remove('bg-primary/10', 'text-primary');
+            icon.classList.add('text-zinc-400', 'group-hover:text-primary');
+          }
+
+          form.submit();
+        });
+      });
+
+      // --- Operator checkboxes: re-submit on change ---
+      document.querySelectorAll('.filter-auto-submit').forEach(function (checkbox) {
+        checkbox.addEventListener('change', function () {
+          form.submit();
+        });
+      });
+
+      // --- Dual-handle price range slider ---
+      var minSlider = document.getElementById('minPriceSlider');
+      var maxSlider = document.getElementById('maxPriceSlider');
+      var minLabel = document.getElementById('minPriceLabel');
+      var maxLabel = document.getElementById('maxPriceLabel');
+      var track = document.getElementById('priceRangeTrack');
+      var gap = 10; // minimum ZMW gap kept between the two handles
+
+      function updateTrack() {
+        var min = parseInt(minSlider.value, 10);
+        var max = parseInt(maxSlider.value, 10);
+        var floor = parseInt(minSlider.min, 10);
+        var ceil = parseInt(minSlider.max, 10);
+        var range = ceil - floor;
+
+        var left = ((min - floor) / range) * 100;
+        var right = ((max - floor) / range) * 100;
+
+        track.style.left = left + '%';
+        track.style.width = Math.max(right - left, 0) + '%';
+
+        minLabel.textContent = 'K' + min;
+        maxLabel.textContent = 'K' + max;
+      }
+
+      minSlider.addEventListener('input', function () {
+        if (parseInt(minSlider.value, 10) > parseInt(maxSlider.value, 10) - gap) {
+          minSlider.value = parseInt(maxSlider.value, 10) - gap;
+        }
+        updateTrack();
+      });
+
+      maxSlider.addEventListener('input', function () {
+        if (parseInt(maxSlider.value, 10) < parseInt(minSlider.value, 10) + gap) {
+          maxSlider.value = parseInt(minSlider.value, 10) + gap;
+        }
+        updateTrack();
+      });
+
+      // Only submit once the user releases the handle, not on every pixel of drag
+      minSlider.addEventListener('change', function () { form.submit(); });
+      maxSlider.addEventListener('change', function () { form.submit(); });
+
+      updateTrack();
+    })();
+  </script>
 </body>
 
 </html>

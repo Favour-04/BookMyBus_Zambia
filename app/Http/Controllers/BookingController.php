@@ -13,6 +13,8 @@ use App\Services\PaymentService;
 use App\Services\RefundCalculationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Carbon\Carbon;
 
 class BookingController extends Controller
@@ -32,14 +34,17 @@ class BookingController extends Controller
             ->pluck('seat_number')
             ->toArray();
 
+        $availableRemaining = $route->bus->seat_capacity - count($bookedSeats);
+        $passengers = max(1, min((int) request()->query('passengers', 1), max($availableRemaining, 1)));
+
         $searchBackUrl = route('trips.search', [
             'origin' => $route->origin,
             'destination' => $route->destination,
             'travel_date' => $route->travel_date->format('Y-m-d'),
-            'passengers' => request()->query('passengers', 1),
+            'passengers' => $passengers,
         ]);
 
-        return view('seat_selection', compact('route', 'bookedSeats', 'searchBackUrl'));
+        return view('seat_selection', compact('route', 'bookedSeats', 'searchBackUrl', 'passengers'));
     }
 
     /**
@@ -49,45 +54,68 @@ class BookingController extends Controller
     {
         $validated = $request->validate([
             'route_id' => 'required|exists:routes,id',
-            'seat_number' => 'required|integer|min:1',
-            'passenger_name' => 'required|string|max:255',
-            'id_number' => 'required|string|max:50',
-            'phone' => 'required|string|max:20',
+            'passengers' => 'required|array|min:1',
+            'passengers.*.seat_number' => 'required|integer|min:1',
+            'passengers.*.passenger_name' => 'required|string|max:255',
+            'passengers.*.id_number' => 'required|string|max:50',
+            'passengers.*.phone' => 'required|string|max:20',
         ]);
 
         $route = Route::with('bus')->findOrFail($validated['route_id']);
+        $seatNumbers = array_column($validated['passengers'], 'seat_number');
 
-        if ($validated['seat_number'] > $route->bus->seat_capacity) {
+        if (count($seatNumbers) !== count(array_unique($seatNumbers))) {
             return back()
-                ->withErrors(['seat_number' => 'Please select a valid seat.'])
+                ->withErrors(['seat_numbers' => 'Each passenger must be assigned a different seat.'])
                 ->withInput();
         }
 
-        if (in_array($validated['seat_number'], $route->bookedSeats(), true)) {
+        foreach ($seatNumbers as $seatNumber) {
+            if ($seatNumber > $route->bus->seat_capacity) {
+                return back()
+                    ->withErrors(['seat_numbers' => 'Please select valid seats.'])
+                    ->withInput();
+            }
+        }
+
+        if (array_intersect($seatNumbers, $route->bookedSeats())) {
             return back()
-                ->withErrors(['seat_number' => 'This seat was just taken. Please choose another seat.'])
+                ->withErrors(['seat_numbers' => 'One of the selected seats was just taken. Please choose again.'])
                 ->withInput();
         }
 
-        // Calculate the fare using FareCalculationService
+        // Fare is the same per seat for a given route/promo, so this only needs to run once.
         $fareResult = $fareService->calculate($route);
 
-        $booking = Booking::create([
-            'user_id' => Auth::id(),
-            'route_id' => $validated['route_id'],
-            'seat_number' => $validated['seat_number'],
-            'passenger_name' => $validated['passenger_name'],
-            'passenger_id_number' => $validated['id_number'],
-            'passenger_phone' => $validated['phone'],
-            'amount' => $fareResult['total'],
-            'base_fare' => $fareResult['base_fare'],
-            'service_fee_total' => $fareResult['service_fee_total'],
-            'discount_amount' => $fareResult['discount'],
-            'promo_code_id' => $fareResult['promo_code_id'],
-            'status' => 'pending',
-        ]);
+        // Multiple seats in one submission share a group_reference so the payment
+        // step (paymentTicket / processPayment) can treat them as a single transaction.
+        $groupReference = count($validated['passengers']) > 1
+            ? 'GRP-' . strtoupper(Str::random(8))
+            : null;
 
-        return redirect()->route('payment.ticket', $booking->id);
+        $bookings = collect();
+
+        DB::transaction(function () use ($validated, $fareResult, $groupReference, &$bookings) {
+            foreach ($validated['passengers'] as $passenger) {
+                $bookings->push(Booking::create([
+                    'user_id' => Auth::id(),
+                    'route_id' => $validated['route_id'],
+                    'seat_number' => $passenger['seat_number'],
+                    'passenger_name' => $passenger['passenger_name'],
+                    'passenger_id_number' => $passenger['id_number'],
+                    'passenger_phone' => $passenger['phone'],
+                    'amount' => $fareResult['total'],
+                    'base_fare' => $fareResult['base_fare'],
+                    'service_fee_total' => $fareResult['service_fee_total'],
+                    'discount_amount' => $fareResult['discount'],
+                    'promo_code_id' => $fareResult['promo_code_id'],
+                    'group_reference' => $groupReference,
+                    'status' => 'pending',
+                ]));
+            }
+        });
+
+        return redirect()->route('payment.ticket', $bookings->first()->id);
     }
 
     /**
@@ -99,17 +127,28 @@ class BookingController extends Controller
             ->where('id', $bookingId)
             ->where('user_id', Auth::id())
             ->firstOrFail();
-        
-        // Get fare breakdown from booking
-        $baseFare = $booking->base_fare ?? $booking->amount;
-        $serviceFeeTotal = $booking->service_fee_total ?? 0;
-        $discountAmount = $booking->discount_amount ?? 0;
-        $totalFare = $booking->amount;
+
+        // For a multi-seat purchase, pull in the sibling bookings sharing this
+        // group_reference so the payment page can show/charge for the whole party.
+        $groupBookings = $booking->group_reference
+            ? Booking::where('group_reference', $booking->group_reference)
+                ->where('user_id', Auth::id())
+                ->orderBy('seat_number')
+                ->get()
+            : collect([$booking]);
+
+        // Get fare breakdown across the whole group
+        $baseFare = $groupBookings->sum(fn (Booking $b) => $b->base_fare ?? $b->amount);
+        $serviceFeeTotal = $groupBookings->sum('service_fee_total');
+        $discountAmount = $groupBookings->sum('discount_amount');
+        $totalFare = $groupBookings->sum('amount');
 
         return view('payment_ticket', [
             'booking' => $booking,
+            'group_bookings' => $groupBookings,
             'passenger_name' => $booking->passenger_name,
             'seat_number' => $booking->seat_number,
+            'seat_numbers' => $groupBookings->pluck('seat_number')->all(),
             'total_fare' => $totalFare,
             'base_fare' => $baseFare,
             'service_fee_total' => $serviceFeeTotal,
@@ -160,12 +199,28 @@ class BookingController extends Controller
                 ->withInput();
         }
 
-        // Process the payment
-        $result = $paymentService->processMobileMoney(
-            $booking,
-            $validated['payment_provider'],
-            $validated['phone_number']
-        );
+        // Pull in any sibling bookings from the same multi-seat purchase so we
+        // charge (and confirm/ticket) the full group as one transaction.
+        $groupBookings = $booking->group_reference
+            ? Booking::where('group_reference', $booking->group_reference)
+                ->where('user_id', Auth::id())
+                ->get()
+            : collect([$booking]);
+
+        // A lone booking uses the original single-booking flow untouched;
+        // a multi-seat group uses the dedicated group method so every seat
+        // gets confirmed, ticketed, and notified — not just the primary one.
+        $result = $groupBookings->count() > 1
+            ? $paymentService->processMobileMoneyForGroup(
+                $groupBookings,
+                $validated['payment_provider'],
+                $validated['phone_number']
+            )
+            : $paymentService->processMobileMoney(
+                $booking,
+                $validated['payment_provider'],
+                $validated['phone_number']
+            );
 
         if ($result['success']) {
             return redirect()->route('booking.success', $booking->id)
@@ -215,8 +270,18 @@ class BookingController extends Controller
     
         // Load relationships for the ticket display
         $booking->load(['route.bus', 'route.operator', 'ticket']);
-        
-        return view('history_page', compact('booking'));
+
+        // Multi-seat purchases: bring in the rest of the party so the success
+        // page can list every ticket, not just the one that was paid through.
+        $groupBookings = $booking->group_reference
+            ? Booking::with(['ticket'])
+                ->where('group_reference', $booking->group_reference)
+                ->where('user_id', Auth::id())
+                ->orderBy('seat_number')
+                ->get()
+            : collect([$booking]);
+
+        return view('history_page', compact('booking', 'groupBookings'));
     }
 
     /**

@@ -29,6 +29,7 @@ class Booking extends Model
         'status',
         'held_until',
         'reference_id',
+        'group_reference',
         'id_number',
         'phone_number',
         'boarded_at',

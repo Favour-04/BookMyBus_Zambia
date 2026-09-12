@@ -43,9 +43,9 @@ class Route extends Model
     // Query scopes
     public function scopeSearch($query, $origin, $destination, $travel_date)
     {
-        return $query->where('origin', 'like', '%' . $origin . '%')
-                     ->where('destination', 'like', '%' . $destination . '%')
-                     ->where('travel_date', $travel_date);
+        return $query->where('origin', 'ilike', '%' . $origin . '%')
+            ->where('destination', 'ilike', '%' . $destination . '%')
+            ->where('travel_date', $travel_date);
     }
 
     // relationships definitions
@@ -78,7 +78,7 @@ class Route extends Model
     // helper methods
 
     // Get seat numbers already booked on this route (confirmed or pending).
-     
+
     public function bookedSeats(): array
     {
         return $this->bookings()
@@ -88,7 +88,7 @@ class Route extends Model
     }
 
     // Get all available seat numbers for this route.
-     
+
     public function availableSeats(): array
     {
         $total  = range(1, $this->bus->seat_capacity);
@@ -125,5 +125,38 @@ class Route extends Model
         $userIds = $this->bookings()->where('status', 'confirmed')->pluck('user_id')->unique();
 
         return User::whereIn('id', $userIds)->get();
+    }
+    public function scopePriceBetween($query, $min = null, $max = null)
+    {
+        return $query
+            ->when($min !== null && $min !== '', fn($q) => $q->where('fare', '>=', $min))
+            ->when($max !== null && $max !== '', fn($q) => $q->where('fare', '<=', $max));
+    }
+
+    public function scopeDepartureTimeOfDay($query, array $periods)
+    {
+        if (empty($periods)) {
+            return $query;
+        }
+
+        return $query->where(function ($q) use ($periods) {
+            foreach ($periods as $period) {
+                $q->orWhere(function ($q2) use ($period) {
+                    match ($period) {
+                        'dawn' => $q2->whereTime('departure_time', '>=', '04:00:00')
+                            ->whereTime('departure_time', '<', '08:00:00'),
+                        'morning' => $q2->whereTime('departure_time', '>=', '08:00:00')
+                            ->whereTime('departure_time', '<', '12:00:00'),
+                        'afternoon' => $q2->whereTime('departure_time', '>=', '12:00:00')
+                            ->whereTime('departure_time', '<', '17:00:00'),
+                        'night' => $q2->where(function ($q3) {
+                            $q3->whereTime('departure_time', '>=', '17:00:00')
+                                ->orWhereTime('departure_time', '<', '04:00:00');
+                        }),
+                        default => null,
+                    };
+                });
+            }
+        });
     }
 }

@@ -4,10 +4,11 @@ This document provides a comprehensive summary of all controllers in the BookMyB
 
 ## Overview
 
-The application follows a standard Laravel MVC structure with controllers organized into three main categories:
+The application follows a standard Laravel MVC structure with controllers organized into the following categories:
 
 - **Base Controller**: Abstract base class for all controllers
-- **Web Controllers**: Handle traditional web page requests
+- **Web Controllers**: Handle traditional web page requests (traveler-facing)
+- **Admin Controllers**: Handle platform-wide management for the admin web portal
 - **API Controllers**: Handle RESTful API requests for mobile/web clients
 - **Operator Controllers**: Handle operator-specific functionality
 - **Auth Controllers**: Handle authentication for web-based login/logout
@@ -29,17 +30,23 @@ The application follows a standard Laravel MVC structure with controllers organi
 ### `app/Http/Controllers/BookingController.php`
 
 - **Namespace**: `App\Http\Controllers`
-- **Purpose**: Handles web-based booking flow for travelers
+- **Purpose**: Handles the web-based booking flow for travelers (seat selection, mobile-money payment, tickets, cancellation and booking lookup)
 
-| Method                             | Description                                                                                                                      |
-| ---------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
-| `showSeats($id)`                   | Displays seat selection page for a specific route. Retrieves route with bus and operator details, and gets already booked seats. |
-| `store(Request $request)`          | Creates a new booking with validated route_id and seat_number. Sets amount from route fare and status to 'pending'.              |
-| `paymentTicket($bookingId)`        | Displays payment ticket page with booking details including origin, destination, departure time/date, and fare.                  |
-| `processPayment(Booking $booking)` | Updates booking status from 'pending' to 'confirmed' and redirects to success page.                                              |
-| `success(Booking $booking)`        | Displays the success page (digital ticket) with route, bus, and operator details.                                                |
+| Method                                              | Description                                                                                                                                                                                               |
+| --------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `showSeats($id)`                                    | Displays the seat selection page for a route. Loads route with bus/operator details and already-booked seats; aborts 404 when the route is inactive.                                                      |
+| `store(Request, FareCalculationService)`            | Creates a pending booking (validated route, seat and passenger details). Calculates the fare breakdown (base fare, service fees, promo discount) and redirects to the payment ticket page.                |
+| `paymentTicket($bookingId)`                         | Displays the payment ticket page: fare breakdown, applied promo code, seat, origin/destination, departure info and hold/expiry status.                                                                    |
+| `processPayment(Request, Booking, PaymentService)`  | Processes mobile money payment (MTN/Airtel) via `PaymentService`. Validates provider/phone, checks confirmation/expiry, then redirects to the success page or back with errors.                          |
+| `validatePromoCode(Request, FareCalculationService)`| AJAX endpoint validating a promo code for a route; returns the discount result as JSON.                                                                                                                  |
+| `success(Booking)`                                  | Displays the success page (digital ticket / booking history) after payment.                                                                                                                               |
+| `showTicket(string $qrCode)`                        | Displays a traveler's digital ticket by QR code (lets a traveler re-open their ticket after booking).                                                                                                     |
+| `cancel(Booking, RefundCalculationService)`         | Cancels the traveler's own booking. Pending bookings are released; confirmed bookings are cancelled with a refund per the operator's rules. Blocks past and already-cancelled trips.                       |
+| `customerLookupView()`                              | Displays the customer booking lookup form (by reference ID or phone number).                                                                                                                              |
+| `customerLookup(Request)`                           | Looks up a booking by reference ID and/or phone number and displays it.                                                                                                                                   |
 
-**Models Used**: `Route`, `Booking`
+**Models Used**: `Booking`, `Route`, `Operator`, `PromoCode`, `Ticket`
+**Dependencies**: `App\Services\FareCalculationService`, `App\Services\PaymentService`, `App\Services\RefundCalculationService`, `App\Notifications\BookingCancelled`, `Carbon\Carbon`, `Illuminate\Support\Facades\Auth`
 
 ---
 
@@ -58,6 +65,22 @@ The application follows a standard Laravel MVC structure with controllers organi
 
 ---
 
+### `app/Http/Controllers/ProfileController.php`
+
+- **Namespace**: `App\Http\Controllers`
+- **Purpose**: Traveler profile management and booking history
+
+| Method                        | Description                                                                                              |
+| ----------------------------- | -------------------------------------------------------------------------------------------------------- |
+| `index()`                     | Displays the traveler's profile with their latest 20 bookings (uses the `web` guard).                   |
+| `update(Request $request)`    | Updates the traveler's basic account details (full_name, email, phone_number, preferred_language).       |
+| `updatePassword(Request $request)` | Updates the traveler's password after verifying the current password.                               |
+
+**Models Used**: `User`
+**Dependencies**: `Illuminate\Support\Facades\Auth`, `Illuminate\Support\Facades\Hash`, `Illuminate\Validation\Rule`
+
+---
+
 ## Auth Controllers
 
 ### `app/Http/Controllers/Auth/LoginController.php`
@@ -65,11 +88,57 @@ The application follows a standard Laravel MVC structure with controllers organi
 - **Namespace**: `App\Http\Controllers\Auth`
 - **Purpose**: Handles traveler authentication for web-based requests
 
-| Method                     | Description                                                                                                    |
-| -------------------------- | -------------------------------------------------------------------------------------------------------------- |
-| `showLoginForm()`          | Displays the traveler login form.                                                                              |
-| `login(Request $request)`  | Handles traveler login using web guard authentication. Validates credentials and redirects to home on success. |
-| `logout(Request $request)` | Logs out the traveler from both web and operator guards, clears and invalidates session.                       |
+| Method                     | Description                                                                                                                            |
+| -------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| `showLoginForm()`          | Displays the traveler login form.                                                                                                      |
+| `login(Request $request)`  | Logs in a traveler via the web guard. Validates credentials, blocks suspended accounts, regenerates the session and redirects to the intended/home route. |
+| `logout(Request $request)` | Logs out the traveler from the web and operator guards, clears and invalidates the session.                                            |
+
+**Dependencies**: `Illuminate\Support\Facades\Auth`
+
+---
+
+### `app/Http/Controllers/Auth/RegisterController.php`
+
+- **Namespace**: `App\Http\Controllers\Auth`
+- **Purpose**: Handles traveler self-registration on the web (routes: `GET/POST /register`)
+
+| Method                          | Description                                                                                |
+| ------------------------------- | ------------------------------------------------------------------------------------------ |
+| `showRegistrationForm()`        | Displays the traveler registration form.                                                   |
+| `register(Request $request)`    | Validates and creates a traveler account, logs the user in (web guard) and redirects home. |
+
+**Models Used**: `User`
+**Dependencies**: `Illuminate\Support\Facades\Auth`, `Illuminate\Support\Facades\Hash`, `Illuminate\Validation\Rule`
+
+---
+
+### `app/Http/Controllers/Auth/PasswordResetController.php`
+
+- **Namespace**: `App\Http\Controllers\Auth`
+- **Purpose**: Handles the "forgot password" reset flow for travelers (routes: `/forgot-password`, `/reset-password`)
+
+| Method                                    | Description                                                                                                   |
+| ----------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| `showLinkRequestForm()`                   | Displays the password reset link request form.                                                               |
+| `sendResetLinkEmail(Request $request)`    | Validates the email and sends a password reset link via the password broker.                                  |
+| `showResetForm(Request, $token = null)`   | Displays the password reset form with the token and email.                                                    |
+| `reset(Request $request)`                 | Resets the password via the broker, hashes the new password and fires a `PasswordReset` event.               |
+
+**Dependencies**: `Illuminate\Support\Facades\Password`, `Illuminate\Support\Facades\Hash`, `Illuminate\Support\Str`, `Illuminate\Auth\Events\PasswordReset`
+
+---
+
+### `app/Http/Controllers/Auth/Admin/LoginController.php`
+
+- **Namespace**: `App\Http\Controllers\Auth\Admin`
+- **Purpose**: Handles admin authentication for the admin web portal (routes: `GET/POST /admin/login`)
+
+| Method                     | Description                                                                                                          |
+| -------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| `showLoginForm()`          | Displays the admin login form.                                                                                       |
+| `login(Request $request)`  | Logs in via the `admin` guard; only users with the admin role are permitted. Redirects to the admin dashboard.        |
+| `logout(Request $request)` | Logs out the admin, clears and invalidates the session, redirects to the admin login.                               |
 
 **Dependencies**: `Illuminate\Support\Facades\Auth`
 
@@ -80,13 +149,168 @@ The application follows a standard Laravel MVC structure with controllers organi
 - **Namespace**: `App\Http\Controllers\Auth\Operator`
 - **Purpose**: Handles operator authentication for web-based requests
 
-| Method                     | Description                                                                                                         |
-| -------------------------- | ------------------------------------------------------------------------------------------------------------------- |
-| `showLoginForm()`          | Displays the operator login form.                                                                                   |
-| `login(Request $request)`  | Handles operator login using operator guard. Validates credentials and checks if operator is verified before login. |
-| `logout(Request $request)` | Logs out the operator from both web and operator guards, clears and invalidates session.                            |
+| Method                     | Description                                                                                                                                 |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| `showLoginForm()`          | Displays the operator login form.                                                                                                           |
+| `login(Request $request)`  | Logs in an operator via the operator guard. Validates credentials, blocks unverified operators, logs the event with `OperatorAuditService` and redirects to the operator dashboard. |
+| `logout(Request $request)` | Logs out from the web and operator guards, clears/invalidates the session and logs the event.                                               |
 
-**Dependencies**: `Illuminate\Support\Facades\Auth`
+**Dependencies**: `Illuminate\Support\Facades\Auth`, `App\Services\OperatorAuditService`, `App\Models\OperatorAuditLog`
+
+---
+
+## Admin Controllers
+
+Controllers in `App\Http\Controllers\Admin` handle platform-wide management for the admin web portal. They use session-based authentication (admin guard) and log administrative actions via `App\Services\AdminAuditService`.
+
+### `app/Http/Controllers/Admin/DashboardController.php`
+
+- **Namespace**: `App\Http\Controllers\Admin`
+- **Purpose**: Admin dashboard with system-wide statistics and trends
+
+| Method    | Description                                                                                                                                                                   |
+| --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `index()` | Displays system stats (users, operators, pending verifications, bookings, revenue, buses, routes), month-over-month trends, booking status breakdown, payment channel split, last-30-day charts, top operators, and recent activity lists. |
+
+**Private Methods**: `percentageChange($previous, $current)` - Computes the percentage change between two baselines.
+
+**Models Used**: `User`, `Operator`, `Booking`, `Bus`, `Route`, `Payment`
+**Dependencies**: `Carbon\Carbon`, `Illuminate\Support\Facades\DB`
+
+---
+
+### `app/Http/Controllers/Admin/BookingController.php`
+
+- **Namespace**: `App\Http\Controllers\Admin`
+- **Purpose**: System-wide booking listing and detail views
+
+| Method                    | Description                                                                                                                                                        |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `index(Request $request)` | Lists bookings across all operators with filters (status, operator, search by reference/passenger/phone/seat, travel date) and sorting. Provides summary stats.   |
+| `show($id)`               | Shows a single booking's full detail (route, bus, driver, user, payment, ticket, promo code, cancellation rule) and logs a `booking.viewed` audit event.           |
+
+**Private Methods**: `applyDateFilter($query, $date)` - Filters bookings by travel date (today/week/month).
+
+**Models Used**: `Booking`, `Operator`
+**Dependencies**: `Carbon\Carbon`, `App\Services\AdminAuditService`
+
+---
+
+### `app/Http/Controllers/Admin/OperatorController.php`
+
+- **Namespace**: `App\Http\Controllers\Admin`
+- **Purpose**: Operator management (list, create, verify, suspend, delete)
+
+| Method                    | Description                                                                                                                                                                          |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `index(Request $request)` | Lists operators with verification status filter and search (company, email, TPIN, phone). Includes bus/route counts and summary counts.                                              |
+| `create()`                | Shows the form to create a new operator.                                                                                                                                             |
+| `store(Request $request)` | Validates and creates an operator (optionally marking them verified immediately). Logs an `operator.created` audit event.                                                            |
+| `show($id)`               | Shows an operator's profile with bus/route counts, booking stats and recent bookings.                                                                                                |
+| `verify(Request, $id)`    | Approves/verifies an operator (sets is_verified, verified_at, verified_by). Logs the audit event.                                                                                    |
+| `suspend(Request, $id)`   | Suspends/unverifies an operator (clears verification fields). Logs the audit event.                                                                                                  |
+| `destroy(Request, $id)`   | Soft-deletes an operator after logging an `operator.deleted` audit event.                                                                                                             |
+
+**Private Methods**: `operatorStats($operatorId)` - Aggregates booking/usage stats for an operator.
+
+**Models Used**: `Operator`, `Booking`
+**Dependencies**: `Illuminate\Support\Facades\Auth`, `App\Services\AdminAuditService`
+
+---
+
+### `app/Http/Controllers/Admin/UserController.php`
+
+- **Namespace**: `App\Http\Controllers\Admin`
+- **Purpose**: Traveler management (list, create, suspend, activate, delete)
+
+| Method                    | Description                                                                                                                                                                         |
+| ------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `index(Request $request)` | Lists travelers with search, active/suspended status filter and pagination, plus summary counts.                                                                                    |
+| `show($id)`               | Shows a traveler's profile with booking stats and recent bookings; logs a `user.viewed` audit event.                                                                                |
+| `create()`                | Shows the form to create a new user account.                                                                                                                                        |
+| `store(Request $request)` | Validates and creates a traveler or admin user; logs a `user.created` audit event.                                                                                                  |
+| `suspend(Request, $id)`   | Deactivates a traveler account (own admin account cannot be suspended).                                                                                                             |
+| `activate(Request, $id)`  | Reactivates a traveler account.                                                                                                                                                      |
+| `destroy(Request, $id)`   | Soft-deletes a traveler account (own admin account cannot be deleted) and logs the audit event.                                                                                     |
+
+**Models Used**: `User`, `Booking`
+**Dependencies**: `Illuminate\Support\Facades\Auth`, `App\Services\AdminAuditService`
+
+---
+
+### `app/Http/Controllers/Admin/PaymentController.php`
+
+- **Namespace**: `App\Http\Controllers\Admin`
+- **Purpose**: System-wide payment transaction listing
+
+| Method                    | Description                                                                                                                                            |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `index(Request $request)` | Lists all payments with filters (status, method, operator, date range, search by transaction/booking reference) and summary stats (successful/failed/pending, revenue). |
+
+**Models Used**: `Payment`, `Operator`
+
+---
+
+### `app/Http/Controllers/Admin/TripController.php`
+
+- **Namespace**: `App\Http\Controllers\Admin`
+- **Purpose**: System-wide trip (route) listing
+
+| Method                    | Description                                                                                                                                             |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `index(Request $request)` | Lists all trips across operators with filters (operator, date, status: delayed/departed/arrived/scheduled/inactive, search) and trip stats.             |
+
+**Models Used**: `Route`, `Operator`
+
+---
+
+### `app/Http/Controllers/Admin/ReportController.php`
+
+- **Namespace**: `App\Http\Controllers\Admin`
+- **Purpose**: Analytics / reports (revenue and bookings trends)
+
+| Method                    | Description                                                                                                                                             |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `index()`                 | Renders the reports dashboard with all datasets (trailing 12-month trends, revenue by operator/route, payment methods, status breakdown, totals).       |
+| `data(Request $request)`  | JSON endpoint returning the same datasets scoped to an optional date range / operator for live filtering.                                                |
+| `export()`                | Exports a revenue-by-operator CSV file.                                                                                                                   |
+
+**Private Methods**: `buildReportData($from, $to, $operatorId)`, `scopedPaymentsQuery($from, $to, $operatorId)`, `scopedBookingsQuery($from, $to, $operatorId)`, `normaliseRange($from, $to)`.
+
+**Models Used**: `Booking`, `Payment`, `Operator`
+**Dependencies**: `Carbon\Carbon`, `Illuminate\Support\Facades\DB`
+
+---
+
+### `app/Http/Controllers/Admin/AuditLogController.php`
+
+- **Namespace**: `App\Http\Controllers\Admin`
+- **Purpose**: Platform-wide admin audit log
+
+| Method                    | Description                                                                                                  |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| `index(Request $request)` | Lists audit log entries (paginated, 25/page) with filters for event, date range and search. Includes stats.  |
+| `show($id)`               | Shows a single audit log entry with recorded state changes.                                                   |
+
+**Models Used**: `AdminAuditLog`
+
+---
+
+### `app/Http/Controllers/Admin/ProfileController.php`
+
+- **Namespace**: `App\Http\Controllers\Admin`
+- **Purpose**: Admin profile / settings
+
+| Method                        | Description                                                                                                                       |
+| ----------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| `index()`                     | Displays the admin's profile and their recent audit activity.                                                                     |
+| `update(Request $request)`    | Updates the admin's account details and logs a `profile.updated` audit event.                                                     |
+| `updatePassword(Request $request)` | Updates the admin's password after verifying the current one; logs a `profile.password_changed` audit event.                 |
+
+**Private Methods**: `getAdmin()` - Resolves the authenticated admin via the `admin` guard (403 if the user is not an admin).
+
+**Models Used**: `User`, `AdminAuditLog`
+**Dependencies**: `Illuminate\Support\Facades\Auth`, `Illuminate\Support\Facades\Hash`, `App\Services\AdminAuditService`
 
 ---
 
@@ -217,17 +441,18 @@ The application follows a standard Laravel MVC structure with controllers organi
 - **Namespace**: `App\Http\Controllers\Operator`
 - **Purpose**: Operator dashboard with statistics and overview
 
-| Method    | Description                                                                                               |
-| --------- | --------------------------------------------------------------------------------------------------------- |
-| `index()` | Displays operator dashboard with total bookings, revenue, active trips, fleet status, and upcoming trips. |
+| Method    | Description                                                                                                                                                          |
+| --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `index()` | Displays operator dashboard with booking/revenue KPIs and month-over-month trends, today's bookings, pending/cancelled counts, trip occupancy, fleet status, upcoming trips, recent bookings and top routes. |
 
 **Private Methods**:
 
 - `getOperator()` - Private helper method to get authenticated operator. Supports API guard, session, and fallback to operator ID 1.
 - `getOperatorRoutes($operator)` - Get operator's routes for dropdown
 - `getOperatorBuses($operator)` - Get operator's buses with detailed info
+- `getOperatorDrivers($operator)` - Get operator's active drivers
 
-**Models Used**: `Route`, `Booking`, `Operator`, `Bus`
+**Models Used**: `Route`, `Booking`, `Operator`, `Bus`, `Driver`
 **Dependencies**: `Carbon\Carbon`, `Illuminate\Support\Facades\Auth`
 
 ---
@@ -235,21 +460,29 @@ The application follows a standard Laravel MVC structure with controllers organi
 ### `app/Http/Controllers/Operator/TripManagementController.php`
 
 - **Namespace**: `App\Http\Controllers\Operator`
-- **Purpose**: Comprehensive trip management for bus operators
+- **Purpose**: Comprehensive trip management for bus operators (19 public methods)
 
-| Method                                    | Description                                                                                           |
-| ----------------------------------------- | ----------------------------------------------------------------------------------------------------- |
-| `index(Request $request)`                 | Display the trip management dashboard with filters for status, date, and search.                      |
-| `seatMap($tripId)`                        | Show seat map for a specific trip with passenger details.                                             |
-| `store(Request $request)`                 | Store a new trip. Validates origin, destination, date, time, bus, and fare. Checks for bus conflicts. |
-| `update(Request $request, $tripId)`       | Update an existing trip. Validates and checks for conflicts. Logs fare changes for audit.             |
-| `cancel($tripId)`                         | Cancel a trip. Checks for confirmed bookings and cancels pending bookings.                            |
-| `occupancy($tripId)`                      | Get seat occupancy for a specific trip (API). Returns detailed seat map.                              |
-| `export(Request $request)`                | Export trips data as CSV file.                                                                        |
-| `upcoming(Request $request)`              | Get upcoming trips (API endpoint) with configurable limit and days.                                   |
-| `show($tripId)`                           | Get trip details (API endpoint) with booking information and summary.                                 |
-| `stats()`                                 | Get trip statistics (API endpoint) with weekly trend data.                                            |
-| `updateStatus(Request $request, $tripId)` | Update trip status (API endpoint). Maps status to route updates.                                      |
+| Method                                    | Description                                                                                                        |
+| ----------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| `calendar(Request $request)`              | Displays a month calendar view of trips with status and booked counts.                                             |
+| `index(Request $request)`                 | Displays the trip management dashboard with filters for status, date, and search.                                  |
+| `seatMap($tripId)`                        | Shows the seat map for a specific trip with passenger details.                                                     |
+| `store(Request $request)`                 | Stores a new trip. Validates origin, destination, date, time, bus, and fare. Checks for bus conflicts.             |
+| `update(Request $request, $tripId)`       | Updates an existing trip. Validates and checks for conflicts. Logs fare changes for audit.                         |
+| `cancel($tripId)`                         | Cancels a trip. Checks for confirmed bookings and cancels pending bookings.                                        |
+| `occupancy($tripId)`                      | Gets seat occupancy for a trip (API). Returns a detailed seat map.                                                 |
+| `export(Request $request)`                | Exports trip data as a CSV file.                                                                                   |
+| `upcoming(Request $request)`              | Gets upcoming trips (API endpoint) with configurable limit and days.                                               |
+| `show($tripId)`                           | Gets trip details (API endpoint) with bookings summary.                                                            |
+| `stats()`                                 | Gets trip statistics (API endpoint) with weekly trend data.                                                        |
+| `updateStatus(Request $request, $tripId)` | Updates trip status (API endpoint). Maps status to route updates.                                                  |
+| `markDelayed(Request $request, $tripId)`  | Marks a trip as delayed (delay minutes/reason), logs the audit event and notifies passengers.                      |
+| `markDeparted($tripId)`                   | Marks a trip as departed and notifies passengers.                                                                  |
+| `markArrived($tripId)`                    | Marks a trip as arrived and notifies passengers.                                                                   |
+| `assignDriver(Request, $tripId)`          | Assigns a driver from the operator's fleet to a trip.                                                               |
+| `tripJson($tripId)`                       | Returns trip data as JSON for the edit drawer.                                                                     |
+| `cancelWithNotification($tripId)`         | Cancels a trip and notifies passengers (bypasses the confirmed-booking check).                                     |
+| `printableSchedule(Request $request)`     | Renders a printable schedule for a date range.                                                                     |
 
 **Private Methods**:
 
@@ -266,49 +499,295 @@ The application follows a standard Laravel MVC structure with controllers organi
 - `generateSeatMap($capacity, $bookedSeats, $pendingSeats, $passengerMap)` - Generate seat map array
 - `generateDetailedSeatMap($capacity, $confirmedSeats, $pendingSeats)` - Generate detailed seat map for API
 
-**Models Used**: `Route`, `Booking`, `Bus`, `Operator`, `Ticket`
-**Dependencies**: `Carbon\Carbon`, `Illuminate\Support\Facades\Auth`, `Illuminate\Support\Facades\DB`, `Illuminate\Support\Facades\Log`
+**Models Used**: `Route`, `Booking`, `Bus`, `Driver`, `Operator`, `Ticket`
+**Dependencies**: `Carbon\Carbon`, `Illuminate\Support\Facades\Auth`, `Illuminate\Support\Facades\DB`, `Illuminate\Support\Facades\Log`, `Illuminate\Support\Facades\Notification`, `App\Services\OperatorAuditService`, `App\Notifications\TripStatusChanged`
+
+---
+
+### `app/Http/Controllers/Operator/BookingManagementController.php`
+
+- **Namespace**: `App\Http\Controllers\Operator`
+- **Purpose**: Comprehensive booking management for the operator's trips
+
+| Method                                | Description                                                                                                                                                                        |
+| ------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `index(Request $request)`             | Lists all bookings for the operator with status/payment/date filters, search and sorting, plus summary stats.                                                                       |
+| `tripBookings($tripId)`               | Shows bookings for a specific trip.                                                                                                                                                |
+| `show($bookingId)`                    | Shows a booking's full detail and logs a `booking.viewed` audit event.                                                                                                              |
+| `edit($bookingId)`                    | Shows the edit form with available seats for a seat change.                                                                                                                        |
+| `update(Request, $bookingId)`         | Updates booking passenger details/seat with conflict and capacity checks.                                                                                                           |
+| `markBoarded($bookingId)`             | Marks a confirmed booking as boarded.                                                                                                                                              |
+| `undoBoarded($bookingId)`             | Removes the boarded status.                                                                                                                                                        |
+| `updateNotes(Request, $bookingId)`    | Adds/updates internal notes on a booking.                                                                                                                                          |
+| `bulkAction(Request)`                 | Bulk cancels pending bookings or bulk marks confirmed bookings as boarded.                                                                                                         |
+| `printReceipt($bookingId)`            | Shows a printable receipt for a booking.                                                                                                                                           |
+| `customerLookup(Request)`             | Looks up a booking by reference ID or phone number.                                                                                                                                |
+| `cancelBooking($bookingId)`           | Cancels a booking (pending or confirmed) with appropriate handling.                                                                                                                |
+| `processRefund($bookingId)`           | Processes a refund for a cancelled booking.                                                                                                                                        |
+| `export(Request $request)`            | Exports the operator's bookings as a CSV file.                                                                                                                                     |
+
+**Private Methods**: `getOperator()`, `applyDateFilter($query, $filter)`, `getBookingStats($operator)`, `getStatusStyles()`, `formatTripData($route)`.
+
+**Models Used**: `Booking`, `Route`, `Operator`
+**Dependencies**: `Carbon\Carbon`, `Illuminate\Support\Facades\Auth`, `Illuminate\Support\Facades\DB`, `App\Services\OperatorAuditService`
+
+---
+
+### `app/Http/Controllers/Operator/BusController.php`
+
+- **Namespace**: `App\Http\Controllers\Operator`
+- **Purpose**: Fleet (bus) management
+
+| Method                        | Description                                                                                                                                                      |
+| ----------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `index(Request $request)`     | Lists the operator's buses with search/status/class filters and fleet summary stats (total, active, capacity, maintenance due).                                   |
+| `store(Request $request)`     | Validates and creates a bus (registration number unique per operator, capacity 1-100, class economy/business/luxury, amenities, maintenance fields).             |
+| `show($busId)`                | Shows a single bus detail.                                                                                                                                       |
+| `update(Request, $busId)`     | Updates a bus with the same validation rules.                                                                                                                    |
+| `toggleStatus($busId)`        | Activates/deactivates a bus; blocks deactivation when the bus has upcoming scheduled trips. Logs an audit event.                                                |
+| `destroy($busId)`             | Soft-deletes a bus; blocked when upcoming scheduled trips exist. Logs an audit event.                                                                            |
+
+**Private Methods**: `getOperator()`.
+
+**Models Used**: `Bus`, `Route`, `Operator`
+**Dependencies**: `Carbon\Carbon`, `App\Services\OperatorAuditService`, `Illuminate\Validation\Rule`
+
+---
+
+### `app/Http/Controllers/Operator/PassengerListController.php`
+
+- **Namespace**: `App\Http\Controllers\Operator`
+- **Purpose**: Passenger lists (manifest) and check-in
+
+| Method                      | Description                                                                                                                                   |
+| --------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| `index(Request $request)`   | Lists all passengers across the operator's trips with filters (trip, status, boarded, date range, search) and summary stats.                 |
+| `manifest($routeId)`        | Shows the passenger manifest for a specific trip.                                                                                             |
+| `export($routeId)`          | Exports the passenger manifest for a trip as a CSV file.                                                                                       |
+| `bulkCheckin(Request)`      | Bulk-marks selected confirmed bookings as boarded.                                                                                             |
+
+**Private Methods**: `getPassengerStats($operator)`, `getOperator()`.
+
+**Models Used**: `Booking`, `Route`, `Operator`
+**Dependencies**: `Carbon\Carbon`
+
+---
+
+### `app/Http/Controllers/Operator/CustomerController.php`
+
+- **Namespace**: `App\Http\Controllers\Operator`
+- **Purpose**: Customer (traveler) management for the operator
+
+| Method                    | Description                                                                                                                                              |
+| ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `index(Request $request)` | Lists customers who have booked with this operator (search, sort) with stats (total, confirmed bookings, new this month, repeat customers).              |
+| `show($customerId)`       | Shows a customer's details, booking history and stats; logs an audit event.                                                                              |
+
+**Private Methods**: `getOperator()`.
+
+**Models Used**: `User`, `Booking`, `Operator`
+**Dependencies**: `Carbon\Carbon`, `App\Services\OperatorAuditService`
+
+---
+
+### `app/Http/Controllers/Operator/RevenueController.php`
+
+- **Namespace**: `App\Http\Controllers\Operator`
+- **Purpose**: Revenue analytics
+
+| Method                    | Description                                                                                                                                                                 |
+| ------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `index(Request $request)` | Revenue dashboard with date range / period filters; KPIs (total/period/today revenue, pending payments, confirmed/cancelled counts), revenue by route and payment method, daily chart data and recent transactions. |
+
+**Private Methods**: `getOperator()`.
+
+**Models Used**: `Booking`, `Payment`, `Route`, `Operator`
+**Dependencies**: `Carbon\Carbon`
+
+---
+
+### `app/Http/Controllers/Operator/AuditLogController.php`
+
+- **Namespace**: `App\Http\Controllers\Operator`
+- **Purpose**: Operator audit log
+
+| Method                    | Description                                                                                                  |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| `index(Request $request)` | Lists the operator's audit logs (paginated, 30/page) with event/date-range/search filters and summary stats. |
+| `show($id)`               | Shows a single audit log entry.                                                                              |
+
+**Private Methods**: `getOperator()` - Includes the full fallback logic (guard, session, fallback to operator ID 1).
+
+**Models Used**: `OperatorAuditLog`, `Operator`
+
+---
+
+### `app/Http/Controllers/Operator/FareRuleController.php`
+
+- **Namespace**: `App\Http\Controllers\Operator`
+- **Purpose**: Fare rules management (cancellation rules and service fees)
+
+| Method                                   | Description                                                                                              |
+| ---------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| `index(Request, FareCalculationService)` | Shows cancellation rules and service fees; supports a live fare preview with an optional promo code.     |
+| `storeCancellationRule(Request)`         | Creates a cancellation rule (hours before departure, refund percentage).                                 |
+| `updateCancellationRule(Request, $id)`   | Updates a cancellation rule.                                                                             |
+| `destroyCancellationRule($id)`           | Deletes a cancellation rule.                                                                             |
+| `storeServiceFee(Request)`               | Creates a service fee (fixed or percentage).                                                             |
+| `updateServiceFee(Request, $id)`         | Updates a service fee.                                                                                   |
+| `destroyServiceFee($id)`                 | Deletes a service fee.                                                                                   |
+
+**Private Methods**: `getOperator()`.
+
+**Models Used**: `CancellationRule`, `ServiceFee`, `PromoCode`, `Operator`
+**Dependencies**: `App\Services\FareCalculationService`, `App\Services\OperatorAuditService`
+
+---
+
+### `app/Http/Controllers/Operator/DriverController.php`
+
+- **Namespace**: `App\Http\Controllers\Operator`
+- **Purpose**: Driver management
+
+| Method                    | Description                                                                             |
+| ------------------------- | --------------------------------------------------------------------------------------- |
+| `index()`                 | Lists the operator's drivers (paginated).                                               |
+| `store(Request $request)` | Validates and creates a driver (unique license number).                                 |
+| `update(Request, $id)`    | Updates a driver's details.                                                             |
+| `json($id)`               | Returns a driver as JSON (for AJAX).                                                    |
+| `destroy($id)`            | Deletes a driver; blocked when the driver is assigned to active routes.                 |
+
+**Private Methods**: `getOperator()`.
+
+**Models Used**: `Driver`, `Operator`
+**Dependencies**: `Illuminate\Validation\Rule`
+
+---
+
+### `app/Http/Controllers/Operator/PromoCodeController.php`
+
+- **Namespace**: `App\Http\Controllers\Operator`
+- **Purpose**: Promo code management
+
+| Method                    | Description                                                                                              |
+| ------------------------- | -------------------------------------------------------------------------------------------------------- |
+| `index()`                 | Lists the operator's promo codes.                                                                        |
+| `store(Request $request)` | Validates and creates a promo code (unique code, discount type/value, validity window, usage limits).    |
+| `update(Request, $id)`    | Updates a promo code.                                                                                    |
+| `destroy($id)`            | Deletes a promo code.                                                                                    |
+
+**Private Methods**: `getOperator()`.
+
+**Models Used**: `PromoCode`, `Operator`
+**Dependencies**: `App\Services\OperatorAuditService`
+
+---
+
+### `app/Http/Controllers/Operator/RouteTemplateController.php`
+
+- **Namespace**: `App\Http\Controllers\Operator`
+- **Purpose**: Route templates and bulk trip creation
+
+| Method                            | Description                                                                                                                            |
+| --------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| `index()`                         | Lists the operator's route templates with trip counts.                                                                                 |
+| `store(Request $request)`         | Validates and creates a route template (name, origin, destination, distance, base fare).                                               |
+| `update(Request, $id)`            | Updates a route template.                                                                                                              |
+| `destroy($id)`                    | Deletes a route template.                                                                                                              |
+| `createTrip(Request, $id)`        | Creates a single trip from a template (bus, dates, times, fare).                                                                       |
+| `createBulkTrips(Request, $id)`   | Bulk-creates trips over a date range on selected weekdays, checking for bus conflicts.                                                 |
+| `getTemplatesJson()`              | Returns active templates as JSON (for AJAX).                                                                                           |
+
+**Private Methods**: `getOperator()`.
+
+**Models Used**: `RouteTemplate`, `Route`, `Operator`
+**Dependencies**: `Carbon\Carbon`, `App\Services\OperatorAuditService`
+
+---
+
+### `app/Http/Controllers/Operator/ProfileController.php`
+
+- **Namespace**: `App\Http\Controllers\Operator`
+- **Purpose**: Operator profile / settings
+
+| Method                        | Description                                                                                                                                                      |
+| ----------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `index()`                     | Displays the operator's profile with operational stats (total trips, active buses, avg occupancy, on-time rate, confirmed bookings).                              |
+| `update(Request $request)`    | Updates the operator's business details and handles an optional logo upload to public storage.                                                                     |
+| `updatePassword(Request)`     | Updates the operator's password after verifying the current one.                                                                                                 |
+
+**Private Methods**: `getOperator()`.
+
+**Models Used**: `Operator`, `Route`, `Booking`, `Bus`
+**Dependencies**: `Carbon\Carbon`, `Illuminate\Support\Facades\Auth`, `Illuminate\Support\Facades\Hash`, `Illuminate\Support\Facades\Storage`, `Illuminate\Validation\Rule`
 
 ---
 
 ## Summary Table
 
-| Controller                            | Type     | Methods Count | Primary Models                        |
-| ------------------------------------- | -------- | ------------- | ------------------------------------- |
-| `Controller.php`                      | Base     | 0             | -                                     |
-| `BookingController.php`               | Web      | 5             | Route, Booking                        |
-| `LandingController.php`               | Web      | 2             | Route                                 |
-| `LoginController.php` (Auth)          | Auth     | 3             | -                                     |
-| `LoginController.php` (Auth/Operator) | Auth     | 3             | -                                     |
-| `AdminController.php`                 | API      | 5             | User, Operator, Booking, Payment      |
-| `AuthController.php`                  | API      | 6             | User, Operator                        |
-| `BookingController.php` (API)         | API      | 5             | Booking, Route                        |
-| `BusController.php`                   | API      | 4             | Bus                                   |
-| `RouteController.php`                 | API      | 6             | Route                                 |
-| `PaymentController.php`               | API      | 3             | Booking, Payment, Ticket              |
-| `TicketController.php`                | API      | 3             | Ticket                                |
-| `DashboardController.php`             | Operator | 1             | Route, Booking, Operator, Bus         |
-| `TripManagementController.php`        | Operator | 10+           | Route, Booking, Bus, Operator, Ticket |
+| Controller                                | Type     | Methods Count | Primary Models                                        |
+| ----------------------------------------- | -------- | ------------- | ----------------------------------------------------- |
+| `Controller.php`                          | Base     | 0             | -                                                     |
+| `BookingController.php` (Web)             | Web      | 10            | Booking, Route, Operator, PromoCode, Ticket           |
+| `LandingController.php` (Web)             | Web      | 2             | Route                                                 |
+| `ProfileController.php` (Web)             | Web      | 3             | User                                                  |
+| `LoginController.php` (Auth)              | Auth     | 3             | -                                                     |
+| `RegisterController.php` (Auth)           | Auth     | 2             | User                                                  |
+| `PasswordResetController.php` (Auth)      | Auth     | 4             | -                                                     |
+| `LoginController.php` (Auth/Admin)        | Auth     | 3             | -                                                     |
+| `LoginController.php` (Auth/Operator)     | Auth     | 3             | -                                                     |
+| `AdminController.php` (API)               | API      | 6             | User, Operator, Booking, Payment                      |
+| `AuthController.php` (API)                | API      | 6             | User, Operator                                        |
+| `BookingController.php` (API)             | API      | 5             | Booking, Route                                        |
+| `BusController.php` (API)                 | API      | 4             | Bus                                                   |
+| `RouteController.php` (API)               | API      | 6             | Route                                                 |
+| `PaymentController.php` (API)             | API      | 3             | Booking, Payment, Ticket                              |
+| `TicketController.php` (API)              | API      | 3             | Ticket                                                |
+| `DashboardController.php` (Admin)         | Admin    | 1             | User, Operator, Booking, Bus, Route, Payment          |
+| `BookingController.php` (Admin)           | Admin    | 2             | Booking, Operator                                     |
+| `OperatorController.php` (Admin)          | Admin    | 7             | Operator, Booking                                     |
+| `UserController.php` (Admin)              | Admin    | 7             | User, Booking                                         |
+| `PaymentController.php` (Admin)           | Admin    | 1             | Payment, Operator                                     |
+| `TripController.php` (Admin)              | Admin    | 1             | Route, Operator                                       |
+| `ReportController.php` (Admin)            | Admin    | 3             | Booking, Payment, Operator                            |
+| `AuditLogController.php` (Admin)          | Admin    | 2             | AdminAuditLog                                         |
+| `ProfileController.php` (Admin)           | Admin    | 3             | User, AdminAuditLog                                   |
+| `DashboardController.php` (Operator)      | Operator | 1             | Route, Booking, Operator, Bus, Driver                 |
+| `TripManagementController.php` (Operator) | Operator | 19            | Route, Booking, Bus, Driver, Operator, Ticket         |
+| `BookingManagementController.php` (Operator) | Operator | 14        | Booking, Route, Operator                              |
+| `BusController.php` (Operator)            | Operator | 6             | Bus, Route, Operator                                  |
+| `PassengerListController.php` (Operator)  | Operator | 4             | Booking, Route, Operator                              |
+| `CustomerController.php` (Operator)       | Operator | 2             | User, Booking, Operator                               |
+| `RevenueController.php` (Operator)        | Operator | 1             | Booking, Payment, Route, Operator                     |
+| `AuditLogController.php` (Operator)       | Operator | 2             | OperatorAuditLog, Operator                            |
+| `FareRuleController.php` (Operator)       | Operator | 7             | CancellationRule, ServiceFee, PromoCode, Operator     |
+| `DriverController.php` (Operator)         | Operator | 5             | Driver, Operator                                      |
+| `PromoCodeController.php` (Operator)      | Operator | 4             | PromoCode, Operator                                   |
+| `RouteTemplateController.php` (Operator)  | Operator | 7             | RouteTemplate, Route, Operator                        |
+| `ProfileController.php` (Operator)        | Operator | 3             | Operator, Route, Booking, Bus                         |
 
 ---
 
 ## Authentication & Authorization
 
-- **Travelers (Web)**: Use `Auth\LoginController` for login/logout with session-based authentication
+- **Travelers (Web)**: Use `Auth\LoginController` for login/logout with session-based authentication; `Auth\RegisterController` for self-registration and `Auth\PasswordResetController` for password resets
 - **Travelers (API)**: Use `Api\AuthController` for registration, login, and token management
-- **Operators (Web)**: Use `Auth\Operator\LoginController` for login/logout with session-based authentication
+- **Operators (Web)**: Use `Auth\Operator\LoginController` for login/logout with session-based authentication; actions are audited via `OperatorAuditService`
 - **Operators (API)**: Use `Api\AuthController` for registration and login; must be verified before login
-- **Admin**: Uses `Api\AdminController` endpoints (assumed to be protected by admin middleware)
+- **Admin (Web)**: Uses `Auth\Admin\LoginController` with the `admin` guard; only users with the `admin` role are permitted; actions are audited via `AdminAuditService`
+- **Admin (API)**: Uses `Api\AdminController` endpoints for dashboard and management
 - **API Authentication**: All API controllers use token-based authentication via `createToken()`
-- **Operator Web**: Uses session-based authentication with fallback to operator ID 1 for development
+- **Operator Web fallback**: Many operator controllers fall back to operator ID 1 for development when no guard/session operator is present
 
 ---
 
 ## Notes
 
-- The `TripManagementController` has extensive private helper methods for trip status determination and data formatting
-- The `DashboardController` and `TripManagementController` share similar `getOperator()` fallback logic for development purposes
+- `TripManagementController` is the largest operator controller (19 public methods) with an extensive set of private helpers for trip status determination and data formatting
+- Most operator controllers share a `getOperator()` helper that resolves the operator from the guard, session, or a development fallback (operator ID 1)
+- Admin and operator web portals log actions via `AdminAuditService` / `OperatorAuditService`
+- Web fare/refund logic is centralized in `FareCalculationService`, `PaymentService`, and `RefundCalculationService`
 - Payment processing is designed to integrate with MTN/Airtel Money APIs in production
 - All controllers follow RESTful conventions where applicable
 - The application uses Carbon for date/time handling throughout
-- Auth controllers handle web-based session authentication while API AuthController handles token-based authentication
+- Auth controllers handle web-based session authentication while the API `AuthController` handles token-based authentication

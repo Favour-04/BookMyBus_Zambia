@@ -179,16 +179,43 @@
                         </div>
                     </div>
                     <div class="p-8 space-y-8">
+                        @php
+                            $partyBookings = ($group_bookings ?? collect([$booking]));
+                            $isGroupBooking = $partyBookings->count() > 1;
+                        @endphp
                         <div class="flex justify-between items-center">
                             <div class="space-y-1">
                                 <p class="text-[10px] font-bold uppercase text-on-surface-variant tracking-widest">Passenger</p>
-                                <p class="font-headline font-extrabold text-xl">{{ $passenger_name ?? 'John Mulenga' }}</p>
+                                <p class="font-headline font-extrabold text-xl">
+                                    {{ $passenger_name ?? 'John Mulenga' }}
+                                    @if($isGroupBooking)
+                                        <span class="text-sm font-bold text-on-surface-variant">+{{ $partyBookings->count() - 1 }} more</span>
+                                    @endif
+                                </p>
                             </div>
                             <div class="text-right space-y-1">
-                                <p class="text-[10px] font-bold uppercase text-on-surface-variant tracking-widest">Seat</p>
-                                <p class="font-headline font-extrabold text-xl text-secondary">{{ $seat_number }}</p>
+                                <p class="text-[10px] font-bold uppercase text-on-surface-variant tracking-widest">
+                                    {{ $isGroupBooking ? 'Seats' : 'Seat' }}
+                                </p>
+                                <p class="font-headline font-extrabold text-xl text-secondary">
+                                    {{ isset($seat_numbers) ? implode(', ', $seat_numbers) : $seat_number }}
+                                </p>
                             </div>
                         </div>
+                        @if($isGroupBooking)
+                        <!-- Your Party -->
+                        <div class="bg-surface-container-low rounded-xl p-4 space-y-2">
+                            <p class="text-[10px] font-bold uppercase text-on-surface-variant tracking-widest mb-1">
+                                Your Party ({{ $partyBookings->count() }} passengers)
+                            </p>
+                            @foreach($partyBookings as $partyBooking)
+                                <div class="flex justify-between items-center text-sm">
+                                    <span class="font-bold">{{ $partyBooking->passenger_name }}</span>
+                                    <span class="text-on-surface-variant">Seat {{ $partyBooking->seat_number }}</span>
+                                </div>
+                            @endforeach
+                        </div>
+                        @endif
                         <div class="flex items-center gap-6 justify-between relative">
                             <div class="flex-1">
                                 <p class="font-black text-2xl font-headline">{{ $origin_code ?? 'LUN' }}</p>
@@ -244,7 +271,12 @@
 
             <!-- Price Breakdown -->
             <div class="bg-surface-container-low p-6 rounded-xl space-y-3">
-                <h3 class="text-xs font-bold uppercase tracking-widest text-on-surface-variant">Fare Summary</h3>
+                <h3 class="text-xs font-bold uppercase tracking-widest text-on-surface-variant">
+                    Fare Summary
+                    @if($isGroupBooking)
+                        <span class="normal-case font-medium text-on-surface-variant/70">&middot; {{ $partyBookings->count() }} seats</span>
+                    @endif
+                </h3>
                 <div class="space-y-2 text-sm">
                     <div class="flex justify-between">
                         <span class="text-on-surface-variant">Base Fare</span>

@@ -32,7 +32,7 @@ class RouteSeeder extends Seeder
                 'destination'    => 'Lusaka',
                 'distance_km'    => 420.50,
                 'departure_time' => '06:00',
-                'arrival_time'   => '11:30',
+                'arrival_time'   => '12:30',
                 'fare'           => 180.00,
                 'travel_date'    => $today,
                 'is_active'      => true,
