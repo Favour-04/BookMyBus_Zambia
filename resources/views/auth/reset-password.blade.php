@@ -1,79 +1,20 @@
-<!DOCTYPE html>
-<html class="light" lang="en">
+@extends('layouts.auth')
 
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Reset Password — BookMyBus Zambia</title>
-    <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=Inter:wght@400;500;600&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
-    <script id="tailwind-config">
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    colors: {
-                        "on-secondary": "#ffffff",
-                        "on-secondary-container": "#632f00",
-                        "secondary-container": "#ff8921",
-                        "primary-fixed-dim": "#7edb83",
-                        "inverse-primary": "#7edb83",
-                        background: "#f9f9fc",
-                        "inverse-on-surface": "#f0f0f3",
-                        "tertiary-container": "#d1200f",
-                        "surface-container-lowest": "#ffffff",
-                        "outline-variant": "#bfcaba",
-                        "on-tertiary": "#ffffff",
-                        surface: "#f9f9fc",
-                        "on-primary": "#ffffff",
-                        "primary-fixed": "#99f89d",
-                        "surface-variant": "#e2e2e5",
-                        "on-primary-fixed": "#002106",
-                        "surface-bright": "#f9f9fc",
-                        "surface-dim": "#dadadc",
-                        outline: "#6f7a6c",
-                        primary: "#00601f",
-                        "on-primary-fixed-variant": "#00531a",
-                        "surface-container-low": "#f3f3f6",
-                        "on-surface-variant": "#3f493e",
-                        "surface-container-high": "#e8e8ea",
-                        "on-surface": "#1a1c1e",
-                        "primary-container": "#197b30",
-                        "error-container": "#ffdad6",
-                        "surface-container-highest": "#e2e2e5",
-                        "surface-tint": "#006e25",
-                        error: "#ba1a1a",
-                        "surface-container": "#eeeef0",
-                        secondary: "#954a00",
-                        tertiary: "#a80800",
-                        "on-error": "#ffffff",
-                        "on-background": "#1a1c1e",
-                    },
-                    fontFamily: {
-                        headline: ["Manrope"],
-                        body: ["Inter"],
-                    },
-                },
-            },
-        };
-    </script>
-    <style>
-        .material-symbols-outlined {
-            font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
-            vertical-align: middle;
-        }
-        .hero-gradient {
+@section('title', 'Reset Password')
+
+@push('head')
+<style>
+.hero-gradient {
             background: linear-gradient(135deg, #00601f 0%, #197b30 100%);
         }
         .panel-gradient {
             background: linear-gradient(160deg, #00601f 0%, #197b30 60%, #1a3d22 100%);
         }
-    </style>
-</head>
+</style>
+@endpush
 
-<body class="bg-surface font-body text-on-surface min-h-screen flex">
-
-    <!-- Left decorative panel -->
+@section('content')
+<!-- Left decorative panel -->
     <div class="hidden lg:flex lg:w-1/2 panel-gradient flex-col justify-between p-12 relative overflow-hidden">
         <!-- Background pattern -->
         <div class="absolute inset-0 opacity-10">
@@ -254,8 +195,10 @@
             </div>
         </div>
     </div>
+@endsection
 
-    <script>
+@push('scripts')
+<script>
         function togglePassword(inputId, iconId) {
             const input = document.getElementById(inputId);
             const icon = document.getElementById(iconId);
@@ -268,5 +211,4 @@
             }
         }
     </script>
-</body>
-</html>
+@endpush

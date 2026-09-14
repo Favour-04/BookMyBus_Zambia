@@ -1,23 +1,11 @@
-<!DOCTYPE html>
-<html class="light" lang="{{ str_replace('_', '-', app()->getLocale() ?? 'en') }}">
+@extends('layouts.operator')
 
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zambia Transit | Route Templates</title>
+@section('title', 'Route Templates')
+@section('page_title', 'Route Templates')
 
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Manrope:wght@700;800&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
-        rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Manrope:wght@100..900&display=swap"
-        rel="stylesheet" />
-
-    <style>
-        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; vertical-align: middle; }
-        body { font-family: 'Inter', sans-serif; background-color: #f9f9fc; }
-        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+@push('head')
+<style>
+.custom-scrollbar::-webkit-scrollbar { width: 4px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #bfcaba; border-radius: 10px; }
 
@@ -31,88 +19,11 @@
             transition: opacity 0.25s ease;
         }
         #drawer-backdrop.open { opacity: 1; pointer-events: auto; }
-    </style>
+</style>
+@endpush
 
-    <script id="tailwind-config">
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    colors: {
-                        "surface-container-low": "#f3f3f6", "primary": "#004614",
-                        "on-primary": "#ffffff", "outline-variant": "#bfcaba", "outline": "#6f7a6c",
-                        "surface": "#f9f9fc", "surface-container-high": "#e8e8eb",
-                        "surface-container": "#edeef1", "surface-container-highest": "#e2e2e5",
-                        "error-container": "#ffdad6", "surface-container-lowest": "#ffffff",
-                        "background": "#f9f9fc", "error": "#ba1a1a", "on-surface": "#1a1c1e",
-                        "on-surface-variant": "#40493e", "tertiary": "#7c0400",
-                    },
-                    fontFamily: { "headline-md": ["Manrope"], "headline-sm": ["Manrope"], "body-md": ["Inter"], "body-sm": ["Inter"], "label-caps": ["Inter"] },
-                    fontSize: {
-                        "headline-md": ["20px", {"lineHeight": "28px", "fontWeight": "700"}],
-                        "headline-sm": ["14px", {"lineHeight": "20px", "fontWeight": "700"}],
-                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "500"}],
-                        "body-sm": ["12px", {"lineHeight": "16px", "fontWeight": "400"}],
-                        "label-caps": ["10px", {"lineHeight": "12px", "letterSpacing": "0.1em", "fontWeight": "700"}]
-                    }
-                }
-            }
-        }
-    </script>
-</head>
+@section('content')
 
-<body class="bg-background text-on-surface">
-
-    <!-- Sidebar -->
-    <aside class="h-screen w-64 fixed left-0 top-0 bg-surface-container-low flex flex-col py-6 px-4 z-20">
-        <div class="mb-10 px-2">
-            <h1 class="font-headline-md text-headline-md font-extrabold text-primary uppercase tracking-tighter">{{ $operator->company_name ?? 'Operator' }}</h1>
-            <p class="font-body-sm text-body-sm text-on-surface-variant opacity-70">Operator Portal</p>
-        </div>
-        <nav class="flex-grow space-y-1">
-            <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:text-primary hover:bg-surface-container-higher transition-colors" href="{{ route('operator.dashboard') }}">
-                <span class="material-symbols-outlined">dashboard</span><span class="font-body-md">Dashboard</span>
-            </a>
-            <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:text-primary hover:bg-surface-container-higher transition-colors" href="{{ route('operator.trips.index') }}">
-                <span class="material-symbols-outlined">directions_bus</span><span class="font-body-md">Manage Trips</span>
-            </a>
-            <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-primary font-bold border-r-4 border-primary bg-surface-container-high" href="{{ route('operator.route-templates.index') }}">
-                <span class="material-symbols-outlined">route</span><span class="font-body-md">Route Templates</span>
-            </a>
-            <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:text-primary hover:bg-surface-container-higher transition-colors" href="{{ route('operator.buses.index') }}">
-                <span class="material-symbols-outlined">fleet</span><span class="font-body-md">Fleet</span>
-            </a>
-            <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:text-primary hover:bg-surface-container-higher transition-colors" href="{{ route('operator.bookings.index') }}">
-                <span class="material-symbols-outlined">book_online</span><span class="font-body-md">All Bookings</span>
-            </a>
-            <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:text-primary hover:bg-surface-container-higher transition-colors" href="{{ route('operator.revenue') }}">
-                <span class="material-symbols-outlined">payments</span><span class="font-body-md">Revenue</span>
-            </a>
-            <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:text-primary hover:bg-surface-container-higher transition-colors" href="{{ route('operator.fare-rules.index') }}">
-                <span class="material-symbols-outlined">sell</span><span class="font-body-md">Fare Rules</span>
-            </a>
-            <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:text-primary hover:bg-surface-container-higher transition-colors" href="{{ route('operator.promo-codes.index') }}">
-                <span class="material-symbols-outlined">confirmation_number</span><span class="font-body-md">Promo Codes</span>
-            </a>
-            <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:text-primary hover:bg-surface-container-higher transition-colors" href="{{ route('operator.audit-log.index') }}">
-                <span class="material-symbols-outlined">history</span><span class="font-body-md">Audit Log</span>
-            </a>
-            <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:text-primary hover:bg-surface-container-higher transition-colors" href="{{ route('operator.profile') }}">
-                <span class="material-symbols-outlined">account_circle</span><span class="font-body-md">Profile</span>
-            </a>
-        </nav>
-    </aside>
-
-    <!-- Main -->
-    <main class="ml-64 min-h-screen">
-        <header class="h-16 px-8 flex items-center justify-between sticky top-0 bg-surface-container-low border-b border-outline-variant/15 z-10">
-            <h2 class="font-headline-sm text-headline-sm text-primary">Route Templates</h2>
-            <div class="flex items-center gap-4">
-                <span class="text-body-sm text-on-surface-variant">Reusable route definitions</span>
-            </div>
-        </header>
-
-        <div class="p-8">
             @if(session('success'))
             <div class="mb-6 p-4 bg-primary/10 border border-primary/20 rounded-xl text-body-sm text-primary font-medium">{{ session('success') }}</div>
             @endif
@@ -182,7 +93,6 @@
                 @endforelse
             </div>
         </div>
-    </main>
 
     <!-- Backdrop -->
     <div id="drawer-backdrop" class="fixed inset-0 bg-on-surface/30 z-30" onclick="closeDrawers()"></div>
@@ -301,7 +211,10 @@
         </form>
     </aside>
 
-    <script>
+@endsection
+
+@push('scripts')
+<script>
         function openDrawer(type) {
             document.getElementById(type + '-drawer').classList.add('open');
             document.getElementById('drawer-backdrop').classList.add('open');
@@ -328,5 +241,5 @@
             el.addEventListener('mouseleave', () => el.classList.remove('scale-[0.98]'));
         });
     </script>
-</body>
-</html>
+@endpush
+

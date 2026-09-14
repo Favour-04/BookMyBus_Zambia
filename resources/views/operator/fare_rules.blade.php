@@ -1,26 +1,11 @@
-<!DOCTYPE html>
-<html class="light" lang="{{ str_replace('_', '-', app()->getLocale() ?? 'en') }}">
+@extends('layouts.operator')
 
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zambia Transit | Fare Rules</title>
+@section('title', 'Fare Rules')
+@section('page_title', 'Fare Rules')
 
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Manrope:wght@700;800&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
-        rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Manrope:wght@100..900&display=swap"
-        rel="stylesheet" />
-
-    <style>
-        .material-symbols-outlined {
-            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-            vertical-align: middle;
-        }
-        body { font-family: 'Inter', sans-serif; background-color: #f9f9fc; }
-        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+@push('head')
+<style>
+.custom-scrollbar::-webkit-scrollbar { width: 4px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #bfcaba; border-radius: 10px; }
 
@@ -43,144 +28,11 @@
             transition: opacity 0.25s ease;
         }
         #drawer-backdrop.open { opacity: 1; pointer-events: auto; }
-    </style>
+</style>
+@endpush
 
-    <script id="tailwind-config">
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    "colors": {
-                        "surface-container-low": "#f3f3f6",
-                        "surface-variant": "#e2e2e5",
-                        "primary-container": "#197b30",
-                        "on-primary": "#ffffff",
-                        "outline-variant": "#bfcaba",
-                        "outline": "#6f7a6c",
-                        "surface-dim": "#d9dadd",
-                        "on-background": "#1a1c1e",
-                        "surface-container-high": "#e8e8eb",
-                        "surface": "#f9f9fc",
-                        "surface-container": "#edeef1",
-                        "surface-container-highest": "#e2e2e5",
-                        "error-container": "#ffdad6",
-                        "surface-container-lowest": "#ffffff",
-                        "background": "#f9f9fc",
-                        "error": "#ba1a1a",
-                        "on-surface": "#1a1c1e",
-                        "tertiary-container": "#a80800",
-                        "secondary-container": "#fd9c53",
-                        "primary": "#004614",
-                        "on-surface-variant": "#40493e",
-                        "secondary": "#954a00",
-                        "on-error": "#ffffff",
-                        "on-primary-container": "#85d988",
-                        "on-error-container": "#93000a",
-                        "surface-bright": "#f9f9fc",
-                        "inverse-surface": "#2f3133"
-                    },
-                    "fontFamily": {
-                        "headline-lg": ["Manrope"],
-                        "headline-md": ["Manrope"],
-                        "headline-sm": ["Manrope"],
-                        "body-md": ["Inter"],
-                        "body-sm": ["Inter"],
-                        "label-caps": ["Inter"]
-                    },
-                    "fontSize": {
-                        "headline-lg": ["36px", {"lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "800"}],
-                        "headline-md": ["20px", {"lineHeight": "28px", "fontWeight": "700"}],
-                        "headline-sm": ["14px", {"lineHeight": "20px", "fontWeight": "700"}],
-                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "500"}],
-                        "body-sm": ["12px", {"lineHeight": "16px", "fontWeight": "400"}],
-                        "label-caps": ["10px", {"lineHeight": "12px", "letterSpacing": "0.1em", "fontWeight": "700"}]
-                    }
-                }
-            }
-        }
-    </script>
-</head>
+@section('content')
 
-<body class="bg-background text-on-surface">
-
-    <!-- Sidebar Navigation -->
-    <aside class="h-screen w-64 fixed left-0 top-0 bg-surface-container-low flex flex-col py-6 px-4 z-20">
-        <div class="mb-10 px-2">
-            <h1 class="font-headline-md text-headline-md font-extrabold text-primary uppercase tracking-tighter">
-                {{ $operator->company_name ?? 'Power Tools Bus' }}
-            </h1>
-            <p class="font-body-sm text-body-sm text-on-surface-variant opacity-70">Operator Portal</p>
-        </div>
-
-        <nav class="flex-grow space-y-1">
-            <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:text-primary hover:bg-surface-container-higher transition-colors duration-200"
-                href="{{ route('operator.dashboard') }}">
-                <span class="material-symbols-outlined">dashboard</span>
-                <span class="font-body-md text-body-md">Dashboard</span>
-            </a>
-            <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:text-primary hover:bg-surface-container-higher transition-colors duration-200"
-                href="{{ route('operator.trips.index') }}">
-                <span class="material-symbols-outlined">directions_bus</span>
-                <span class="font-body-md text-body-md">Manage Trips</span>
-            </a>
-            <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:text-primary hover:bg-surface-container-higher transition-colors duration-200"
-                href="{{ route('operator.trips.calendar') }}">
-                <span class="material-symbols-outlined">calendar_month</span>
-                <span class="font-body-md text-body-md">Trip Calendar</span>
-            </a>
-            <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:text-primary hover:bg-surface-container-higher transition-colors duration-200"
-                href="{{ route('operator.buses.index') }}">
-                <span class="material-symbols-outlined">fleet</span>
-                <span class="font-body-md text-body-md">Fleet</span>
-            </a>
-            <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:text-primary hover:bg-surface-container-higher transition-colors duration-200"
-                href="{{ route('operator.bookings.index') }}">
-                <span class="material-symbols-outlined">book_online</span>
-                <span class="font-body-md text-body-md">All Bookings</span>
-            </a>
-            <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:text-primary hover:bg-surface-container-higher transition-colors duration-200"
-                href="{{ route('operator.revenue') }}">
-                <span class="material-symbols-outlined">payments</span>
-                <span class="font-body-md text-body-md">Revenue</span>
-            </a>
-            <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-primary font-bold border-r-4 border-primary bg-surface-container-high transition-all duration-150"
-                href="{{ route('operator.fare-rules.index') }}">
-                <span class="material-symbols-outlined">sell</span>
-                <span class="font-body-md text-body-md">Fare Rules</span>
-            </a>
-            <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:text-primary hover:bg-surface-container-higher transition-colors duration-200"
-                href="{{ route('operator.promo-codes.index') }}">
-                <span class="material-symbols-outlined">confirmation_number</span>
-                <span class="font-body-md text-body-md">Promo Codes</span>
-            </a>
-            <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:text-primary hover:bg-surface-container-higher transition-colors duration-200"
-                href="{{ route('operator.audit-log.index') }}">
-                <span class="material-symbols-outlined">history</span>
-                <span class="font-body-md text-body-md">Audit Log</span>
-            </a>
-            <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:text-primary hover:bg-surface-container-higher transition-colors duration-200"
-                href="{{ route('operator.profile') }}">
-                <span class="material-symbols-outlined">account_circle</span>
-                <span class="font-body-md text-body-md">Profile</span>
-            </a>
-        </nav>
-    </aside>
-
-    <!-- Main Content -->
-    <main class="ml-64 min-h-screen">
-
-        <!-- Header -->
-        <header class="h-16 px-8 flex items-center justify-between sticky top-0 bg-surface-container-low border-b border-outline-variant/15 z-10">
-            <div>
-                <h2 class="font-headline-sm text-headline-sm text-primary">Fare Rules</h2>
-            </div>
-            <div class="flex items-center gap-4">
-                <span class="text-body-sm text-on-surface-variant">Configure pricing, fees & cancellation policies</span>
-            </div>
-        </header>
-
-        <!-- Page Content -->
-        <div class="p-8">
 
             @if(session('success'))
             <div class="mb-6 p-4 bg-primary/10 border border-primary/20 rounded-xl text-body-sm text-primary font-medium">
@@ -389,7 +241,6 @@
             </div>
 
         </div>
-    </main>
 
     <!-- Drawer Backdrop -->
     <div id="drawer-backdrop" class="fixed inset-0 bg-on-surface/30 z-30" onclick="closeDrawer()"></div>
@@ -473,7 +324,10 @@
         </form>
     </aside>
 
-    <script>
+@endsection
+
+@push('scripts')
+<script>
         // Tab switching
         function switchTab(tab, btn) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
@@ -503,6 +357,5 @@
             el.addEventListener('mouseleave',() => el.classList.remove('scale-[0.98]'));
         });
     </script>
+@endpush
 
-</body>
-</html>

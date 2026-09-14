@@ -101,7 +101,7 @@ class BookingManagementController extends Controller
 
         $bookings = Booking::with(['user'])
             ->where('route_id', $route->id)
-            ->orderByRaw("FIELD(status, 'confirmed', 'pending', 'cancelled')")
+            ->orderByRaw("CASE status WHEN 'confirmed' THEN 0 WHEN 'pending' THEN 1 WHEN 'cancelled' THEN 2 ELSE 3 END")
             ->orderBy('seat_number', 'asc')
             ->get();
 
@@ -580,44 +580,7 @@ class BookingManagementController extends Controller
             }
         }
         
-        // Fallback to operator ID 1
-        $operator = Operator::find(1);
-        
-        if (!$operator) {
-            try {
-                $operator = Operator::create([
-                    'id' => 1,
-                    'company_name' => 'Default Operator',
-                    'email' => 'default@operator.com',
-                    'phone_number' => '0977123456',
-                    'password' => bcrypt('password'),
-                    'is_verified' => true,
-                    'verified_at' => now(),
-                    'address' => 'Lusaka, Zambia',
-                ]);
-            } catch (\Exception $e) {
-                $operator = Operator::withTrashed()->find(1);
-                if ($operator) {
-                    $operator->restore();
-                    $operator->update([
-                        'is_verified' => true,
-                        'verified_at' => now(),
-                    ]);
-                } else {
-                    $operator = Operator::first() ?? Operator::create([
-                        'company_name' => 'Fallback Operator',
-                        'email' => 'fallback@operator.com',
-                        'phone_number' => '0977123456',
-                        'password' => bcrypt('password'),
-                        'is_verified' => true,
-                        'verified_at' => now(),
-                    ]);
-                }
-            }
-        }
-        
-        session(['operator_id' => $operator->id]);
-        return $operator;
+        abort(403, 'Operator session expired. Please log in again.');
     }
 
     private function applyDateFilter($query, $filter)

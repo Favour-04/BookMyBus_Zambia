@@ -1,67 +1,21 @@
-<!DOCTYPE html>
-<html class="light" lang="en">
+@extends('layouts.auth')
 
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Operator Portal — BookMyBus Zambia</title>
-    <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=Inter:wght@400;500;600&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
-    <script id="tailwind-config">
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    colors: {
-                        "on-secondary": "#ffffff",
-                        "on-secondary-container": "#632f00",
-                        "secondary-container": "#ff8921",
-                        background: "#f9f9fc",
-                        "surface-container-lowest": "#ffffff",
-                        "outline-variant": "#bfcaba",
-                        surface: "#f9f9fc",
-                        "on-primary": "#ffffff",
-                        "surface-dim": "#dadadc",
-                        outline: "#6f7a6c",
-                        primary: "#00601f",
-                        "surface-container-low": "#f3f3f6",
-                        "on-surface-variant": "#3f493e",
-                        "surface-container-high": "#e8e8ea",
-                        "on-surface": "#1a1c1e",
-                        "primary-container": "#197b30",
-                        "primary-fixed": "#99f89d",
-                        "error-container": "#ffdad6",
-                        error: "#ba1a1a",
-                        "surface-container": "#eeeef0",
-                        secondary: "#954a00",
-                        "on-background": "#1a1c1e",
-                    },
-                    fontFamily: {
-                        headline: ["Manrope"],
-                        body: ["Inter"],
-                    },
-                },
-            },
-        };
-    </script>
-    <style>
-        .material-symbols-outlined {
-            font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
-            vertical-align: middle;
-        }
-        .hero-gradient {
+@section('title', 'Operator Portal')
+
+@push('head')
+<style>
+.hero-gradient {
             background: linear-gradient(135deg, #00601f 0%, #197b30 100%);
         }
         /* Subtle orange accent panel for operators — distinguishes from traveler login */
         .operator-panel {
             background: linear-gradient(160deg, #6b3300 0%, #954a00 50%, #7a3f00 100%);
         }
-    </style>
-</head>
+</style>
+@endpush
 
-<body class="bg-surface font-body text-on-surface min-h-screen flex">
-
-    <!-- Left decorative panel — orange theme to distinguish from traveler login -->
+@section('content')
+<!-- Left decorative panel — orange theme to distinguish from traveler login -->
     <div class="hidden lg:flex lg:w-1/2 operator-panel flex-col justify-between p-12 relative overflow-hidden">
         <!-- Background pattern -->
         <div class="absolute inset-0 opacity-10">
@@ -170,7 +124,7 @@
                 </div>
             @endif
 
-            <form action="/operator/login" method="POST" class="flex flex-col gap-5">
+            <form action="{{ route('operator.login') }}" method="POST" class="flex flex-col gap-5">
                 @csrf
 
                 <!-- Email -->
@@ -246,8 +200,10 @@
             </div>
         </div>
     </div>
+@endsection
 
-    <script>
+@push('scripts')
+<script>
         function togglePassword() {
             const input = document.getElementById('password');
             const icon = document.getElementById('eye-icon');
@@ -260,5 +216,4 @@
             }
         }
     </script>
-</body>
-</html>
+@endpush

@@ -26,28 +26,34 @@
 
     <!-- Filters -->
     <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/15 p-4 mb-6">
-        <form method="GET" class="grid grid-cols-2 md:grid-cols-5 gap-3">
-            <select name="status" class="rounded-xl border border-outline-variant/30 px-3 py-2 text-sm focus:outline-none focus:border-primary">
+        <form method="GET" class="grid grid-cols-2 md:grid-cols-5 gap-3" role="search" aria-label="Filter payments">
+            <label for="pay-status" class="sr-only">Filter by payment status</label>
+            <select id="pay-status" name="status" class="rounded-xl border border-outline-variant/30 px-3 py-2 text-sm focus:outline-none focus:border-primary">
                 <option value="all">All statuses</option>
                 @foreach(['successful', 'failed', 'pending'] as $st)
                     <option value="{{ $st }}" {{ request('status') === $st ? 'selected' : '' }}>{{ ucfirst($st) }}</option>
                 @endforeach
             </select>
-            <select name="method" class="rounded-xl border border-outline-variant/30 px-3 py-2 text-sm focus:outline-none focus:border-primary">
+            <label for="pay-method" class="sr-only">Filter by payment method</label>
+            <select id="pay-method" name="method" class="rounded-xl border border-outline-variant/30 px-3 py-2 text-sm focus:outline-none focus:border-primary">
                 <option value="">All methods</option>
                 @foreach($methods as $m)
                     <option value="{{ $m }}" {{ request('method') === $m ? 'selected' : '' }}>{{ is_string($m) ? ucwords(str_replace('_', ' ', $m)) : $m }}</option>
                 @endforeach
             </select>
-            <select name="operator_id" class="rounded-xl border border-outline-variant/30 px-3 py-2 text-sm focus:outline-none focus:border-primary">
+            <label for="pay-operator" class="sr-only">Filter by operator</label>
+            <select id="pay-operator" name="operator_id" class="rounded-xl border border-outline-variant/30 px-3 py-2 text-sm focus:outline-none focus:border-primary">
                 <option value="">All operators</option>
                 @foreach($operators as $operator)
                     <option value="{{ $operator->id }}" {{ request('operator_id') == $operator->id ? 'selected' : '' }}>{{ $operator->company_name }}</option>
                 @endforeach
             </select>
-            <input type="date" name="from" value="{{ request('from') }}" class="rounded-xl border border-outline-variant/30 px-3 py-2 text-sm focus:outline-none focus:border-primary">
-            <input type="date" name="to" value="{{ request('to') }}" class="rounded-xl border border-outline-variant/30 px-3 py-2 text-sm focus:outline-none focus:border-primary">
-            <input type="text" name="search" value="{{ request('search') }}" placeholder="Txn ref / booking..."
+            <label for="pay-from" class="sr-only">Filter from date</label>
+            <input id="pay-from" type="date" name="from" value="{{ request('from') }}" class="rounded-xl border border-outline-variant/30 px-3 py-2 text-sm focus:outline-none focus:border-primary">
+            <label for="pay-to" class="sr-only">Filter to date</label>
+            <input id="pay-to" type="date" name="to" value="{{ request('to') }}" class="rounded-xl border border-outline-variant/30 px-3 py-2 text-sm focus:outline-none focus:border-primary">
+            <label for="pay-search" class="sr-only">Search by transaction reference or booking</label>
+            <input id="pay-search" type="text" name="search" value="{{ request('search') }}" placeholder="Txn ref / booking..."
                 class="rounded-xl border border-outline-variant/30 px-3 py-2 text-sm focus:outline-none focus:border-primary">
             <div class="flex gap-2 col-span-2 md:col-span-1">
                 <button type="submit" class="flex-1 flex items-center justify-center gap-1 px-4 py-2 rounded-xl bg-primary text-white text-sm font-bold">

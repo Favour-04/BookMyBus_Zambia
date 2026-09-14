@@ -283,6 +283,26 @@ class BookingController extends Controller
     }
 
     /**
+     * Display the authenticated traveler's booking history.
+     *
+     * This powers the "My Bookings" menu item, showing the logged-in
+     * user's own bookings rather than a lookup/search form.
+     */
+    public function myBookings()
+    {
+        /** @var \App\Models\User $user */
+        $user = Auth::guard('web')->user();
+
+        $bookings = $user->bookings()
+            ->with(['route', 'ticket'])
+            ->latest()
+            ->take(20)
+            ->get();
+
+        return view('my_bookings', compact('bookings'));
+    }
+
+    /**
      * Display the customer booking lookup form.
      */
     public function customerLookupView()

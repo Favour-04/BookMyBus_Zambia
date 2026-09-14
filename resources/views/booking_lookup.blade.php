@@ -1,49 +1,13 @@
-<!DOCTYPE html>
-<html class="light" lang="{{ str_replace('_', '-', app()->getLocale() ?? 'en') }}">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Booking | BookMyBus Zambia</title>
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Manrope:wght@100..900&display=swap" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,200..0&display=swap" rel="stylesheet" />
-    <style>
-        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; vertical-align: middle; }
-        body { font-family: 'Inter', sans-serif; background-color: #f9f9fc; }
-    </style>
-    <script>
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    colors: {
-                        "primary": "#004614", "on-primary": "#ffffff",
-                        "surface-container-low": "#f3f3f6", "surface-container": "#edeef1",
-                        "surface-container-highest": "#e2e2e5", "surface-container-lowest": "#ffffff",
-                        "surface": "#f9f9fc", "on-surface": "#1a1c1e",
-                        "on-surface-variant": "#40493e", "outline-variant": "#bfcaba",
-                        "outline": "#6f7a6c", "tertiary": "#7c0400", "error": "#ba1a1a",
-                        "error-container": "#ffdad6", "secondary": "#954a00",
-                    },
-                    fontFamily: { 'headline': ['Manrope', 'sans-serif'], 'body': ['Inter', 'sans-serif'] }
-                }
-            }
-        }
-    </script>
-</head>
-<body class="bg-surface text-on-surface min-h-screen">
-    <!-- Navigation Bar -->
-    <header class="h-16 bg-surface-container-low border-b border-outline-variant/15 flex items-center px-8 sticky top-0 z-20">
-        <a href="{{ route('home') }}" class="font-headline text-xl font-extrabold text-primary tracking-tighter">
-            BookMyBus<span class="text-on-surface"> Zambia</span>
-        </a>
-        <nav class="ml-auto flex items-center gap-6">
-            <a href="{{ route('trips.search') }}" class="text-sm font-bold text-on-surface-variant hover:text-primary transition-colors">Book a Trip</a>
-            <a href="{{ route('booking.lookup') }}" class="text-sm font-bold text-primary border-b-2 border-primary">My Booking</a>
-        </nav>
-    </header>
+@extends('layouts.app')
 
-    <main class="max-w-2xl mx-auto px-4 py-12">
+@section('title', 'My Booking')
+
+@section('content')
+
+    <!-- Navigation Bar -->
+    
+
+    
         <div class="text-center mb-10">
             <span class="material-symbols-outlined text-6xl text-primary/30 block mb-4">confirmation_number</span>
             <h1 class="font-headline text-4xl font-extrabold text-on-surface">Find My Booking</h1>
@@ -198,6 +162,26 @@
             Having trouble finding your booking? Contact our support team at
             <a href="mailto:support@bookmybus.co.zm" class="text-primary font-bold hover:underline">support@bookmybus.co.zm</a>
         </p>
-    </main>
-</body>
-</html>
+@endsection
+
+@push('scripts')
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#004614", "on-primary": "#ffffff",
+                        "surface-container-low": "#f3f3f6", "surface-container": "#edeef1",
+                        "surface-container-highest": "#e2e2e5", "surface-container-lowest": "#ffffff",
+                        "surface": "#f9f9fc", "on-surface": "#1a1c1e",
+                        "on-surface-variant": "#40493e", "outline-variant": "#bfcaba",
+                        "outline": "#6f7a6c", "tertiary": "#7c0400", "error": "#ba1a1a",
+                        "error-container": "#ffdad6", "secondary": "#954a00",
+                    },
+                    fontFamily: { 'headline': ['Manrope', 'sans-serif'], 'body': ['Inter', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+@endpush

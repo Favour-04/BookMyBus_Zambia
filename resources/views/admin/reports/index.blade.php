@@ -12,7 +12,7 @@
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/15 p-5">
             <p class="text-[10px] font-bold uppercase text-on-surface-variant tracking-wider">Total Collected Revenue</p>
-            <p class="font-headline font-extrabold text-3xl mt-2">ZMW {{ number_format($totals['revenue']) }}</p>
+            <p class="font-headline font-extrabold text-3xl mt-2">ZMW {{ number_format($totals['revenue'], 2) }}</p>
         </div>
         <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/15 p-5">
             <p class="text-[10px] font-bold uppercase text-on-surface-variant tracking-wider">Total Bookings</p>
@@ -33,19 +33,19 @@
                     <span class="material-symbols-outlined text-base">download</span>Export CSV
                 </a>
             </div>
-            <canvas id="revenueChart" height="90"></canvas>
+            <canvas id="revenueChart" height="90" role="img" aria-label="Bar chart of collected revenue in ZMW for each of the last 12 months. Total over the period: ZMW {{ number_format($totals['revenue'], 2) }}."></canvas>
         </div>
         <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/15 p-6">
             <h3 class="font-headline font-bold text-lg mb-4">Bookings — Last 12 Months</h3>
-            <canvas id="bookingsChart" height="90"></canvas>
+            <canvas id="bookingsChart" height="90" role="img" aria-label="Line chart of booking counts for each of the last 12 months. Total over the period: {{ number_format($totals['bookings']) }} bookings."></canvas>
         </div>
         <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/15 p-6">
             <h3 class="font-headline font-bold text-lg mb-4">Payment Methods</h3>
-            <canvas id="methodChart" height="90"></canvas>
+            <canvas id="methodChart" height="90" role="img" aria-label="Doughnut chart of successful payments split by payment method: {{ $paymentMethods->map(fn($v,$k) => $k . ' (' . $v . ')')->join(', ') }}."></canvas>
         </div>
         <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/15 p-6">
             <h3 class="font-headline font-bold text-lg mb-4">Booking Status</h3>
-            <canvas id="statusChart" height="90"></canvas>
+            <canvas id="statusChart" height="90" role="img" aria-label="Doughnut chart of booking status: {{ $statusBreakdown['confirmed'] }} confirmed, {{ $statusBreakdown['pending'] }} pending, {{ $statusBreakdown['cancelled'] }} cancelled."></canvas>
         </div>
     </div>
 <!-- Revenue tables -->
@@ -55,7 +55,7 @@
             <div class="overflow-x-auto">
                 <table class="w-full text-sm">
                     <thead>
-                        <tr class="border-b border-outline-variant/20">
+                        <tr class="border-b border-outline-variant/20 bg-surface-container-low">
                             <th class="text-left py-2 px-2 font-bold text-on-surface-variant text-[10px] uppercase tracking-wider">#</th>
                             <th class="text-left py-2 px-2 font-bold text-on-surface-variant text-[10px] uppercase tracking-wider">Operator</th>
                             <th class="text-left py-2 px-2 font-bold text-on-surface-variant text-[10px] uppercase tracking-wider">Txns</th>
@@ -83,7 +83,7 @@
             <div class="overflow-x-auto">
                 <table class="w-full text-sm">
                     <thead>
-                        <tr class="border-b border-outline-variant/20">
+                        <tr class="border-b border-outline-variant/20 bg-surface-container-low">
                             <th class="text-left py-2 px-2 font-bold text-on-surface-variant text-[10px] uppercase tracking-wider">#</th>
                             <th class="text-left py-2 px-2 font-bold text-on-surface-variant text-[10px] uppercase tracking-wider">Route</th>
                             <th class="text-left py-2 px-2 font-bold text-on-surface-variant text-[10px] uppercase tracking-wider">Txns</th>

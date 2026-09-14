@@ -1,42 +1,21 @@
-<!DOCTYPE html>
-<html class="light" lang="en">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Admin Sign In — BookMyBus Zambia</title>
-    <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=Inter:wght@400;500;600&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
-    <script>
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    colors: {
-                        primary: "#00601f", "primary-container": "#197b30",
-                        "on-primary": "#ffffff", surface: "#f9f9fc",
-                        "surface-container-low": "#f3f3f6", "surface-container-lowest": "#ffffff",
-                        "on-surface": "#1a1c1e", "on-surface-variant": "#40493e",
-                        outline: "#6f7a6c", "outline-variant": "#bfcaba",
-                        error: "#ba1a1a", "error-container": "#ffdad6",
-                    },
-                    fontFamily: { headline: ["Manrope"], body: ["Inter"] },
-                }
-            }
-        }
-    </script>
-    <style>
-        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; vertical-align: middle; }
-        body { font-family: 'Inter', sans-serif; background: #f9f9fc; }
-        .auth-gradient { background: linear-gradient(135deg, #001a0a 0%, #004614 50%, #00601f 100%); }
+@extends('layouts.auth')
+
+@section('title', 'Admin Sign In')
+
+@push('head')
+<style>
+.auth-gradient { background: linear-gradient(135deg, #001a0a 0%, #004614 50%, #00601f 100%); }
         .auth-card { backdrop-filter: blur(20px); background: rgba(255, 255, 255, 0.95); }
         .input-field { transition: all 0.2s ease; background: #f3f3f6; border: 2px solid transparent; }
         .input-field:focus { background: #ffffff; border-color: #00601f; box-shadow: 0 0 0 4px rgba(0, 96, 31, 0.1); }
         .input-field.error { border-color: #ba1a1a; background: #fff5f5; }
         .btn-primary { background: linear-gradient(135deg, #00601f 0%, #197b30 100%); transition: all 0.3s ease; }
         .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0, 96, 31, 0.3); }
-    </style>
-</head>
-<body>
+</style>
+@endpush
+
+@section('content')
+
     <div class="min-h-screen flex items-center justify-center p-4 auth-gradient relative overflow-hidden">
         <div class="absolute inset-0 overflow-hidden pointer-events-none">
             <div class="absolute -top-40 -right-40 w-96 h-96 bg-white/5 rounded-full blur-3xl"></div>
@@ -101,5 +80,4 @@
             </div>
         </div>
     </div>
-</body>
-</html>
+@endsection

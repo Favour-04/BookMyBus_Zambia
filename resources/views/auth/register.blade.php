@@ -1,30 +1,10 @@
-<!DOCTYPE html>
-<html class="light" lang="{{ str_replace('_', '-', app()->getLocale() ?? 'en') }}">
+@extends('layouts.auth')
 
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>BookMyBus Zambia - Sign Up</title>
+@section('title', 'Sign Up')
 
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Manrope:wght@700;800&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
-        rel="stylesheet" />
-
-    <style>
-        .material-symbols-outlined {
-            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-            vertical-align: middle;
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background: #f9f9fc;
-        }
-
-        .auth-gradient {
+@push('head')
+<style>
+.auth-gradient {
             background: linear-gradient(135deg, #00601f 0%, #197b30 50%, #2d8f47 100%);
         }
 
@@ -122,38 +102,11 @@
                 transform: translateY(0);
             }
         }
-    </style>
+</style>
+@endpush
 
-    <script id="tailwind-config">
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    colors: {
-                        primary: "#00601f",
-                        "primary-container": "#197b30",
-                        surface: "#f9f9fc",
-                        "surface-container-low": "#f3f3f6",
-                        "surface-container-lowest": "#ffffff",
-                        "on-surface": "#1a1c1e",
-                        "on-surface-variant": "#40493e",
-                        outline: "#6f7a6c",
-                        "outline-variant": "#bfcaba",
-                        error: "#ba1a1a",
-                    },
-                    fontFamily: {
-                        headline: ["Manrope"],
-                        body: ["Inter"],
-                    },
-                }
-            }
-        }
-    </script>
-</head>
-
-<body>
-
-    <div class="min-h-screen flex items-center justify-center p-4 auth-gradient relative overflow-hidden">
+@section('content')
+<div class="min-h-screen flex items-center justify-center p-4 auth-gradient relative overflow-hidden">
 
         <!-- Decorative Background -->
         <div class="absolute inset-0 overflow-hidden pointer-events-none">
@@ -320,8 +273,10 @@
             </div>
         </div>
     </div>
+@endsection
 
-    <script>
+@push('scripts')
+<script>
         // Toggle Password Visibility
         function togglePassword() {
             const passwordInput = document.getElementById('password');
@@ -382,6 +337,4 @@
             el.addEventListener('mouseleave', () => el.classList.remove('scale-[0.98]'));
         });
     </script>
-
-</body>
-</html>
+@endpush

@@ -27,16 +27,15 @@ class LoginController extends Controller
             'password' => 'required',
         ]);
 
-    //     dd([
-    //     'session_id'       => session()->getId(),
-    //     'session_all'      => session()->all(),
-    //     'operator_check'   => Auth::guard('operator')->check(),
-    //     'operator_user'    => Auth::guard('operator')->user(),
-    //     'web_check'        => Auth::guard('web')->check(),
-    // ]);
+        // Normalize the email (lowercase + trim) so copy/paste or Caps Lock
+        // can't silently break a valid login.
+        $email = strtolower(trim($request->input('email')));
+
+        // Pre-fetch for the cross-portal hint below (no password involved).
+        $matchingTraveler = \App\Models\User::where('email', $email)->first(['id', 'email', 'role', 'deleted_at']);
 
         if (Auth::guard('web')->attempt(
-            $request->only('email', 'password'),
+            ['email' => $email, 'password' => $request->input('password')],
             $request->filled('remember')
         )) {
             $user = Auth::guard('web')->user();
@@ -51,6 +50,16 @@ class LoginController extends Controller
 
             $request->session()->regenerate();
             return redirect()->intended(route('home'));
+        }
+
+        // If the email belongs to an operator account instead, point the
+        // user at the right portal rather than a bare "invalid" message.
+        if (! $matchingTraveler) {
+            if (\App\Models\Operator::where('email', $email)->exists()) {
+                throw ValidationException::withMessages([
+                    'email' => 'This email belongs to an operator account. Please sign in on the Operator Portal page instead.',
+                ]);
+            }
         }
 
         throw ValidationException::withMessages([

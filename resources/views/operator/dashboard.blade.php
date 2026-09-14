@@ -1,76 +1,11 @@
-@php
-// Default fallback dataset matching the design specification
+@extends('layouts.operator')
 
-$alerts = $alerts ?? [
-[
-'type' => 'maintenance',
-'icon' => 'build',
-'title' => 'Maintenance Required',
-'message' => 'Bus #ZTC-8812 is 500km overdue for engine service. Safety clearance expires in 48 hours.',
-'action_label' => 'Schedule Service',
-'action_icon' => 'arrow_forward',
-'bg_class' => 'bg-tertiary-container/5 border-tertiary-container/30',
-'icon_bg' => 'bg-tertiary-container text-on-tertiary',
-'title_class' => 'text-on-tertiary-fixed-variant',
-'btn_class' => 'text-tertiary'
-],
-[
-'type' => 'demand',
-'icon' => 'local_fire_department',
-'title' => 'High Demand Route',
-'message' => 'Lusaka-Livingstone bookings for tomorrow are at 94%. Consider adding an extra 18:00 express trip.',
-'action_label' => 'Add Trip',
-'action_icon' => 'add',
-'bg_class' => 'bg-secondary-container/5 border-secondary-container/30',
-'icon_bg' => 'bg-secondary-container text-on-secondary-container',
-'title_class' => 'text-on-secondary-container',
-'btn_class' => 'text-secondary'
-],
-[
-'type' => 'rest',
-'icon' => 'person_alert',
-'title' => 'Driver Rest Alert',
-'message' => 'Driver Mubita is approaching max legal driving hours. Ensure shift change at Kabwe station.',
-'action_label' => 'View Schedule',
-'action_icon' => 'event',
-'bg_class' => 'bg-surface-container-low border-outline-variant/30',
-'icon_bg' => 'bg-primary-container text-on-primary',
-'title_class' => 'text-primary',
-'btn_class' => 'text-primary'
-]
-];
-@endphp
+@section('title', 'Dashboard')
+@section('page_title', 'Dashboard')
 
-<!DOCTYPE html>
-<html class="light" lang="{{ str_replace('_', '-', app()->getLocale() ?? 'en') }}">
-
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zambia Transit | Operator Dashboard</title>
-
-    <!-- Tailwind CSS with custom colors config -->
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-
-    <!-- Google Fonts & Material Symbols -->
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Manrope:wght@700;800&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
-        rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Manrope:wght@100..900&display=swap"
-        rel="stylesheet" />
-
-    <style>
-        .material-symbols-outlined {
-            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-            vertical-align: middle;
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f9f9fc;
-        }
-
-        .bento-grid {
+@push('head')
+<style>
+.bento-grid {
             display: grid;
             grid-template-columns: repeat(12, 1fr);
             gap: 24px;
@@ -106,211 +41,11 @@ $alerts = $alerts ?? [
         .trip-row:hover .row-actions {
             opacity: 1;
         }
-    </style>
+</style>
+@endpush
 
-    <script id="tailwind-config">
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    "colors": {
-                        "seat-available": "#00601f",
-                        "on-tertiary-fixed-variant": "#920600",
-                        "on-primary-fixed": "#002106",
-                        "inverse-primary": "#86d989",
-                        "surface-container-low": "#f3f3f6",
-                        "primary-fixed": "#a1f6a3",
-                        "surface-variant": "#e2e2e5",
-                        "primary-container": "#197b30",
-                        "on-primary": "#ffffff",
-                        "outline-variant": "#bfcaba",
-                        "outline": "#6f7a6c",
-                        "tertiary-fixed-dim": "#ffb4a7",
-                        "on-secondary-fixed": "#301400",
-                        "surface-dim": "#d9dadd",
-                        "seat-booked": "#a80800",
-                        "on-background": "#1a1c1e",
-                        "surface-container-high": "#e8e8eb",
-                        "surface": "#f9f9fc",
-                        "on-primary-fixed-variant": "#00531a",
-                        "surface-container": "#edeef1",
-                        "primary-fixed-dim": "#86d989",
-                        "on-secondary-container": "#6f3600",
-                        "surface-container-highest": "#e2e2e5",
-                        "inverse-on-surface": "#f0f0f3",
-                        "error-container": "#ffdad6",
-                        "secondary-fixed-dim": "#ffb785",
-                        "on-tertiary-container": "#ffb3a7",
-                        "seat-selected": "#0077b6",
-                        "surface-container-lowest": "#ffffff",
-                        "background": "#f9f9fc",
-                        "error": "#ba1a1a",
-                        "tertiary-fixed": "#ffdad4",
-                        "on-surface": "#1a1c1e",
-                        "on-tertiary": "#ffffff",
-                        "tertiary-container": "#a80800",
-                        "secondary-container": "#fd9c53",
-                        "primary": "#004614",
-                        "on-secondary-fixed-variant": "#713700",
-                        "surface-tint": "#176d2a",
-                        "secondary-fixed": "#ffdcc6",
-                        "tertiary": "#7c0400",
-                        "on-tertiary-fixed": "#400100",
-                        "on-surface-variant": "#40493e",
-                        "secondary": "#954a00",
-                        "on-error": "#ffffff",
-                        "on-primary-container": "#85d988",
-                        "on-secondary": "#ffffff",
-                        "on-error-container": "#93000a",
-                        "surface-bright": "#f9f9fc",
-                        "inverse-surface": "#2f3133"
-                    },
-                    "fontFamily": {
-                        "headline-lg": ["Manrope"],
-                        "headline-md": ["Manrope"],
-                        "headline-sm": ["Manrope"],
-                        "body-md": ["Inter"],
-                        "body-sm": ["Inter"],
-                        "label-caps": ["Inter"]
-                    },
-                    "fontSize": {
-                        "headline-lg": ["36px", {"lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "800"}],
-                        "headline-md": ["20px", {"lineHeight": "28px", "fontWeight": "700"}],
-                        "headline-sm": ["14px", {"lineHeight": "20px", "fontWeight": "700"}],
-                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "500"}],
-                        "body-sm": ["12px", {"lineHeight": "16px", "fontWeight": "400"}],
-                        "label-caps": ["10px", {"lineHeight": "12px", "letterSpacing": "0.1em", "fontWeight": "700"}]
-                    }
-                }
-            }
-        }
-    </script>
-</head>
+@section('content')
 
-<body class="bg-background text-on-surface">
-
-    <!-- Sidebar Navigation -->
-    <aside
-        class="h-screen w-64 fixed left-0 top-0 bg-surface-container-low dark:bg-surface-dim flex flex-col py-6 px-4 z-20">
-        <div class="mb-10 px-2 font-headline-md text-headline-md font-extrabold text-primary">
-            <h1
-                class="font-headline-md text-headline-md font-extrabold text-primary dark:text-primary-fixed uppercase tracking-tighter">
-                {{$operator -> company_name ?? 'N/A'}}</h1>
-            <p class="font-body-sm text-body-sm text-on-surface-variant opacity-70">Operator Portal</p>
-        </div>
-
-        <nav class="flex-grow space-y-1">
-            <!-- Dashboard (Active) -->
-            <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-primary dark:text-primary-fixed font-bold border-r-4 border-primary dark:border-primary-fixed bg-surface-container-high dark:bg-surface-container transition-all duration-150"
-                href="{{ route('operator.dashboard') }}">
-                <span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
-                <span class="font-body-md text-body-md">Dashboard</span>
-            </a>
-
-            <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant dark:text-outline hover:text-primary dark:hover:text-primary-fixed hover:bg-surface-container-highest dark:hover:bg-surface-container transition-colors duration-200"
-                href="{{ route('operator.buses.index') }}">
-                <span class="material-symbols-outlined" data-icon="fleet">fleet</span>
-                <span class="font-body-md text-body-md">Fleet</span>
-            </a>
-
-            <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant dark:text-outline hover:text-primary dark:hover:text-primary-fixed hover:bg-surface-container-highest dark:hover:bg-surface-container transition-colors duration-200"
-                href="{{ route('operator.revenue') }}">
-                <span class="material-symbols-outlined" data-icon="payments">payments</span>
-                <span class="font-body-md text-body-md">Revenue</span>
-            </a>
-
-            <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant dark:text-outline hover:text-primary dark:hover:text-primary-fixed hover:bg-surface-container-highest dark:hover:bg-surface-container transition-colors duration-200"
-                href="{{ route('operator.fare-rules.index') }}">
-                <span class="material-symbols-outlined" data-icon="sell">sell</span>
-                <span class="font-body-md text-body-md">Fare Rules</span>
-            </a>
-
-            <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant dark:text-outline hover:text-primary dark:hover:text-primary-fixed hover:bg-surface-container-highest dark:hover:bg-surface-container transition-colors duration-200"
-                href="{{ route('operator.promo-codes.index') }}">
-                <span class="material-symbols-outlined" data-icon="confirmation_number">confirmation_number</span>
-                <span class="font-body-md text-body-md">Promo Codes</span>
-            </a>
-
-            <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant dark:text-outline hover:text-primary dark:hover:text-primary-fixed hover:bg-surface-container-highest dark:hover:bg-surface-container transition-colors duration-200"
-                href="{{ route('operator.audit-log.index') }}">
-                <span class="material-symbols-outlined" data-icon="history">history</span>
-                <span class="font-body-md text-body-md">Audit Log</span>
-            </a>
-
-            <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant dark:text-outline hover:text-primary dark:hover:text-primary-fixed hover:bg-surface-container-highest dark:hover:bg-surface-container transition-colors duration-200"
-                href="{{ route('operator.profile') }}">
-                <span class="material-symbols-outlined" data-icon="account_circle">account_circle</span>
-                <span class="font-body-md text-body-md">Profile</span>
-            </a>
-        </nav>
-
-        <div class="mt-auto pt-6 border-t border-outline-variant/20 space-y-1">
-            <button onclick="openDrawer()"
-                class="w-full bg-primary text-on-primary py-3 rounded-xl font-bold flex items-center justify-center gap-2 hover:brightness-110 transition-all mb-6">
-                <span class="material-symbols-outlined" data-icon="add_circle">add_circle</span>
-                <span class="font-body-md text-body-md">New Trip</span>
-            </button>
-            <a class="flex items-center gap-3 px-4 py-2 rounded-lg text-on-surface-variant hover:text-primary transition-colors"
-                href="{{ route('operator.profile') }}">
-                <span class="material-symbols-outlined" data-icon="settings">settings</span>
-                <span class="font-body-md text-body-md">Settings</span>
-            </a>
-            <a class="flex items-center gap-3 px-4 py-2 rounded-lg text-on-surface-variant hover:text-primary transition-colors"
-                href="{{ route('support.page') }}">
-                <span class="material-symbols-outlined" data-icon="help">help</span>
-                <span class="font-body-md text-body-md">Support</span>
-            </a>
-        </div>
-    </aside>
-
-    <!-- Main Dynamic Content -->
-    <main class="ml-64 min-h-screen">
-
-        <!-- Header / Top Navigation Bar -->
-        <header
-            class="h-16 px-8 flex items-center justify-between sticky top-0 bg-surface-container-low dark:bg-surface-container border-b border-outline-variant/15 z-50">
-            <div>
-                <h2 class="font-headline-sm text-headline-sm text-primary">Operator Dashboard</h2>
-            </div>
-            <div class="flex items-center gap-6">
-                <div class="relative group">
-                    <span class="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-outline"
-                        data-icon="search">search</span>
-                    <input
-                        class="pl-10 pr-4 py-2 bg-surface-container-low border-none rounded-full w-64 text-body-sm focus:ring-2 focus:ring-primary transition-all"
-                        placeholder="Search trips, buses, drivers..." type="text" />
-                </div>
-                <div class="flex items-center gap-4">
-                    <button
-                        class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors relative"
-                        data-icon="notifications">
-                        notifications
-                        <span class="absolute top-0 right-0 w-2 h-2 bg-tertiary rounded-full"></span>
-                    </button>
-                    <button
-                        class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors"
-                        data-icon="schedule">schedule</button>
-
-                    <div
-                        class="h-8 w-8 rounded-full bg-primary-container flex items-center justify-center overflow-hidden border border-primary/20 cursor-pointer">
-                        <a href="{{ route('operator.profile')}}">
-                            <img class="w-full h-full object-cover"
-                                src="https://lh3.googleusercontent.com/aida-public/AB6AXuCC_um6BOHoYSxo-sV9I20VWjGhb-zV38rw6PHYfGSX0QMjIeGSDnnne5VQ14Dzbl5_QrVJX5_vf9Oa8BbR14Quv_NiAyAwDiq0kE0DcDQJOphyR4LIeKHbMnH-h8ZMG6u6DR33RnE2cyaFw6ZAbOHdAOBnCN1v0jT6IZfFuEKJpPprVP7AizC0wx979g01rNJ1E_sy6EkF-9fnN8eQsFlOzY2E0gyGlEvPmSuK6usojfMoTbfn4_z-_fOxaQj3y4d_f9TRJqctFUM"
-                                alt="Profile avatar">
-                        </a>
-                    </div>
-                    <form action="{{ route('operator.logout') }}" method="POST">
-                        @csrf
-                        <button
-                            class="text-green-800 dark:text-green-400 font-headline font-bold text-sm px-4 py-2 hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-colors rounded-lg flex items-center gap-2"
-                            type="submit">Sign Out</button>
-                    </form>
-                </div>
-            </div>
-        </header>
-
-        <!-- Page Canvas -->
-        <div class="p-8">
 
             <!-- Key Performance Indicators Row -->
             <div class="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -706,10 +441,7 @@ $alerts = $alerts ?? [
 
         </div> <!-- End Bento Grid -->
 
-        </div>
-    </main>
-
-    <!-- New Trip Drawer -->
+<!-- New Trip Drawer -->
     <aside id="trip-drawer"
         class="fixed top-0 right-0 h-full w-[440px] bg-surface-container-lowest border-l border-outline-variant/15 z-40 flex flex-col shadow-xl">
 
@@ -860,7 +592,10 @@ $alerts = $alerts ?? [
     </aside>
 
     <!-- Micro-interaction Event Handlers for Buttons/Links -->
-    <script>
+@endsection
+
+@push('scripts')
+<script>
         // Drawer open/close
         function openDrawer() {
             document.getElementById('trip-drawer').classList.add('open');
@@ -903,6 +638,4 @@ $alerts = $alerts ?? [
             el.addEventListener('mouseleave',() => el.classList.remove('scale-[0.98]'));
         });
     </script>
-</body>
-
-</html>
+@endpush

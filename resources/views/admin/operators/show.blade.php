@@ -13,7 +13,7 @@
         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div class="flex items-center gap-4">
                 @if($operator->logo_path)
-                    <img src="{{ asset('storage/' . $operator->logo_path) }}" class="h-16 w-16 rounded-2xl object-cover bg-surface-container-high" alt="">
+                    <img src="{{ asset('storage/' . $operator->logo_path) }}" class="h-16 w-16 rounded-2xl object-cover bg-surface-container-high" alt="{{ $operator->company_name }} logo">
                 @else
                     <div class="h-16 w-16 rounded-2xl bg-primary/20 flex items-center justify-center text-primary font-headline font-extrabold text-2xl">{{ strtoupper(substr($operator->company_name ?? 'O', 0, 1)) }}</div>
                 @endif
@@ -83,7 +83,7 @@
         </div>
         <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/15 p-5">
             <p class="text-[10px] font-bold uppercase text-on-surface-variant tracking-wider">Revenue</p>
-            <p class="font-headline font-extrabold text-2xl mt-2 leading-tight">ZMW {{ number_format($stats['revenue']) }}</p>
+            <p class="font-headline font-extrabold text-2xl mt-2 leading-tight">ZMW {{ number_format($stats['revenue'], 2) }}</p>
         </div>
     </div>
 <div class="grid grid-cols-1 xl:grid-cols-2 gap-6 mb-6">
@@ -164,7 +164,7 @@
         <div class="overflow-x-auto">
             <table class="w-full text-sm">
                 <thead>
-                    <tr class="border-b border-outline-variant/20">
+                    <tr class="border-b border-outline-variant/20 bg-surface-container-low">
                         <th class="text-left py-3 px-2 font-bold text-on-surface-variant text-[10px] uppercase tracking-wider">Reference</th>
                         <th class="text-left py-3 px-2 font-bold text-on-surface-variant text-[10px] uppercase tracking-wider">Passenger</th>
                         <th class="text-left py-3 px-2 font-bold text-on-surface-variant text-[10px] uppercase tracking-wider">Route</th>

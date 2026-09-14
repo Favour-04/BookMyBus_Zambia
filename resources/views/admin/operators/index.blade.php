@@ -26,14 +26,20 @@
 
     <!-- Filters + Search -->
     <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
-        <div class="inline-flex rounded-xl border border-outline-variant/20 bg-surface-container-lowest p-1">
-            <a href="{{ route('admin.operators.index') }}" class="px-4 py-2 rounded-lg text-sm font-bold {{ $status === 'all' ? 'bg-primary text-white' : 'text-on-surface-variant hover:bg-surface-container-high' }}">All</a>
-            <a href="{{ route('admin.operators.index', ['status' => 'verified']) }}" class="px-4 py-2 rounded-lg text-sm font-bold {{ $status === 'verified' ? 'bg-primary text-white' : 'text-on-surface-variant hover:bg-surface-container-high' }}">Verified</a>
-            <a href="{{ route('admin.operators.index', ['status' => 'pending']) }}" class="px-4 py-2 rounded-lg text-sm font-bold {{ $status === 'pending' ? 'bg-primary text-white' : 'text-on-surface-variant hover:bg-surface-container-high' }}">Pending</a>
+        <div class="flex flex-wrap items-center gap-3">
+            <div class="inline-flex rounded-xl border border-outline-variant/20 bg-surface-container-lowest p-1" role="group" aria-label="Filter operators by status">
+                <a href="{{ route('admin.operators.index') }}" class="px-4 py-2 rounded-lg text-sm font-bold {{ $status === 'all' ? 'bg-primary text-white' : 'text-on-surface-variant hover:bg-surface-container-high' }}">All</a>
+                <a href="{{ route('admin.operators.index', ['status' => 'verified']) }}" class="px-4 py-2 rounded-lg text-sm font-bold {{ $status === 'verified' ? 'bg-primary text-white' : 'text-on-surface-variant hover:bg-surface-container-high' }}">Verified</a>
+                <a href="{{ route('admin.operators.index', ['status' => 'pending']) }}" class="px-4 py-2 rounded-lg text-sm font-bold {{ $status === 'pending' ? 'bg-primary text-white' : 'text-on-surface-variant hover:bg-surface-container-high' }}">Pending</a>
+            </div>
+            <a href="{{ route('admin.operators.create') }}" class="flex items-center gap-1 px-4 py-2 rounded-xl bg-primary text-white text-sm font-bold hover:bg-primary-container">
+                <span class="material-symbols-outlined text-base">person_add</span>Add Operator
+            </a>
         </div>
-        <form method="GET" class="flex gap-2">
+        <form method="GET" class="flex gap-2" role="search">
             <input type="hidden" name="status" value="{{ $status }}">
-            <input type="text" name="search" value="{{ $search }}" placeholder="Search company, email, TPIN..."
+            <label for="operator-search" class="sr-only">Search operators by company, email, or TPIN</label>
+            <input id="operator-search" type="text" name="search" value="{{ $search }}" placeholder="Search company, email, TPIN..."
                 class="rounded-xl border border-outline-variant/30 bg-surface-container-lowest px-4 py-2 text-sm focus:outline-none focus:border-primary">
             <button type="submit" class="flex items-center gap-1 px-4 py-2 rounded-xl bg-primary text-white text-sm font-bold">
                 <span class="material-symbols-outlined text-base">search</span>Search
@@ -64,7 +70,7 @@
                         <td class="py-3 px-4">
                             <div class="flex items-center gap-3">
                                 @if($operator->logo_path)
-                                    <img src="{{ asset('storage/' . $operator->logo_path) }}" class="h-9 w-9 rounded-full object-cover bg-surface-container-high" alt="">
+                                    <img src="{{ asset('storage/' . $operator->logo_path) }}" class="h-9 w-9 rounded-full object-cover bg-surface-container-high" alt="{{ $operator->company_name }} logo">
                                 @else
                                     <div class="h-9 w-9 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold">{{ strtoupper(substr($operator->company_name ?? 'O', 0, 1)) }}</div>
                                 @endif
@@ -117,10 +123,9 @@
                 </tbody>
             </table>
         </div>
-        @if($operators->hasPages())
-            <div class="p-4 border-t border-outline-variant/15">
-                {{ $operators->links() }}
-            </div>
-        @endif
+        <div class="px-4 py-3 border-t border-outline-variant/15 flex flex-wrap items-center justify-between gap-2">
+            <span class="text-sm text-on-surface-variant">Showing {{ $operators->firstItem() ?? 0 }}–{{ $operators->lastItem() ?? 0 }} of {{ $operators->total() }}</span>
+            {{ $operators->links() }}
+        </div>
     </div>
 @endsection

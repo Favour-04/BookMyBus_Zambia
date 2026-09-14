@@ -100,8 +100,9 @@ Route::middleware('auth')->group(function () {
     Route::post('/bookings/{booking}/cancel', [BookingController::class, 'cancel'])->name('bookings.cancel');
 
     // Booking History
+    Route::get('/my-bookings', [BookingController::class, 'myBookings'])->name('my-bookings');
     Route::get('/my-booking', [BookingController::class, 'customerLookupView'])->name('booking.lookup');
-Route::post('/my-booking/lookup', [BookingController::class, 'customerLookup'])->name('booking.lookup.search');
+    Route::post('/my-booking/lookup', [BookingController::class, 'customerLookup'])->name('booking.lookup.search');
 
     // Promo Code Validation (AJAX)
     Route::post('/booking/validate-promo', [BookingController::class, 'validatePromoCode'])->name('booking.validate-promo');
@@ -194,9 +195,9 @@ Route::prefix('operator')->name('operator.')->middleware('auth:operator')->group
     Route::post('/route-templates', [RouteTemplateController::class, 'store'])->name('route-templates.store');
     Route::put('/route-templates/{id}', [RouteTemplateController::class, 'update'])->name('route-templates.update');
     Route::delete('/route-templates/{id}', [RouteTemplateController::class, 'destroy'])->name('route-templates.destroy');
+    Route::get('/route-templates/json', [RouteTemplateController::class, 'getTemplatesJson'])->name('route-templates.json');
     Route::post('/route-templates/{id}/create-trip', [RouteTemplateController::class, 'createTrip'])->name('route-templates.create-trip');
     Route::post('/route-templates/{id}/create-bulk-trips', [RouteTemplateController::class, 'createBulkTrips'])->name('route-templates.create-bulk-trips');
-    Route::get('/route-templates/json', [RouteTemplateController::class, 'getTemplatesJson'])->name('route-templates.json');
 
     // Profile
     Route::get('/profile', [OperatorProfileController::class, 'index'])->name('profile');
@@ -238,6 +239,8 @@ Route::prefix('admin')->name('admin.')->middleware('auth:admin')->group(function
 
     // Operator verification & management
     Route::get('/operators', [App\Http\Controllers\Admin\OperatorController::class, 'index'])->name('operators.index');
+    Route::get('/operators/create', [App\Http\Controllers\Admin\OperatorController::class, 'create'])->name('operators.create');
+    Route::post('/operators', [App\Http\Controllers\Admin\OperatorController::class, 'store'])->name('operators.store');
     Route::get('/operators/{id}', [App\Http\Controllers\Admin\OperatorController::class, 'show'])->name('operators.show');
     Route::post('/operators/{id}/verify', [App\Http\Controllers\Admin\OperatorController::class, 'verify'])->name('operators.verify');
     Route::post('/operators/{id}/suspend', [App\Http\Controllers\Admin\OperatorController::class, 'suspend'])->name('operators.suspend');

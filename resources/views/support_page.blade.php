@@ -1,45 +1,9 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Support | BookMyBus Zambia</title>
-  <script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: ['Inter', 'sans-serif'],
-            headline: ['Manrope', 'sans-serif'],
-          },
-          colors: {
-            brand: {
-              DEFAULT: '#00601f',
-            },
-          },
-        },
-      },
-    };
-  </script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@400;500;700;800&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
-</head>
-<body class="bg-slate-50 text-slate-900 font-sans antialiased">
+@extends('layouts.app')
 
-<nav class="fixed inset-x-0 top-0 z-50 border-b border-slate-200 bg-white/95 backdrop-blur-sm shadow-sm">
-  <div class="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
-    <a href="{{ url('/') }}" class="text-xl font-extrabold tracking-tight text-brand">🚌 BookMyBus Zambia</a>
-    <div class="hidden items-center gap-10 md:flex">
-      <a href="{{ route('home') }}" class="text-sm font-semibold text-slate-600 transition hover:text-brand">Find Trips</a>
-      <a href="{{ route('booking.lookup') }}" class="text-sm font-semibold text-slate-600 transition hover:text-brand">My Bookings</a>
-      <a href="{{ route('operator.login') }}" class="text-sm font-semibold text-slate-600 transition hover:text-brand">Operator Portal</a>
-      <a href="{{ route('support.page') }}" class="text-sm font-semibold text-brand border-b-2 border-orange-500 pb-1">Support</a>
-    </div>
-  </div>
-</nav>
+@section('title', 'Support')
 
-<main class="mx-auto mt-24 max-w-6xl px-4 pb-20 sm:px-6 lg:px-8">
-  <div class="text-center">
+@section('content')
+<div class="text-center">
     <h1 class="font-headline text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl">How can we help you?</h1>
     <p class="mx-auto mt-4 max-w-2xl text-base leading-7 text-slate-600">We're here to assist you with your travel needs.</p>
   </div>
@@ -144,23 +108,14 @@
       <button type="button" onclick="sendMessage()" class="w-full rounded-2xl bg-brand px-5 py-3 text-sm font-semibold text-white transition hover:bg-green-700">Send Message</button>
     </div>
   </section>
-</main>
 
-<footer class="border-t border-slate-200 bg-slate-50 py-10">
-  <div class="mx-auto max-w-7xl px-4 text-center text-sm text-slate-500 sm:px-6 lg:px-8">
-    <p class="font-semibold text-slate-900">🚌 BookMyBus Zambia</p>
-    <p class="mt-2">© 2025 BookMyBus Zambia. Premium Travel Excellence.</p>
-    <div class="mt-4 flex flex-wrap justify-center gap-4">
-      <a href="{{ route('privacy-policy') }}" class="text-slate-500 transition hover:text-slate-900">Privacy Policy</a>
-      <a href="{{ route('terms-of-service') }}" class="text-slate-500 transition hover:text-slate-900">Terms of Service</a>
-      <a href="{{ route('carrier-partners') }}" class="text-slate-500 transition hover:text-slate-900">Carrier Partners</a>
-      <a href="{{ route('contact-us') }}" class="text-slate-500 transition hover:text-slate-900">Contact Us</a>
-    </div>
-  </div>
-</footer>
+
+
 
 <div id="toast" class="fixed bottom-8 left-1/2 z-50 -translate-x-1/2 rounded-full bg-slate-900 px-4 py-2 text-sm text-white opacity-0 transition-opacity"></div>
+@endsection
 
+@push('scripts')
 <script>
   function toggleFAQ(element) {
     const answer = element.parentElement.querySelector('.faq-answer');
@@ -199,5 +154,4 @@
     showToast('✅ Message sent! We will respond within 24 hours.');
   }
 </script>
-</body>
-</html>
+@endpush

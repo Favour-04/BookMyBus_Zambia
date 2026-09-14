@@ -1,103 +1,20 @@
-<!doctype html>
-<html class="light" lang="en">
+@extends('layouts.app')
 
-<head>
-  <meta charset="utf-8" />
-  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-  <title>My Profile — BookMyBus Zambia</title>
-  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-  <link
-    href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=Inter:wght@400;500;600&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
-    rel="stylesheet" />
-  <script id="tailwind-config">
-    tailwind.config = {
-      darkMode: "class",
-      theme: {
-        extend: {
-          colors: {
-            "on-secondary": "#ffffff",
-            "on-secondary-container": "#632f00",
-            "secondary-container": "#ff8921",
-            "primary-fixed-dim": "#7edb83",
-            "inverse-primary": "#7edb83",
-            background: "#f9f9fc",
-            "tertiary-container": "#d1200f",
-            "surface-container-lowest": "#ffffff",
-            "outline-variant": "#bfcaba",
-            "on-tertiary": "#ffffff",
-            surface: "#f9f9fc",
-            "on-primary": "#ffffff",
-            "primary-fixed": "#99f89d",
-            "surface-variant": "#e2e2e5",
-            "surface-bright": "#f9f9fc",
-            "surface-dim": "#dadadc",
-            outline: "#6f7a6c",
-            primary: "#00601f",
-            "surface-container-low": "#f3f3f6",
-            "on-surface-variant": "#3f493e",
-            "surface-container-high": "#e8e8ea",
-            "on-surface": "#1a1c1e",
-            "primary-container": "#197b30",
-            "error-container": "#ffdad6",
-            "surface-container-highest": "#e2e2e5",
-            error: "#ba1a1a",
-            "surface-container": "#eeeef0",
-            secondary: "#954a00",
-            tertiary: "#a80800",
-            "on-error": "#ffffff",
-            "on-background": "#1a1c1e",
-          },
-          fontFamily: {
-            headline: ["Manrope"],
-            body: ["Inter"],
-          },
-        },
-      },
-    };
-  </script>
-  <style>
-    .material-symbols-outlined {
-      font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
-      vertical-align: middle;
-    }
-    .hero-gradient { background: linear-gradient(135deg, #00601f 0%, #197b30 100%); }
+@section('title', 'My Profile')
+
+@push('head')
+<style>
+.hero-gradient { background: linear-gradient(135deg, #00601f 0%, #197b30 100%); }
     .tab-panel { display: none; }
     .tab-panel.active { display: block; }
-  </style>
-</head>
+</style>
+@endpush
 
-<body class="bg-surface font-body text-on-surface">
+@section('content')
+<!-- TopNavBar -->
+  
 
-  <!-- TopNavBar -->
-  <nav class="fixed top-0 w-full z-50 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md shadow-sm dark:shadow-none">
-    <div class="flex justify-between items-center px-6 py-4 max-w-7xl mx-auto w-full">
-      <div class="text-xl font-extrabold text-green-900 dark:text-green-100 tracking-tighter font-headline">
-        <a href="{{ route('home') }}">BookMyBus Zambia</a>
-      </div>
-      <div class="hidden md:flex items-center gap-8">
-        <a class="font-headline tracking-tight font-bold text-sm text-zinc-600 dark:text-zinc-400 hover:text-green-900 dark:hover:text-green-100 transition-colors"
-          href="{{ route('home') }}">Find Trips</a>
-        <a class="font-headline tracking-tight font-bold text-sm text-green-900 dark:text-green-100 border-b-2 border-orange-600 pb-1"
-          href="{{ route('profile') }}">My Account</a>
-        <a class="font-headline tracking-tight font-bold text-sm text-zinc-600 dark:text-zinc-400 hover:text-green-900 dark:hover:text-green-100 transition-colors"
-          href="{{ route('booking.lookup') }}">My Bookings</a>
-        <a class="font-headline tracking-tight font-bold text-sm text-zinc-600 dark:text-zinc-400 hover:text-green-900 dark:hover:text-green-100 transition-colors"
-          href="{{ route('operator.login') }}">Operator Portal</a>
-        <a class="font-headline tracking-tight font-bold text-sm text-zinc-600 dark:text-zinc-400 hover:text-green-900 dark:hover:text-green-100 transition-colors"
-          href="{{ route('support.page') }}">Support</a>
-      </div>
-      <form action="{{ route('logout') }}" method="POST">
-        @csrf
-        <button type="submit"
-          class="text-green-800 dark:text-green-400 font-headline font-bold text-sm px-4 py-2 hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-colors rounded-lg flex items-center gap-2">
-          <span>Sign Out</span>
-          <span class="material-symbols-outlined text-lg">logout</span>
-        </button>
-      </form>
-    </div>
-  </nav>
-
-  <main class="pt-28 pb-20 max-w-5xl mx-auto px-6">
+  
 
     <!-- Status messages -->
     @if(session('status'))
@@ -286,10 +203,10 @@
         @endforelse
       </div>
     </div>
+@endsection
 
-  </main>
-
-  <script>
+@push('scripts')
+<script>
     function setTab(tab, btn) {
       document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
       document.getElementById('tab-' + tab).classList.add('active');
@@ -314,5 +231,4 @@
       });
     @endif
   </script>
-</body>
-</html>
+@endpush

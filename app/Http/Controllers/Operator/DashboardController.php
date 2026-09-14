@@ -18,6 +18,7 @@ class DashboardController extends Controller
     public function index()
     {
         $operator = $this->getOperator();
+        abort_unless($operator, 403, 'Operator session expired. Please log in again.');
         $operatorId = $operator->id;
 
         $routes = $this->getOperatorRoutes($operator);
@@ -228,13 +229,53 @@ class DashboardController extends Controller
 
         $operator = Operator::find($operatorId);
 
+        // Alerts section (Section 5 of the bento grid) expects a static
+        // 3-card list in the exact shape below. Placeholder actions are '#'
+        // until the underlying trips/bookings actions exist.
+        $alerts = [
+            [
+                'bg_class'     => 'bg-tertiary/5 border-tertiary/20',
+                'icon'         => 'warning',
+                'icon_bg'      => 'bg-tertiary/10',
+                'title'        => 'Low Seat Inventory',
+                'title_class'  => 'text-tertiary',
+                'message'      => 'One or more upcoming trips are almost fully booked. Consider adding capacity or extra departures.',
+                'btn_class'    => 'text-tertiary',
+                'action_label' => 'Review trips',
+                'action_icon'  => 'arrow_forward',
+            ],
+            [
+                'bg_class'     => 'bg-secondary/5 border-secondary/20',
+                'icon'         => 'payments',
+                'icon_bg'      => 'bg-secondary/10',
+                'title'        => 'Pending Payments',
+                'title_class'  => 'text-secondary',
+                'message'      => 'Some bookings are still awaiting payment. Follow up before the hold expires to avoid losing the seats.',
+                'btn_class'    => 'text-secondary',
+                'action_label' => 'Review bookings',
+                'action_icon'  => 'arrow_forward',
+            ],
+            [
+                'bg_class'     => 'bg-primary/5 border-primary/20',
+                'icon'         => 'directions_bus',
+                'icon_bg'      => 'bg-primary/10',
+                'title'        => 'Upcoming Departures',
+                'title_class'  => 'text-primary',
+                'message'      => 'Trips scheduled for today and tomorrow require driver and vehicle assignment confirmation.',
+                'btn_class'    => 'text-primary',
+                'action_label' => 'Open schedule',
+                'action_icon'  => 'arrow_forward',
+            ],
+        ];
+
         return view('operator.dashboard', compact(
             'total_bookings', 'bookings_trend',
             'revenue', 'revenue_trend', 'revenue_average',
             'today_bookings', 'pending_bookings', 'cancelled_bookings',
             'active_trips_count', 'total_trips_today', 'avg_occupancy',
             'fleet_status', 'upcoming_trips', 'recent_bookings', 'top_routes',
-            'operator', 'routes', 'buses', 'drivers'
+            'operator', 'routes', 'buses', 'drivers',
+            'alerts'
         ));
     }
 
@@ -245,7 +286,11 @@ class DashboardController extends Controller
             session(['operator_id' => $operator->id]);
             return $operator;
         }
-        return Operator::find(session('operator_id'));
+        if (session('operator_id')) {
+            $operator = Operator::find(session('operator_id'));
+            if ($operator) return $operator;
+        }
+        abort(403, 'Operator session expired. Please log in again.');
     }
 
     private function getOperatorRoutes($operator)

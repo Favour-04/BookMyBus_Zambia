@@ -13,6 +13,18 @@
         .custom-scrollbar::-webkit-scrollbar { width: 4px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #bfcaba; border-radius: 10px; }
+        /* Visible keyboard focus for interactive controls */
+        a:focus-visible, button:focus-visible, [tabindex]:focus-visible {
+            outline: 2px solid #00601f;
+            outline-offset: 2px;
+            border-radius: 0.5rem;
+        }
+        input:focus-visible, select:focus-visible, textarea:focus-visible {
+            outline: 2px solid #00601f;
+            outline-offset: 2px;
+        }
+        /* Mobile sidebar slide transition */
+        #admin-sidebar { transition: transform 0.25s ease-in-out; }
     </style>
     <script>
         tailwind.config = {
@@ -38,13 +50,25 @@
 </head>
 <body class="bg-surface text-on-surface">
 
+    <!-- Skip to content link (keyboard / screen-reader users) -->
+    <a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:px-4 focus:py-2 focus:rounded-lg focus:bg-primary focus:text-white focus:text-sm focus:font-bold">Skip to content</a>
+
+    <!-- Mobile sidebar backdrop -->
+    <div id="admin-sidebar-backdrop" class="fixed inset-0 bg-black/40 z-30 lg:hidden hidden" onclick="document.getElementById('admin-sidebar').classList.add('-translate-x-full'); this.classList.add('hidden');"></div>
+
     <!-- Sidebar -->
-    <aside class="h-screen w-64 fixed left-0 top-0 bg-surface-container-low flex flex-col py-6 px-4 z-20">
-        <div class="mb-10 px-2">
-            <h1 class="font-headline text-xl font-extrabold text-primary uppercase tracking-tighter">BookMyBus</h1>
-            <p class="text-xs text-on-surface-variant opacity-70">Admin Portal</p>
+    <aside id="admin-sidebar" class="h-screen w-64 fixed left-0 top-0 bg-surface-container-low flex flex-col py-6 px-4 z-40 -translate-x-full lg:translate-x-0">
+        <div class="mb-10 px-2 flex items-center justify-between">
+            <div>
+                <h1 class="font-headline text-xl font-extrabold text-primary uppercase tracking-tighter">BookMyBus</h1>
+                <p class="text-xs text-on-surface-variant opacity-70">Admin Portal</p>
+            </div>
+            <!-- Close button (mobile only) -->
+            <button type="button" class="lg:hidden text-on-surface-variant hover:text-primary" aria-label="Close menu" onclick="document.getElementById('admin-sidebar').classList.add('-translate-x-full'); document.getElementById('admin-sidebar-backdrop').classList.add('hidden');">
+                <span class="material-symbols-outlined">close</span>
+            </button>
         </div>
-        <nav class="flex-grow space-y-1 custom-scrollbar overflow-y-auto">
+        <nav class="flex-grow space-y-1 custom-scrollbar overflow-y-auto" aria-label="Admin navigation">
             @include('layouts.partials.admin-nav')
         </nav>
         <div class="mt-auto pt-6 border-t border-outline-variant/20">
@@ -58,9 +82,15 @@
     </aside>
 
     <!-- Main Content -->
-    <main class="ml-64 min-h-screen">
-        <header class="h-16 px-8 flex items-center justify-between sticky top-0 bg-surface-container-low border-b border-outline-variant/15 z-10">
-            <h2 class="font-headline text-base font-bold text-primary">@yield('page_title', 'Admin Portal')</h2>
+    <main class="lg:ml-64 min-h-screen">
+        <header class="h-16 px-4 md:px-8 flex items-center justify-between sticky top-0 bg-surface-container-low border-b border-outline-variant/15 z-20">
+            <div class="flex items-center gap-3">
+                <!-- Hamburger toggle (mobile only) -->
+                <button type="button" class="lg:hidden flex items-center justify-center text-on-surface-variant hover:text-primary" aria-label="Open menu" aria-controls="admin-sidebar" aria-expanded="false" onclick="const sb=document.getElementById('admin-sidebar');const bd=document.getElementById('admin-sidebar-backdrop');const open=sb.classList.contains('-translate-x-full');sb.classList.toggle('-translate-x-full',!open);bd.classList.toggle('hidden',!open);this.setAttribute('aria-expanded',open);">
+                    <span class="material-symbols-outlined">menu</span>
+                </button>
+                <h2 class="font-headline text-base font-bold text-primary">@yield('page_title', 'Admin Portal')</h2>
+            </div>
             <div class="flex items-center gap-4">
                 <div class="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center">
                     <span class="material-symbols-outlined text-primary text-sm">admin_panel_settings</span>
@@ -68,21 +98,21 @@
             </div>
         </header>
 
-        <div class="p-8">
+        <div id="main-content" class="p-4 md:p-8">
             @if(session('success'))
-                <div class="bg-primary/10 border border-primary/20 rounded-xl p-4 text-sm text-primary mb-6">{{ session('success') }}</div>
+                <div role="status" class="bg-primary/10 border border-primary/20 rounded-xl p-4 text-sm text-primary mb-6">{{ session('success') }}</div>
             @endif
             @if(session('status'))
-                <div class="bg-primary/10 border border-primary/20 rounded-xl p-4 text-sm text-primary mb-6">{{ session('status') }}</div>
+                <div role="status" class="bg-primary/10 border border-primary/20 rounded-xl p-4 text-sm text-primary mb-6">{{ session('status') }}</div>
             @endif
             @if(session('error'))
-                <div class="bg-error-container/20 border border-error/20 rounded-xl p-4 text-sm text-error mb-6">{{ session('error') }}</div>
+                <div role="alert" class="bg-error-container/20 border border-error/20 rounded-xl p-4 text-sm text-error mb-6">{{ session('error') }}</div>
             @endif
             @if(session('warning'))
-                <div class="bg-tertiary/10 border border-tertiary/20 rounded-xl p-4 text-sm text-tertiary mb-6">{{ session('warning') }}</div>
+                <div role="alert" class="bg-tertiary/10 border border-tertiary/20 rounded-xl p-4 text-sm text-tertiary mb-6">{{ session('warning') }}</div>
             @endif
             @if($errors->any())
-                <div class="bg-error-container/20 border border-error/20 rounded-xl p-4 text-sm text-error mb-6">
+                <div role="alert" class="bg-error-container/20 border border-error/20 rounded-xl p-4 text-sm text-error mb-6">
                     @foreach($errors->all() as $error)
                         <p>{{ $error }}</p>
                     @endforeach
