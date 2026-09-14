@@ -3,15 +3,24 @@
 @section('title', 'Secure Payment | BookMyBus Zambia')
 
 @section('content')
+@php
+    $partyBookingsForHeader = ($group_bookings ?? collect([$booking]));
+    $isGroupBookingHeader = $partyBookingsForHeader->count() > 1;
+@endphp
 <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
     <!-- Left Column: Payment Methods -->
     <div class="lg:col-span-7 space-y-8">
         <header>
             <div class="flex items-center gap-2 mb-4">
-                <a href="{{ route('booking.seats', $booking->route_id) }}" class="flex items-center gap-1 text-sm font-bold text-primary hover:underline">
-                    <span class="material-symbols-outlined text-sm">arrow_back</span>
-                    Back to Seat Selection
-                </a>
+                <form id="release-seat-form" method="POST"
+                    action="{{ route('bookings.release-hold', $booking->id) }}" class="inline">
+                    @csrf
+                    <button type="button" id="back-to-seats-btn"
+                        class="flex items-center gap-1 text-sm font-bold text-primary hover:underline">
+                        <span class="material-symbols-outlined text-sm">arrow_back</span>
+                        Back to Seat Selection
+                    </button>
+                </form>
             </div>
             <h1 class="text-4xl font-black font-headline tracking-tight text-on-surface mb-2">Secure Checkout</h1>
             <p class="text-on-surface-variant font-medium">Finalize your booking to {{ $destination ?? 'Lusaka' }} securely.</p>
@@ -33,10 +42,10 @@
 
         <!-- Validation Errors -->
         @if ($errors->any())
-            <div class="bg-red-50 border-l-4 border-red-500 p-4 mb-6 rounded-r-xl shadow-sm">
+            <div class="bg-error-container text-on-error-container p-4 mb-6 rounded-xl">
                 <div class="flex items-center gap-3">
-                    <span class="material-symbols-outlined text-red-600">error</span>
-                    <ul class="text-sm text-red-700 font-medium">
+                    <span class="material-symbols-outlined">error</span>
+                    <ul class="text-sm font-medium">
                         @foreach ($errors->all() as $error)
                             <li>{{ $error }}</li>
                         @endforeach
@@ -141,13 +150,13 @@
                             type="tel"
                             value="{{ old('phone_number') }}" />
                         @error('phone_number')
-                            <p class="text-red-600 text-xs mt-1 font-bold">{{ $message }}</p>
+                            <p class="text-error text-xs mt-1 font-bold">{{ $message }}</p>
                         @enderror
                     </div>
                 </div>
 
                 <button type="submit" id="pay-button"
-                    class="w-full py-4 rounded-xl bg-gradient-to-br from-primary to-primary-container text-white font-headline font-bold text-lg shadow-lg hover:shadow-primary/20 transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
+                    class="w-full py-4 rounded-xl bg-gradient-to-br from-primary to-primary-container text-on-primary font-headline font-bold text-lg shadow-lg hover:shadow-primary/20 transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
                     @if($expired) disabled @endif>
                     @if($expired)
                         Reservation Expired
@@ -175,7 +184,7 @@
                             src="https://lh3.googleusercontent.com/aida-public/AB6AXuBtACWHf96GQ2Q6lm8qydU0xrhEVka89gUOGcMoH974Us9bOlDAAtmr10nk6iIVJ98jsWJWTii8Y8xLjDrFPGlxmNfkI3FGH_6VBr36Xy3f7LlCdbSg2-0_ZP_SiM83Ez88uCg3arvxEVQaOe61WNm9VIt3cvWqw1dkKoQHxHtajf-ws6BRAPpzQED8jlxcNOuEO_ywfSvtmIzSz9cKzbFuJfqHi-ADDDJ6v4amXeggpOH57W9NqViHzH1pa8mfsF4oaXs1MVj_wgc4" />
                         <div class="absolute inset-0 bg-gradient-to-t from-surface-container-lowest to-transparent"></div>
                         <div class="absolute bottom-4 left-6">
-                            <span class="px-3 py-1 bg-primary text-white text-[10px] font-bold uppercase tracking-widest rounded-full">Pending Payment</span>
+                            <span class="px-3 py-1 bg-primary text-on-primary text-[10px] font-bold uppercase tracking-widest rounded-full">Pending Payment</span>
                         </div>
                     </div>
                     <div class="p-8 space-y-8">
@@ -424,5 +433,23 @@
             tick();
             var interval = setInterval(tick, 1000);
         })();
+
+        // "Back to Seat Selection" — releasing the hold is a real, POST-backed
+        // action (frees the seat immediately rather than waiting on the
+        // 10-minute expiry), so confirm before submitting.
+        document.getElementById('back-to-seats-btn')?.addEventListener('click', function () {
+            const isGroup = @json($isGroupBookingHeader);
+            const seatWord = isGroup ? 'seats' : 'seat';
+            const pronoun = isGroup ? 'them' : 'it';
+
+            const confirmed = window.confirm(
+                'Going back will release your selected ' + seatWord + '. ' +
+                'Someone else could book ' + pronoun + ' in the meantime. Continue?'
+            );
+
+            if (confirmed) {
+                document.getElementById('release-seat-form').submit();
+            }
+        });
     </script>
 @endpush

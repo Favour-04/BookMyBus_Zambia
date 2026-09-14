@@ -12,6 +12,7 @@ use App\Services\FareCalculationService;
 use App\Services\PaymentService;
 use App\Services\RefundCalculationService;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -301,6 +302,39 @@ class BookingController extends Controller
     }
 
     /**
+     * Release a pending seat hold when a traveler backs out of the payment
+     * page to reselect their seat(s). Deliberately separate from cancel():
+     * this only ever touches a booking that's still 'pending' (never paid),
+     * skips the refund/notification machinery meant for a real cancellation,
+     * and always sends the traveler back to seat selection rather than a
+     * bookings list. For a multi-seat purchase, every sibling booking
+     * sharing the group_reference is released together, not just the one
+     * whose id happened to be in the URL.
+     */
+    public function releaseHold(Booking $booking)
+    {
+        if ($booking->user_id !== Auth::id()) {
+            abort(403);
+        }
+
+        $routeId = $booking->route_id;
+
+        if ($booking->status === 'pending') {
+            $group = $booking->group_reference
+                ? Booking::where('group_reference', $booking->group_reference)
+                    ->where('user_id', Auth::id())
+                    ->where('status', 'pending')
+                    ->get()
+                : collect([$booking]);
+
+            $group->each(fn (Booking $b) => $b->cancel());
+        }
+
+        return redirect()->route('booking.seats', $routeId)
+            ->with('status', 'Your seat selection was released. Please choose your seat(s) again.');
+    }
+
+    /**
      * Cancel a traveler's booking.
      *
      * Pending (unpaid) bookings are simply released. Confirmed bookings are
@@ -348,47 +382,114 @@ class BookingController extends Controller
     }
 
     /**
-     * Display the customer booking lookup form.
+     * Number of trips (grouped bookings) shown per page on the My Bookings
+     * dashboard for signed-in travelers.
+     */
+    private const TRIPS_PER_PAGE = 10;
+
+    /**
+     * "My Bookings" page.
+     *
+     * Signed-in travelers see their own booking history immediately — no
+     * search required — scoped to Auth::id() and grouped into one card per
+     * purchase via Booking::groupIntoTrips(). Guests (not logged in) see
+     * only the reference-ID search form below; $trips is null for them so
+     * the view knows to skip the dashboard section entirely.
      */
     public function customerLookupView()
     {
-        return view('booking_lookup', ['booking' => null, 'error' => null]);
+        $trips = Auth::check() ? $this->paginatedTripsForCurrentUser() : null;
+
+        return view('booking_lookup', [
+            'trips' => $trips,
+            'foundBooking' => null,
+            'groupBookings' => null,
+            'error' => null,
+        ]);
     }
 
     /**
-     * Process customer booking lookup by reference ID or phone number.
+     * Look up a single booking by its exact reference ID.
+     *
+     * Deliberately available to guests and, unlike the dashboard above,
+     * deliberately NOT scoped to Auth::id(). The reference ID itself (a
+     * random 6-character code — roughly 2 billion combinations) is treated
+     * as the credential here, the same way a paper ticket or airline PNR
+     * works: whoever has the code can view that booking. This is what lets
+     * a guest retrieve a ticket without an account, e.g. a passenger whose
+     * seat was booked under someone else's login.
+     *
+     * Phone number is deliberately not offered as a search field: a phone
+     * number is far easier to guess or enumerate than a random reference
+     * code, so allowing it here would make it easy to pull up a stranger's
+     * booking. For the same reason this only ever does an exact match —
+     * no partial/LIKE matching — so a search can't be used to incrementally
+     * narrow down a valid code either. The route this action sits behind
+     * is also rate-limited (see routes/web.php) as a further guard against
+     * brute-forcing reference IDs.
      */
     public function customerLookup(Request $request)
     {
-        $request->validate([
-            'reference_id' => 'nullable|string|max:50',
-            'phone_number' => 'nullable|string|max:20',
+        $validated = $request->validate([
+            'reference_id' => 'required|string|max:50',
         ]);
 
-        $booking = null;
-        $error = null;
+        $referenceId = strtoupper(trim($validated['reference_id']));
 
-        if ($request->filled('reference_id') || $request->filled('phone_number')) {
-            $query = Booking::with(['route.bus', 'route.operator', 'ticket']);
+        $foundBooking = Booking::with(['route.bus', 'route.operator', 'ticket'])
+            ->where('reference_id', $referenceId)
+            ->first();
 
-            if ($request->filled('reference_id')) {
-                $query->where('reference_id', 'like', '%' . $request->reference_id . '%');
-            }
+        $trips = Auth::check() ? $this->paginatedTripsForCurrentUser() : null;
 
-            if ($request->filled('phone_number')) {
-                $phone = preg_replace('/[^0-9]/', '', $request->phone_number);
-                $query->where('passenger_phone', 'like', '%' . $phone . '%');
-            }
-
-            $booking = $query->first();
-
-            if (!$booking) {
-                $error = 'No booking found with the provided details. Please check and try again.';
-            }
-        } else {
-            $error = 'Please provide a Booking Reference ID or Phone Number.';
+        if (!$foundBooking) {
+            return view('booking_lookup', [
+                'trips' => $trips,
+                'foundBooking' => null,
+                'groupBookings' => null,
+                'error' => 'No booking found with that reference ID. Please check and try again.',
+            ]);
         }
 
-        return view('booking_lookup', compact('booking', 'error'));
+        // Multi-seat purchase: show every seat in the party, not just the
+        // one the reference ID happened to belong to. Unscoped by design,
+        // matching the lookup above.
+        $groupBookings = $foundBooking->group_reference
+            ? Booking::with('ticket')
+                ->where('group_reference', $foundBooking->group_reference)
+                ->orderBy('seat_number')
+                ->get()
+            : collect([$foundBooking]);
+
+        return view('booking_lookup', [
+            'trips' => $trips,
+            'foundBooking' => $foundBooking,
+            'groupBookings' => $groupBookings,
+            'error' => null,
+        ]);
+    }
+
+    /**
+     * Build the paginated, grouped booking history for the signed-in user,
+     * for the My Bookings dashboard.
+     */
+    private function paginatedTripsForCurrentUser(): LengthAwarePaginator
+    {
+        $bookings = Auth::user()->bookings()
+            ->with('route', 'ticket')
+            ->latest()
+            ->get();
+
+        $trips = Booking::groupIntoTrips($bookings);
+
+        $page = (int) request('page', 1);
+
+        return new LengthAwarePaginator(
+            $trips->forPage($page, self::TRIPS_PER_PAGE)->values(),
+            $trips->count(),
+            self::TRIPS_PER_PAGE,
+            $page,
+            ['path' => request()->url(), 'query' => request()->query()]
+        );
     }
 }

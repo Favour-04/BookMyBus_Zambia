@@ -35,6 +35,17 @@ Route::get('/support', function () {
     return view('support_page');
 })->name('support.page');
 
+// My Bookings — open to guests and signed-in travelers alike.
+// GET branches internally on Auth::check(): signed-in travelers see their
+// own bookings immediately; guests see just the search form.
+// The POST search below is an exact-match, unscoped-by-user lookup (the
+// reference ID is the credential — see BookingController::customerLookup
+// for the full reasoning), so it's throttled here as a brute-force guard.
+Route::get('/my-booking', [BookingController::class, 'customerLookupView'])->name('booking.lookup');
+Route::post('/my-booking/lookup', [BookingController::class, 'customerLookup'])
+    ->middleware('throttle:20,1')
+    ->name('booking.lookup.search');
+
 // Static informational pages
 Route::view('/privacy-policy', 'privacy_policy')->name('privacy-policy');
 Route::view('/terms-of-service', 'terms_of_service')->name('terms-of-service');
@@ -99,10 +110,8 @@ Route::middleware('auth')->group(function () {
 
     // Cancel a booking (traveler self-cancellation with refund calculation)
     Route::post('/bookings/{booking}/cancel', [BookingController::class, 'cancel'])->name('bookings.cancel');
-
-    // Booking History
-    Route::get('/my-booking', [BookingController::class, 'customerLookupView'])->name('booking.lookup');
-Route::post('/my-booking/lookup', [BookingController::class, 'customerLookup'])->name('booking.lookup.search');
+    Route::post('/bookings/{booking}/release', [BookingController::class, 'releaseHold'])
+    ->name('bookings.release-hold');
 
     // Promo Code Validation (AJAX)
     Route::post('/booking/validate-promo', [BookingController::class, 'validatePromoCode'])->name('booking.validate-promo');

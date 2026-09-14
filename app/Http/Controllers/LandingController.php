@@ -9,6 +9,21 @@ use Stevebauman\Location\Facades\Location;
 class LandingController extends Controller
 {
     /**
+     * Flat, deduped, sorted list of every town/city defined in
+     * config/zambia_cities.php. Shared by index() (autocomplete data) and
+     * search() (origin/destination validation) so there's a single source
+     * of truth for "what counts as a real Zambian city" in this controller.
+     */
+    protected function allCities()
+    {
+        return collect(config('zambia_cities'))
+            ->flatten()
+            ->unique()
+            ->sort()
+            ->values();
+    }
+
+    /**
      * Display the landing page with popular routes.
      */
     public function index()
@@ -65,7 +80,11 @@ class LandingController extends Controller
         //     ->shuffle()
         //     ->take(4);
 
-        return view('landing_search', compact('routes', 'detectedCity'));
+        // Flat, deduped list of every town/city defined in config/zambia_cities.php,
+        // used to power the From/To autocomplete on the search bar.
+        $cities = $this->allCities();
+
+        return view('landing_search', compact('routes', 'detectedCity', 'cities'));
     }
 
     /*
@@ -73,9 +92,24 @@ class LandingController extends Controller
      */
     public function search(Request $request)
     {
+        $cities = $this->allCities();
+
+        // Case-insensitive membership check: the autocomplete always inserts
+        // a city exactly as config/zambia_cities.php spells it, but existing
+        // links elsewhere in the app (e.g. popular-route cards built from
+        // Route::origin/destination) might not match that casing exactly, so
+        // this doesn't require an exact-case Rule::in() match.
+        $cityRule = function ($attribute, $value, $fail) use ($cities) {
+            $matches = $cities->contains(fn ($city) => strcasecmp($city, $value) === 0);
+
+            if (! $matches) {
+                $fail('Please choose a valid Zambian city from the suggestions.');
+            }
+        };
+
         $validated = $request->validate([
-            'origin' => 'nullable|string',
-            'destination' => 'nullable|string',
+            'origin' => ['nullable', 'string', $cityRule],
+            'destination' => ['nullable', 'string', $cityRule],
             'travel_date' => 'nullable|date',
             'passengers' => 'nullable|integer|min:1',
             'min_price' => 'nullable|numeric|min:0',

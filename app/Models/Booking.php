@@ -131,4 +131,38 @@ class Booking extends Model
             'boarded_by' => null,
         ]);
     }
+
+    /**
+     * Group a collection of bookings into one entry per purchase.
+     *
+     * A multi-seat purchase creates one Booking row per seat, all sharing
+     * a group_reference. This collapses those siblings back into a single
+     * "trip" object so a bookings list can show one card per purchase
+     * instead of one row per seat. A single-seat booking becomes a group
+     * of one. Shared by ProfileController's Booking History tab and
+     * BookingController's My Bookings page so the two stay consistent.
+     *
+     * @param  \Illuminate\Support\Collection<int, Booking>  $bookings
+     * @return \Illuminate\Support\Collection<int, object>
+     */
+    public static function groupIntoTrips($bookings)
+    {
+        return $bookings
+            ->groupBy(fn (Booking $booking) => $booking->group_reference ?? 'single-' . $booking->id)
+            ->map(function ($group) {
+                $ordered = $group->sortBy('seat_number')->values();
+                $primary = $ordered->first();
+
+                return (object) [
+                    'primary' => $primary,
+                    'bookings' => $ordered,
+                    'seat_numbers' => $ordered->pluck('seat_number')->all(),
+                    'total_amount' => $group->sum('amount'),
+                    'is_group' => $ordered->count() > 1,
+                    'created_at' => $primary->created_at,
+                ];
+            })
+            ->sortByDesc('created_at')
+            ->values();
+    }
 }

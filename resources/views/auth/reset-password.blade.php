@@ -5,6 +5,20 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Reset Password — BookMyBus Zambia</title>
+
+    <script>
+        (function () {
+            try {
+                var stored = localStorage.getItem('theme');
+                var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                var useDark = stored === 'dark' || (!stored && prefersDark);
+                var root = document.documentElement;
+                if (useDark) { root.classList.add('dark'); root.classList.remove('light'); }
+                else { root.classList.add('light'); root.classList.remove('dark'); }
+            } catch (e) {}
+        })();
+    </script>
+
     <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=Inter:wght@400;500;600&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
     <script id="tailwind-config">
@@ -13,69 +27,93 @@
             theme: {
                 extend: {
                     colors: {
-                        "on-secondary": "#ffffff",
-                        "on-secondary-container": "#632f00",
-                        "secondary-container": "#ff8921",
-                        "primary-fixed-dim": "#7edb83",
-                        "inverse-primary": "#7edb83",
-                        background: "#f9f9fc",
-                        "inverse-on-surface": "#f0f0f3",
-                        "tertiary-container": "#d1200f",
-                        "surface-container-lowest": "#ffffff",
-                        "outline-variant": "#bfcaba",
-                        "on-tertiary": "#ffffff",
-                        surface: "#f9f9fc",
-                        "on-primary": "#ffffff",
-                        "primary-fixed": "#99f89d",
-                        "surface-variant": "#e2e2e5",
-                        "on-primary-fixed": "#002106",
-                        "surface-bright": "#f9f9fc",
-                        "surface-dim": "#dadadc",
-                        outline: "#6f7a6c",
-                        primary: "#00601f",
-                        "on-primary-fixed-variant": "#00531a",
-                        "surface-container-low": "#f3f3f6",
-                        "on-surface-variant": "#3f493e",
-                        "surface-container-high": "#e8e8ea",
-                        "on-surface": "#1a1c1e",
-                        "primary-container": "#197b30",
-                        "error-container": "#ffdad6",
-                        "surface-container-highest": "#e2e2e5",
-                        "surface-tint": "#006e25",
-                        error: "#ba1a1a",
-                        "surface-container": "#eeeef0",
-                        secondary: "#954a00",
-                        tertiary: "#a80800",
-                        "on-error": "#ffffff",
-                        "on-background": "#1a1c1e",
+                        primary: "var(--color-primary)",
+                        "primary-container": "var(--color-primary-container)",
+                        "on-primary": "var(--color-on-primary)",
+                        surface: "var(--color-surface)",
+                        "surface-container-low": "var(--color-surface-container-low)",
+                        "surface-container-lowest": "var(--color-surface-container-lowest)",
+                        "on-surface": "var(--color-on-surface)",
+                        "on-surface-variant": "var(--color-on-surface-variant)",
+                        outline: "var(--color-outline)",
+                        "outline-variant": "var(--color-outline-variant)",
+                        error: "var(--color-error)",
+                        "error-container": "var(--color-error-container)",
+                        "primary-fixed": "var(--color-primary-fixed)",
+                        "secondary-container": "var(--color-secondary-container)",
                     },
-                    fontFamily: {
-                        headline: ["Manrope"],
-                        body: ["Inter"],
-                    },
-                },
-            },
-        };
+                    fontFamily: { headline: ["Manrope"], body: ["Inter"] },
+                }
+            }
+        }
     </script>
     <style>
-        .material-symbols-outlined {
-            font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
-            vertical-align: middle;
+        .material-symbols-outlined { font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24; vertical-align: middle; }
+        body { font-family: 'Inter', sans-serif; background: var(--color-surface); }
+
+        :root {
+            color-scheme: light;
+            --color-primary: #00601f;
+            --color-primary-container: #197b30;
+            --color-on-primary: #ffffff;
+            --color-surface: #f9f9fc;
+            --color-surface-container-low: #f3f3f6;
+            --color-surface-container-lowest: #ffffff;
+            --color-on-surface: #1a1c1e;
+            --color-on-surface-variant: #3f493e;
+            --color-outline: #6f7a6c;
+            --color-outline-variant: #bfcaba;
+            --color-error: #ba1a1a;
+            --color-error-container: #ffdad6;
+            --color-primary-fixed: #99f89d;
+            --color-secondary-container: #ff8921;
         }
-        .hero-gradient {
-            background: linear-gradient(135deg, #00601f 0%, #197b30 100%);
+
+        .dark {
+            color-scheme: dark;
+            --color-primary: #7edb83;
+            --color-primary-container: #00531a;
+            --color-on-primary: #003910;
+            --color-surface: #121316;
+            --color-surface-container-low: #1a1c1e;
+            --color-surface-container-lowest: #0d0e11;
+            --color-on-surface: #e3e2e6;
+            --color-on-surface-variant: #bfcaba;
+            --color-outline: #899383;
+            --color-outline-variant: #3f493e;
+            --color-error: #ffb4ab;
+            --color-error-container: #93000a;
+            --color-primary-fixed: #99f89d;
+            --color-secondary-container: #713700;
         }
-        .panel-gradient {
-            background: linear-gradient(160deg, #00601f 0%, #197b30 60%, #1a3d22 100%);
+
+        .hero-gradient { background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-container) 100%); }
+        .panel-gradient { background: linear-gradient(160deg, #00601f 0%, #197b30 60%, #1a3d22 100%); }
+
+        .theme-toggle {
+            position: fixed; top: 1rem; right: 1rem; z-index: 100;
+            width: 2.5rem; height: 2.5rem;
+            display: flex; align-items: center; justify-content: center;
+            border-radius: 9999px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            color: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            cursor: pointer;
+            transition: background 0.2s ease;
         }
+        .theme-toggle:hover { background: rgba(255, 255, 255, 0.25); }
+        .dark .theme-toggle { background: rgba(0, 0, 0, 0.4); border-color: rgba(255, 255, 255, 0.1); }
     </style>
 </head>
 
 <body class="bg-surface font-body text-on-surface min-h-screen flex">
 
-    <!-- Left decorative panel -->
+    <button type="button" id="themeToggle" class="theme-toggle" aria-label="Toggle dark mode">
+        <span class="material-symbols-outlined" id="themeToggleIcon">dark_mode</span>
+    </button>
+
     <div class="hidden lg:flex lg:w-1/2 panel-gradient flex-col justify-between p-12 relative overflow-hidden">
-        <!-- Background pattern -->
         <div class="absolute inset-0 opacity-10">
             <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -86,11 +124,9 @@
                 <rect width="100%" height="100%" fill="url(#grid)" />
             </svg>
         </div>
-        <!-- Decorative bus icon blob -->
         <div class="absolute -bottom-16 -right-16 w-72 h-72 rounded-full bg-white/5"></div>
         <div class="absolute -bottom-8 -right-8 w-48 h-48 rounded-full bg-white/5"></div>
 
-        <!-- Logo -->
         <div class="relative z-10">
             <a href="{{ route('home') }}" class="flex items-center gap-3">
                 <span class="material-symbols-outlined text-white text-3xl">directions_bus</span>
@@ -98,7 +134,6 @@
             </a>
         </div>
 
-        <!-- Center content -->
         <div class="relative z-10 flex-1 flex flex-col justify-center py-12">
             <span class="text-secondary-container font-bold tracking-widest text-xs uppercase mb-4">New Password</span>
             <h1 class="font-headline text-5xl font-extrabold text-white tracking-tighter leading-tight mb-6">
@@ -108,7 +143,6 @@
                 Choose a strong, unique password to secure your BookMyBus Zambia account.
             </p>
 
-            <!-- Feature pills -->
             <div class="flex flex-col gap-3 mt-10">
                 <div class="flex items-center gap-3">
                     <div class="w-8 h-8 rounded-full bg-white/15 flex items-center justify-center flex-shrink-0">
@@ -131,7 +165,6 @@
             </div>
         </div>
 
-        <!-- Bottom links -->
         <div class="relative z-10">
             <p class="text-white/40 text-xs font-body">
                 Changed your mind?
@@ -140,10 +173,8 @@
         </div>
     </div>
 
-    <!-- Right form panel -->
     <div class="w-full lg:w-1/2 flex flex-col justify-center px-6 py-12 sm:px-12 lg:px-20">
 
-        <!-- Mobile logo -->
         <div class="lg:hidden mb-10">
             <a href="{{ route('home') }}" class="flex items-center gap-2">
                 <span class="material-symbols-outlined text-primary text-2xl">directions_bus</span>
@@ -161,7 +192,6 @@
                 <p class="text-on-surface-variant font-body mt-2 text-sm">Your new password must be different from previously used passwords.</p>
             </div>
 
-            <!-- Validation errors -->
             @if($errors->any())
                 <div class="mb-6 p-4 rounded-lg bg-error-container border border-error/20 flex items-start gap-3">
                     <span class="material-symbols-outlined text-error text-sm mt-0.5">error</span>
@@ -177,7 +207,6 @@
                 @csrf
                 <input type="hidden" name="token" value="{{ $token }}">
 
-                <!-- Email -->
                 <div>
                     <label for="email" class="block text-[10px] uppercase font-bold text-outline tracking-widest mb-2">Email Address</label>
                     <div class="relative">
@@ -195,7 +224,6 @@
                     </div>
                 </div>
 
-                <!-- Password -->
                 <div>
                     <label for="password" class="block text-[10px] uppercase font-bold text-outline tracking-widest mb-2">New Password</label>
                     <div class="relative">
@@ -215,7 +243,6 @@
                     </div>
                 </div>
 
-                <!-- Confirm Password -->
                 <div>
                     <label for="password_confirmation" class="block text-[10px] uppercase font-bold text-outline tracking-widest mb-2">Confirm New Password</label>
                     <div class="relative">
@@ -235,17 +262,15 @@
                     </div>
                 </div>
 
-                <!-- Submit -->
                 <button
                     type="submit"
-                    class="w-full hero-gradient text-white font-headline font-extrabold py-3.5 rounded-lg hover:brightness-110 active:scale-95 transition-all flex items-center justify-center gap-2 mt-1"
+                    class="w-full hero-gradient text-on-primary font-headline font-extrabold py-3.5 rounded-lg hover:brightness-110 active:scale-95 transition-all flex items-center justify-center gap-2 mt-1"
                 >
                     <span>Reset Password</span>
                     <span class="material-symbols-outlined text-lg">lock_reset</span>
                 </button>
             </form>
 
-            <!-- Divider -->
             <div class="mt-8 pt-6 border-t border-outline-variant lg:hidden">
                 <p class="text-center text-xs text-outline font-body">
                     Remembered your password?
@@ -267,6 +292,23 @@
                 icon.textContent = 'visibility';
             }
         }
+
+        (function () {
+            var root = document.documentElement;
+            var toggle = document.getElementById('themeToggle');
+            var icon = document.getElementById('themeToggleIcon');
+            function syncIcon() {
+                icon.textContent = root.classList.contains('dark') ? 'light_mode' : 'dark_mode';
+            }
+            toggle.addEventListener('click', function () {
+                var goingDark = !root.classList.contains('dark');
+                root.classList.toggle('dark', goingDark);
+                root.classList.toggle('light', !goingDark);
+                try { localStorage.setItem('theme', goingDark ? 'dark' : 'light'); } catch (e) {}
+                syncIcon();
+            });
+            syncIcon();
+        })();
     </script>
 </body>
 </html>

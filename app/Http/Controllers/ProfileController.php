@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Booking;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
@@ -10,6 +12,12 @@ use Illuminate\Validation\ValidationException;
 
 class ProfileController extends Controller
 {
+    /**
+     * Number of trips (grouped bookings) shown per page on the Booking
+     * History tab.
+     */
+    private const TRIPS_PER_PAGE = 10;
+
     /**
      * Display the traveler's profile, including booking history.
      */
@@ -19,14 +27,25 @@ class ProfileController extends Controller
         $user = Auth::guard('web')->user();
 
         $bookings = $user->bookings()
-            ->with('route')
+            ->with('route', 'ticket')
             ->latest()
-            ->take(20)
             ->get();
 
+        $trips = Booking::groupIntoTrips($bookings);
+
+        $page = (int) request('page', 1);
+
+        $paginatedTrips = new LengthAwarePaginator(
+            $trips->forPage($page, self::TRIPS_PER_PAGE)->values(),
+            $trips->count(),
+            self::TRIPS_PER_PAGE,
+            $page,
+            ['path' => request()->url(), 'query' => request()->query()]
+        );
+
         return view('profile', [
-            'user'     => $user,
-            'bookings' => $bookings,
+            'user'  => $user,
+            'trips' => $paginatedTrips,
         ]);
     }
 

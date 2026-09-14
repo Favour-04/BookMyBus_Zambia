@@ -77,12 +77,21 @@ class Route extends Model
 
     // helper methods
 
-    // Get seat numbers already booked on this route (confirmed or pending).
+    // Get seat numbers already booked on this route: confirmed outright, or
+    // pending with a seat hold (held_until) that hasn't passed yet. A pending
+    // booking whose 10-minute hold has expired no longer counts — its seat
+    // is free again, even if nothing has gone back and flipped its status.
 
     public function bookedSeats(): array
     {
         return $this->bookings()
-            ->whereIn('status', ['pending', 'confirmed'])
+            ->where(function ($query) {
+                $query->where('status', 'confirmed')
+                    ->orWhere(function ($query) {
+                        $query->where('status', 'pending')
+                            ->where('held_until', '>', now());
+                    });
+            })
             ->pluck('seat_number')
             ->toArray();
     }
