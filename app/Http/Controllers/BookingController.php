@@ -160,6 +160,7 @@ class BookingController extends Controller
             'departure_time' => $booking->route->departure_time,
             'departure_date' => $booking->route->travel_date->format('d M, Y'),
             'booking_id' => $booking->reference_id,
+            'phone_number' => $booking->passenger_phone,
             'expired' => $booking->isExpired(),
             'held_until' => $booking->held_until,
             'origin_code' => strtoupper(substr($booking->route->origin, 0, 3)),

@@ -149,7 +149,7 @@
                             title="Please enter a valid 10-digit Zambian phone number"
                             autocomplete="tel"
                             class="w-full bg-surface-container-lowest border-none rounded-lg p-4 font-headline font-bold text-lg focus:ring-2 focus:ring-primary/30 transition-shadow outline-none @error('phone_number') ring-2 ring-error @enderror"
-                            placeholder="096 123 4567"
+                            placeholder="{{ old('phone_number', $phone_number ?? '096 123 4567') }}"
                             type="tel"
                             value="{{ old('phone_number') }}" />
                         @error('phone_number')
@@ -337,6 +337,11 @@
             btn.innerHTML = `<span class="flex items-center justify-center gap-2"><span class="animate-spin material-symbols-outlined">sync</span> Processing Payment...</span>`;
         }
 
+        // Phone number already on file for the first ticket holder (or whatever
+        // the user typed on a failed-payment retry) — used to pre-fill the
+        // placeholder and to auto-detect which provider banner to select.
+        const knownPhoneNumber = @json(old('phone_number', $phone_number ?? null));
+
         function selectProvider(provider) {
             document.getElementById('payment_provider').value = provider;
 
@@ -354,7 +359,7 @@
                 mtnCard.querySelector('.dot').classList.replace('opacity-100', 'opacity-0');
 
                 phoneLabel.textContent = 'Airtel Phone Number';
-                phoneInput.placeholder = '097 123 4567';
+                phoneInput.placeholder = knownPhoneNumber || '097 123 4567';
                 phoneInput.pattern = "0(97|77)[0-9]{7}";
                 phoneInput.title = "Please enter a 10-digit Airtel number starting with 097 or 077";
             } else {
@@ -366,11 +371,25 @@
                 airtelCard.querySelector('.dot').classList.replace('opacity-100', 'opacity-0');
 
                 phoneLabel.textContent = 'MTN Phone Number';
-                phoneInput.placeholder = '096 123 4567';
+                phoneInput.placeholder = knownPhoneNumber || '096 123 4567';
                 phoneInput.pattern = "0(96|76)[0-9]{7}";
                 phoneInput.title = "Please enter a 10-digit MTN number starting with 096 or 076";
             }
         }
+
+        // Auto-select the provider banner that matches the known phone number's prefix.
+        (function autoSelectProviderFromPhone() {
+            if (!knownPhoneNumber) return;
+
+            const digits = knownPhoneNumber.replace(/[^0-9]/g, '');
+            const local = digits.startsWith('260') ? '0' + digits.slice(3) : digits;
+
+            if (/^0(97|77)/.test(local)) {
+                selectProvider('airtel');
+            } else if (/^0(96|76)/.test(local)) {
+                selectProvider('mtn');
+            }
+        })();
 
         // Countdown Timer
         (function initCountdown() {
