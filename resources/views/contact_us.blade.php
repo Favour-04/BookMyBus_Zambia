@@ -23,6 +23,18 @@
     .card-hover:hover {
         box-shadow: 0 10px 15px -3px var(--color-shadow), 0 4px 6px -4px var(--color-shadow);
     }
+
+        /* SVG icon color — theme-aware. SVGs using stroke="currentColor" or
+           fill="currentColor" inherit this automatically. */
+        .icon {
+            color: var(--color-on-surface);
+            transition: color 0.2s ease;
+        }
+        .icon-primary { color: var(--color-primary); }
+        .icon-secondary { color: var(--color-secondary); }
+        .icon-muted { color: var(--color-on-surface-variant); }
+        .icon-error { color: var(--color-error); }
+        .icon-on-primary { color: var(--color-on-primary); }
 </style>
 @endpush
 

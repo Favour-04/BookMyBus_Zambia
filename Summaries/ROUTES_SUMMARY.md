@@ -137,8 +137,9 @@ Guest middleware: traveler authentication routes use `guest`, operator routes us
 | GET    | `/booking/success/{booking}` | `booking.success`        | `BookingController@success`            | Booking success page     |
 | GET    | `/tickets/{qrCode}`          | `tickets.show`           | `BookingController@showTicket`         | Re-open a digital ticket |
 | POST   | `/bookings/{booking}/cancel` | `bookings.cancel`        | `BookingController@cancel`             | Cancel a booking         |
-| GET    | `/my-booking`                | `booking.lookup`         | `BookingController@customerLookupView` | Display booking lookup   |
-| POST   | `/my-booking/lookup`         | `booking.lookup.search`  | `BookingController@customerLookup`     | Look up a booking        |
+| POST   | `/bookings/{booking}/release`| `bookings.release-hold`  | `BookingController@releaseHold`        | Release a pending seat hold (traveler backs out of payment to reselect seats) |
+| GET    | `/my-booking`                | `booking.lookup`         | `BookingController@customerLookupView` | "My Bookings" — signed-in travelers see their paginated trip history immediately; guests see just the reference-ID lookup form |
+| POST   | `/my-booking/lookup`         | `booking.lookup.search`  | `BookingController@customerLookup`     | Look up a booking by exact reference ID (throttled `throttle:20,1`; not scoped to the current user — see Security Considerations) |
 | POST   | `/booking/validate-promo`    | `booking.validate-promo` | `BookingController@validatePromoCode`  | Validate a promo code    |
 | GET    | `/profile`                   | `profile`                | `ProfileController@index`              | Display traveler profile |
 | PUT    | `/profile`                   | `profile.update`         | `ProfileController@update`             | Update traveler profile  |
@@ -220,12 +221,17 @@ Registers console commands for the application.
 | --------- | ----------------------- | -------------------------- |
 | `inspire` | `Artisan::command(...)` | Display an inspiring quote |
 
+### Scheduled Commands
+
+| Command                          | Frequency        | Description                                                                                                    |
+| --------------------------------- | ----------------- | ---------------------------------------------------------------------------------------------------------------- |
+| `notifications:departure-reminders` | Every 15 minutes  | Sends departure reminders to confirmed passengers on trips departing soon (`withoutOverlapping()`).             |
+| `bookings:expire-pending`         | Every 5 minutes   | Flips pending bookings whose 10-minute seat hold has passed to `expired` (`app/Console/Commands/ExpirePendingBookings.php`, `withoutOverlapping()`). A data-hygiene sweep, not the source of truth for seat availability — `Route::bookedSeats()` already excludes expired-hold pending bookings at read time, so seats free up instantly regardless of how often this runs; it just keeps stored booking status accurate for reports/dashboards/operator views. |
+
 ### Notes
 
-- The command is registered with `Artisan::command(...)` and has purpose text `Display an inspiring quote`.
+- The `inspire` command is registered with `Artisan::command(...)` and has purpose text `Display an inspiring quote`.
 - This is a default Laravel command and can be run via `php artisan inspire`.
-- `notifications:departure-reminders` is scheduled with `Schedule::command(...)` every 15 minutes and uses `withoutOverlapping()`.
-- The scheduler command sends departure reminders to confirmed passengers on trips departing soon.
 
 ## Security Considerations
 
@@ -233,3 +239,8 @@ Registers console commands for the application.
 - Payment callback endpoint is public (called by payment gateways)
 - Operator routes use a custom guard for separate authentication
 - Admin routes require both authentication and role verification
+- The web booking-lookup POST route (`booking.lookup.search`) is throttled (`throttle:20,1`) as a brute-force guard, since the lookup is an exact-match, unscoped-by-user search on the booking `reference_id`
+
+## Notes
+
+- `routes/web.php` imports `App\Http\Controllers\Admin\PanelController`, but that class does not exist anywhere in `app/Http/Controllers/Admin` and the import is never referenced in the file — a dead/broken `use` statement (harmless unless something tries to instantiate it) that's worth cleaning up.

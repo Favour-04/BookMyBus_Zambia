@@ -56,6 +56,18 @@
     .range-slider-wrap input[type="range"]::-moz-range-track {
         background: transparent;
     }
+
+        /* SVG icon color — theme-aware. SVGs using stroke="currentColor" or
+           fill="currentColor" inherit this automatically. */
+        .icon {
+            color: var(--color-on-surface);
+            transition: color 0.2s ease;
+        }
+        .icon-primary { color: var(--color-primary); }
+        .icon-secondary { color: var(--color-secondary); }
+        .icon-muted { color: var(--color-on-surface-variant); }
+        .icon-error { color: var(--color-error); }
+        .icon-on-primary { color: var(--color-on-primary); }
 </style>
 @endpush
 
@@ -191,8 +203,9 @@
         <!-- Operator Info -->
         <div class="flex md:flex-col items-center md:items-start gap-4 md:gap-2 w-full md:w-32 flex-shrink-0">
           <div class="w-14 h-14 bg-surface-container-high rounded-full flex items-center justify-center p-2">
-            <img class="w-full h-full object-contain rounded-full" alt="{{ $trip->operator->company_name ?? 'Operator' }} logo"
-              src="https://placehold.co/56x56?text={{ urlencode($trip->operator->company_name ?? 'Operator') }}" />
+            {{-- <img class="w-full h-full object-contain rounded-full" alt="{{ $trip->operator->company_name ?? 'Operator' }} logo"
+              src="https://placehold.co/56x56?text={{ urlencode($trip->operator->company_name ?? 'Operator') }}" /> --}}
+              <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="64" height="64" class="icon" viewBox="0 0 32 32" style="color: rgb(74, 85, 101); opacity: 1; transform: rotate(0deg);"><path fill="currentColor" d="M27 11h2v4h-2zM3 11h2v4H3zm17 9h2v2h-2zm-10 0h2v2h-2z"></path><path fill="currentColor" d="M21 4H11a5.006 5.006 0 0 0-5 5v14a2 2 0 0 0 2 2v3h2v-3h12v3h2v-3a2.003 2.003 0 0 0 2-2V9a5.006 5.006 0 0 0-5-5m3 6v6H8v-6ZM11 6h10a2.995 2.995 0 0 1 2.816 2H8.184A2.995 2.995 0 0 1 11 6M8 23v-5h16.001l.001 5Z"></path></svg>
           </div>
           <div>
             <h4 class="font-headline font-extrabold text-sm text-on-surface">{{ $trip->operator->company_name ?? 'Unknown Operator' }}</h4>
@@ -217,8 +230,7 @@
             <div class="w-full flex items-center gap-2">
               <div class="w-2 h-2 rounded-full border-2 border-primary"></div>
               <div class="flex-grow border-t-2 border-dashed border-outline-variant relative">
-                <span
-                  class="material-symbols-outlined absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-primary bg-surface-container-lowest text-sm">directions_bus</span>
+                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="64" height="64" class="icon" viewBox="0 0 512 512" style="color: rgb(74, 85, 101); opacity: 1; transform: rotate(0deg);"><path fill="currentColor" d="M47 145c-10 0-23 12.4-23 24.9v134.3l52.49 7.5C84.97 297 100.9 287 119 287c21 0 39 13.3 45.9 32h188.2c6.9-18.7 24.9-32 45.9-32s39 13.3 45.9 32H488v-77.2L456.5 145zm-9 14h405.6l25.6 82H296v64h-98v-64H38zm18 18v46h62v-46zm80 0v46h62v-46zm80 0v110h22V177zm40 0v110h22V177zm40 0v46h62v-46zm86.6 0v46h62.2l-14.4-46zM119 305c-17.2 0-31 13.8-31 31s13.8 31 31 31s31-13.8 31-31s-13.8-31-31-31m280 0c-17.2 0-31 13.8-31 31s13.8 31 31 31s31-13.8 31-31s-13.8-31-31-31m-280 23a8 8 0 0 1 8 8a8 8 0 0 1-8 8a8 8 0 0 1-8-8a8 8 0 0 1 8-8m280 0a8 8 0 0 1 8 8a8 8 0 0 1-8 8a8 8 0 0 1-8-8a8 8 0 0 1 8-8"></path></svg>
               </div>
               <div class="w-2 h-2 rounded-full bg-primary"></div>
             </div>
@@ -266,22 +278,19 @@
     <!-- Bento Info Grid -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-12">
       <div class="bg-primary/5 p-6 rounded-2xl border border-primary/10">
-        <span class="material-symbols-outlined text-primary mb-4"
-          style="font-variation-settings: 'FILL' 1;">security</span>
+        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="64" height="64" class="icon" viewBox="0 0 24 24" style="color: rgb(74, 85, 101); opacity: 1; transform: rotate(0deg);"><path fill="#85a4e6" d="M12 1L3 5v6c0 5.6 3.8 10.7 9 12c5.2-1.3 9-6.4 9-12V5zm0 11h7c-.5 4.1-3.3 7.8-7 8.9zH5V6.3l7-3.1z"></path><path fill="#5c85de" d="M12 1v22c5.2-1.3 9-6.4 9-12V5zm7 11c-.5 4.1-3.3 7.8-7 8.9V12z"></path><path fill="#3367d6" fill-rule="evenodd" d="M21 12h-2s0 .3-.1.6zM3 12h2v-.6z"></path></svg>
         <h4 class="font-headline font-bold text-on-surface mb-2">Verified Operators</h4>
         <p class="text-xs text-on-surface-variant leading-relaxed">All bus operators on our platform pass a 24-point safety
           and cleanliness inspection.</p>
       </div>
       <div class="bg-secondary/5 p-6 rounded-2xl border border-secondary/10">
-        <span class="material-symbols-outlined text-secondary mb-4"
-          style="font-variation-settings: 'FILL' 1;">confirmation_number</span>
+        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="64" height="64" class="icon" viewBox="0 0 48 48" style="color: rgb(74, 85, 101); opacity: 1; transform: rotate(0deg);"><g fill="none" stroke-linecap="round" stroke-width="4"><path stroke="#000" stroke-linejoin="round" d="M9.00013 16.0001L34 6.00008L38.0004 16.0001"></path><path fill="#2F88FF" stroke="#000" stroke-linejoin="round" d="M4 16H44V22C41 22 38 24 38 27.5C38 31 41 34 44 34V40H4V34C7.00016 34 10 32 10 28C10 24 7 22 4 22V16Z"></path><path stroke="#fff" d="M17 25.3848H23"></path><path stroke="#fff" d="M17 31.3848H31"></path></g></svg>
         <h4 class="font-headline font-bold text-on-surface mb-2">Instant Ticket</h4>
         <p class="text-xs text-on-surface-variant leading-relaxed">Receive your boarding QR code via SMS and WhatsApp
           immediately after payment.</p>
       </div>
       <div class="bg-surface-container-low p-6 rounded-2xl">
-        <span class="material-symbols-outlined text-on-surface-variant mb-4"
-          style="font-variation-settings: 'FILL' 1;">support_agent</span>
+        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="64" height="64" class="icon" viewBox="0 0 14 14" style="color: rgb(58, 118, 245); opacity: 1; transform: rotate(0deg);"><g fill="none" fill-rule="evenodd" clip-rule="evenodd"><path fill="#8fbffa" d="M11.883 4.477c-.257-1.85-1.229-3.043-2.562-3.7V.776L9.304.768L9.253.744a7 7 0 0 0-.861-.318A8.3 8.3 0 0 0 6.048.085c-.969 0-1.777.2-2.345.4a6 6 0 0 0-.849.373l-.051.03l-.012.006C1.144 1.82.298 3.531.298 5.877c0 1.241.162 2.103.44 2.826c.231.603.54 1.097.852 1.593l.162.26c.357.577.516 1.266.514 1.984l-.001.828a.5.5 0 0 0 .5.5h6.018a.5.5 0 0 0 .5-.5v-1.203c.03-.147.175-.284.402-.284h.493a2 2 0 0 0 2-2v-.897l.292-.007a1.3 1.3 0 0 0 1.06-.555c.292-.416.154-.896.016-1.21c-.15-.34-.398-.703-.635-1.036l-.197-.272c-.18-.25-.35-.486-.498-.717c-.206-.324-.312-.557-.333-.71"></path><path fill="#2859c5" d="M6.673 3.932V.11a8 8 0 0 0-.625-.024q-.325 0-.625.028v3.82c-.472.089-.886.287-1.209.61c-.459.459-.666 1.101-.666 1.833s.207 1.375.666 1.834s1.102.666 1.834.666q.313 0 .6-.05c.727.709 1.859 1.396 3.255 1.802a.625.625 0 0 0 .35-1.2C9.25 9.135 8.432 8.685 7.86 8.23l.02-.02c.46-.459.667-1.102.667-1.834S8.34 5.002 7.88 4.543c-.323-.323-.736-.521-1.208-.61"></path></g></svg>
         <h4 class="font-headline font-bold text-on-surface mb-2">24/7 Support</h4>
         <p class="text-xs text-on-surface-variant leading-relaxed">Our Zambian-based support team is available via phone and
           chat for any trip issues.</p>

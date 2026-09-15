@@ -34,19 +34,22 @@ The application follows a standard Laravel MVC structure with controllers organi
 
 | Method                                              | Description                                                                                                                                                                                               |
 | --------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `showSeats($id)`                                    | Displays the seat selection page for a route. Loads route with bus/operator details and already-booked seats; aborts 404 when the route is inactive.                                                      |
-| `store(Request, FareCalculationService)`            | Creates a pending booking (validated route, seat and passenger details). Calculates the fare breakdown (base fare, service fees, promo discount) and redirects to the payment ticket page.                |
-| `paymentTicket($bookingId)`                         | Displays the payment ticket page: fare breakdown, applied promo code, seat, origin/destination, departure info and hold/expiry status.                                                                    |
-| `processPayment(Request, Booking, PaymentService)`  | Processes mobile money payment (MTN/Airtel) via `PaymentService`. Validates provider/phone, checks confirmation/expiry, then redirects to the success page or back with errors.                          |
+| `showSeats($id)`                                    | Displays the seat selection page for a route. Loads route with bus/operator details and already-booked seats, clamps the requested passenger count to the remaining capacity, and aborts 404 when the route is inactive. |
+| `store(Request, FareCalculationService)`            | Creates one pending `Booking` per passenger in the submitted `passengers[]` array (multi-seat group booking). Validates each seat is within capacity, unique, and not already booked; calculates the fare once per route/promo; assigns a shared `group_reference` when more than one passenger is submitted; redirects to the payment ticket page for the first booking. |
+| `paymentTicket($bookingId)`                         | Displays the payment ticket page for a booking. When the booking shares a `group_reference`, pulls in every sibling booking in the party and aggregates the fare breakdown (base fare, service fees, discount, total) across the whole group.       |
+| `processPayment(Request, Booking, PaymentService)`  | Processes mobile money payment (MTN/Airtel) via `PaymentService`. For a single booking, calls `processMobileMoney()`; for a multi-seat group (shared `group_reference`), calls `processMobileMoneyForGroup()` so every seat in the party is confirmed, ticketed, and notified. Validates provider/phone, checks confirmation/expiry, then redirects to the success page or back with errors. |
 | `validatePromoCode(Request, FareCalculationService)`| AJAX endpoint validating a promo code for a route; returns the discount result as JSON.                                                                                                                  |
-| `success(Booking)`                                  | Displays the success page (digital ticket / booking history) after payment.                                                                                                                               |
+| `success(Booking)`                                  | Displays the success page (digital ticket / booking history) after payment. Loads sibling group bookings when the purchase covered multiple seats, so every ticket in the party is shown, not just the one paid through. |
 | `showTicket(string $qrCode)`                        | Displays a traveler's digital ticket by QR code (lets a traveler re-open their ticket after booking).                                                                                                     |
+| `releaseHold(Booking $booking)`                     | Releases a pending seat hold when a traveler backs out of the payment page to reselect seat(s). Only ever touches a still-`pending` booking (skips refund/notification logic), releases every sibling booking sharing the same `group_reference`, and redirects back to seat selection. |
 | `cancel(Booking, RefundCalculationService)`         | Cancels the traveler's own booking. Pending bookings are released; confirmed bookings are cancelled with a refund per the operator's rules. Blocks past and already-cancelled trips.                       |
-| `customerLookupView()`                              | Displays the customer booking lookup form (by reference ID or phone number).                                                                                                                              |
-| `customerLookup(Request)`                           | Looks up a booking by reference ID and/or phone number and displays it.                                                                                                                                   |
+| `customerLookupView()`                              | "My Bookings" page. Signed-in travelers immediately see their own paginated, trip-grouped booking history (via `paginatedTripsForCurrentUser()`); guests see only the reference-ID lookup form.           |
+| `customerLookup(Request)`                           | Looks up a single booking by its exact `reference_id` (not scoped to the current user and no phone-number search — the reference ID itself is the credential, similar to a paper ticket/PNR). Also returns the signed-in user's dashboard trips alongside the lookup result. Rate-limited at the route level (`throttle:20,1`) as a brute-force guard. |
+
+**Private Methods**: `paginatedTripsForCurrentUser(): LengthAwarePaginator` - Builds the paginated (10/page), trip-grouped booking history for the signed-in user via `Booking::groupIntoTrips()`. Shared by `customerLookupView()` and `customerLookup()`.
 
 **Models Used**: `Booking`, `Route`, `Operator`, `PromoCode`, `Ticket`
-**Dependencies**: `App\Services\FareCalculationService`, `App\Services\PaymentService`, `App\Services\RefundCalculationService`, `App\Notifications\BookingCancelled`, `Carbon\Carbon`, `Illuminate\Support\Facades\Auth`
+**Dependencies**: `App\Services\FareCalculationService`, `App\Services\PaymentService`, `App\Services\RefundCalculationService`, `App\Notifications\BookingCancelled`, `Carbon\Carbon`, `Illuminate\Support\Facades\Auth`, `Illuminate\Support\Facades\DB`, `Illuminate\Support\Str`, `Illuminate\Pagination\LengthAwarePaginator`
 
 ---
 
@@ -57,11 +60,13 @@ The application follows a standard Laravel MVC structure with controllers organi
 
 | Method                     | Description                                                                                                                                                        |
 | -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `index()`                  | Displays landing page with popular routes. Uses IP-based location detection to show routes from the user's city. Falls back to random routes if no location match. |
-| `search(Request $request)` | Searches for trips based on origin, destination, and travel date. Returns search results view.                                                                     |
+| `index()`                  | Displays the landing page with popular routes. Uses IP-based location detection to show routes from the user's city (verified against active routes in the DB before use), falling back to random active routes if there's no location match. Also passes the flat list of Zambian cities (for From/To autocomplete) to the view. |
+| `search(Request $request)` | Searches for trips based on origin, destination, and travel date, plus price range (`min_price`/`max_price`), time-of-day (`dawn`/`morning`/`afternoon`/`night`), and operator filters. Origin/destination are validated case-insensitively against the Zambian city list. Also returns the full set of operators matching the base route/date search (unaffected by the other filters) so the operator filter checklist doesn't shrink as filters are applied. |
+
+**Private/Protected Methods**: `allCities()` - Returns a flat, deduped, sorted list of every city in `config/zambia_cities.php`; shared by `index()` (autocomplete data) and `search()` (origin/destination validation).
 
 **Models Used**: `Route`
-**Dependencies**: `Stevebauman\Location\Facades\Location`
+**Dependencies**: `Stevebauman\Location\Facades\Location`, `config/zambia_cities.php`
 
 ---
 
@@ -72,12 +77,12 @@ The application follows a standard Laravel MVC structure with controllers organi
 
 | Method                        | Description                                                                                              |
 | ----------------------------- | -------------------------------------------------------------------------------------------------------- |
-| `index()`                     | Displays the traveler's profile with their latest 20 bookings (uses the `web` guard).                   |
+| `index()`                     | Displays the traveler's profile (uses the `web` guard) with their booking history grouped into one entry per purchase via `Booking::groupIntoTrips()` and paginated 10 trips per page. |
 | `update(Request $request)`    | Updates the traveler's basic account details (full_name, email, phone_number, preferred_language).       |
 | `updatePassword(Request $request)` | Updates the traveler's password after verifying the current password.                               |
 
-**Models Used**: `User`
-**Dependencies**: `Illuminate\Support\Facades\Auth`, `Illuminate\Support\Facades\Hash`, `Illuminate\Validation\Rule`
+**Models Used**: `User`, `Booking`
+**Dependencies**: `Illuminate\Support\Facades\Auth`, `Illuminate\Support\Facades\Hash`, `Illuminate\Validation\Rule`, `Illuminate\Pagination\LengthAwarePaginator`
 
 ---
 
@@ -728,7 +733,7 @@ Controllers in `App\Http\Controllers\Admin` handle platform-wide management for 
 | Controller                                | Type     | Methods Count | Primary Models                                        |
 | ----------------------------------------- | -------- | ------------- | ----------------------------------------------------- |
 | `Controller.php`                          | Base     | 0             | -                                                     |
-| `BookingController.php` (Web)             | Web      | 10            | Booking, Route, Operator, PromoCode, Ticket           |
+| `BookingController.php` (Web)             | Web      | 11            | Booking, Route, Operator, PromoCode, Ticket           |
 | `LandingController.php` (Web)             | Web      | 2             | Route                                                 |
 | `ProfileController.php` (Web)             | Web      | 3             | User                                                  |
 | `LoginController.php` (Auth)              | Auth     | 3             | -                                                     |
@@ -787,6 +792,8 @@ Controllers in `App\Http\Controllers\Admin` handle platform-wide management for 
 - Most operator controllers share a `getOperator()` helper that resolves the operator from the guard, session, or a development fallback (operator ID 1)
 - Admin and operator web portals log actions via `AdminAuditService` / `OperatorAuditService`
 - Web fare/refund logic is centralized in `FareCalculationService`, `PaymentService`, and `RefundCalculationService`
+- `BookingController` (Web) supports multi-seat "group" bookings: multiple passengers submitted in one `store()` request share a `group_reference`, and `paymentTicket()`, `processPayment()`, `success()`, and `releaseHold()` all operate on the whole group when one is present
+- The traveler-facing booking lookup (`customerLookup()`) is deliberately reference-ID-only and unscoped by user — no phone-number search — and the route is throttled (`throttle:20,1`) against brute-forcing reference IDs; see the method's docblock in `BookingController.php` for the full reasoning
 - Payment processing is designed to integrate with MTN/Airtel Money APIs in production
 - All controllers follow RESTful conventions where applicable
 - The application uses Carbon for date/time handling throughout

@@ -177,7 +177,9 @@ The application uses 15 Eloquent models for authentication, operator management,
 
 | Method                                                     | Description                                                              |
 | ---------------------------------------------------------- | ------------------------------------------------------------------------ |
-| `scopeSearch($query, $origin, $destination, $travel_date)` | Filters by partial origin and destination matches and exact travel date. |
+| `scopeSearch($query, $origin, $destination, $travel_date)` | Filters by case-insensitive partial origin/destination matches (`ilike`) and exact travel date. |
+| `scopePriceBetween($query, $min = null, $max = null)`      | Filters routes to a fare range; either bound is skipped when null/empty. |
+| `scopeDepartureTimeOfDay($query, array $periods)`          | Filters routes whose `departure_time` falls in any of the given periods (`dawn` 04:00–08:00, `morning` 08:00–12:00, `afternoon` 12:00–17:00, `night` 17:00–04:00); returns the query unmodified when `$periods` is empty. |
 
 ### Relationships
 
@@ -250,7 +252,7 @@ The application uses 15 Eloquent models for authentication, operator management,
 
 | Attribute Group | Attributes                                                                                             |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| References      | `user_id`, `route_id`, `reference_id`                                                                  |
+| References      | `user_id`, `route_id`, `reference_id`, `group_reference`                                               |
 | Passenger       | `seat_number`, `passenger_name`, `passenger_id_number`, `passenger_phone`, `id_number`, `phone_number` |
 | Fare            | `amount`, `base_fare`, `service_fee_total`, `discount_amount`, `promo_code_id`                         |
 | Cancellation    | `cancellation_rule_id`, `refund_amount`, `cancelled_at`                                                |
@@ -260,6 +262,10 @@ The application uses 15 Eloquent models for authentication, operator management,
 
 - `reference_id`: Generated as `BMZ-` plus six random uppercase characters during creation.
 - `held_until`: Set to 10 minutes after creation.
+
+### Multi-Seat Group Bookings
+
+A single purchase covering multiple passengers/seats creates one `Booking` row per seat; every row in the same purchase shares a `group_reference` (`GRP-` plus eight random uppercase characters), set by `BookingController::store()`. A single-seat purchase leaves `group_reference` null.
 
 ### Relationships
 
@@ -282,6 +288,7 @@ The application uses 15 Eloquent models for authentication, operator management,
 | `cancel()`                                    | void        | Changes status to `cancelled`.                         |
 | `markBoarded(string $boardedBy = 'operator')` | void        | Marks the booking confirmed and records boarding data. |
 | `undoBoarded()`                               | void        | Clears boarding timestamp and actor.                   |
+| `groupIntoTrips($bookings)` (static)          | Collection  | Groups a collection of bookings by `group_reference` (falling back to a per-id single-item group) into one object per purchase, with the primary booking, ordered sibling bookings, seat numbers, summed amount, and an `is_group` flag. Shared by `ProfileController`'s Booking History tab and `BookingController`'s My Bookings page. |
 
 ---
 
@@ -642,7 +649,7 @@ OperatorAuditLog
 - **Driver**: Operator-owned driver records with license and active-status tracking
 - **Route**: Location-based search, seat availability, driver assignment, and operational status
 - **RouteTemplate**: Reusable route definitions for trip generation
-- **Booking**: Seat reservation with 10-minute hold, generated references, fare breakdown, cancellation, and boarding state
+- **Booking**: Seat reservation with 10-minute hold, generated references, fare breakdown, cancellation, boarding state, and multi-seat group purchases (shared `group_reference`, grouped via `groupIntoTrips()`)
 
 ### Pricing, Payment, and Ticketing
 

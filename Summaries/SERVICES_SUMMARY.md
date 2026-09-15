@@ -43,19 +43,21 @@ The services layer centralizes domain calculations, payment processing, audit lo
 - **Models Used**: `Booking`, `Payment`, `Ticket`
 - **Notifications**: `TicketIssued`
 - **Gateway Dependency**: `MobileMoney\GatewayInterface`
+- **Other Dependencies**: `Illuminate\Support\Collection` (group processing), `Illuminate\Support\Facades\DB`
 
 | Method                                                                        | Description                                                                                                                                                                                                                                                                                                        |
 | ----------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `processMobileMoney(Booking $booking, string $provider, string $phoneNumber)` | Normalizes and validates the phone number, resolves the selected provider, creates a pending ZMW payment, calls the gateway, and returns a success or failure result. On success, the payment is marked successful, the booking is confirmed through the payment model, and a digital ticket is issued atomically. |
+| `processMobileMoneyForGroup(Collection $bookings, string $provider, string $phoneNumber)` | Processes one mobile-money charge covering several bookings made together (a multi-seat purchase sharing a `group_reference`). Charges the gateway once for the combined total, creates a single `Payment` tied to the first booking, and — on success — confirms every booking in the group and issues/notifies a ticket for each one individually. |
 | `resolveGateway(string $provider)`                                            | Protected gateway factory method that resolves the provider through `SimulatedGateway::forProvider()`. It can be overridden by tests to provide a deterministic gateway.                                                                                                                                           |
 
 **Processing Behavior**:
 
 - Supported provider keys are `mtn` and `airtel`.
-- Phone numbers are normalized to digits before validation and saved to the booking.
+- Phone numbers are normalized to digits before validation and saved to the booking(s).
 - Payment and ticket creation are wrapped in a database transaction on successful gateway response.
 - Ticket creation is guarded against duplicate tickets for the same booking.
-- The traveler receives a `TicketIssued` notification after successful processing.
+- The traveler receives a `TicketIssued` notification after successful processing (one per booking for a group purchase).
 - Unsupported providers, invalid phone numbers, and declined transactions return structured failure results.
 
 **Used By**: `App\Http\Controllers\BookingController` for the web payment flow.

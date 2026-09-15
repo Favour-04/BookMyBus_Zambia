@@ -10,6 +10,18 @@
     }
     .tab-panel { display: none; }
     .tab-panel.active { display: block; }
+
+        /* SVG icon color — theme-aware. SVGs using stroke="currentColor" or
+           fill="currentColor" inherit this automatically. */
+        .icon {
+            color: var(--color-on-surface);
+            transition: color 0.2s ease;
+        }
+        .icon-primary { color: var(--color-primary); }
+        .icon-secondary { color: var(--color-secondary); }
+        .icon-muted { color: var(--color-on-surface-variant); }
+        .icon-error { color: var(--color-error); }
+        .icon-on-primary { color: var(--color-on-primary); }
 </style>
 @endpush
 

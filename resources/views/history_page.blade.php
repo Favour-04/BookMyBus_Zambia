@@ -21,6 +21,18 @@
   .editorial-shadow {
     box-shadow: 0 24px 40px var(--color-shadow);
   }
+
+  /* SVG icon color — theme-aware. SVGs using stroke="currentColor" or
+     fill="currentColor" inherit this automatically. */
+  .icon {
+    color: var(--color-on-surface);
+    transition: color 0.2s ease;
+  }
+  .icon-primary { color: var(--color-primary); }
+  .icon-secondary { color: var(--color-secondary); }
+  .icon-muted { color: var(--color-on-surface-variant); }
+  .icon-error { color: var(--color-error); }
+  .icon-on-primary { color: var(--color-on-primary); }
 </style>
 @endpush
 
@@ -36,8 +48,7 @@ $ticket = $booking->ticket ?? null;
 <section class="bg-primary-container py-6 mb-8">
   <div class="max-w-7xl mx-auto px-6">
     <div class="flex items-center justify-center gap-3">
-      <span class="material-symbols-outlined text-primary text-3xl"
-        style="font-variation-settings: 'FILL' 1;">check_circle</span>
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="64" height="64" viewBox="0 0 32 32" style="color: rgb(0, 57, 16); opacity: 1; transform: rotate(0deg);"><path fill="currentColor" d="M16 3C8.8 3 3 8.8 3 16s5.8 13 13 13s13-5.8 13-13c0-1.4-.188-2.794-.688-4.094L26.688 13.5c.2.8.313 1.6.313 2.5c0 6.1-4.9 11-11 11S5 22.1 5 16S9.9 5 16 5c3 0 5.694 1.194 7.594 3.094L25 6.688C22.7 4.388 19.5 3 16 3m11.28 4.28L16 18.563l-4.28-4.28l-1.44 1.437l5 5l.72.686l.72-.687l12-12l-1.44-1.44z"></path></svg>
       <h2 class="text-2xl font-extrabold font-headline text-on-primary-container">
         PAYMENT SUCCESSFUL
       </h2>
@@ -100,7 +111,7 @@ $partyQrData = $partyTicket?->qr_code ?? $partyBooking->reference_id;
             <p class="font-black text-2xl font-headline">{{ $booking->route->origin }}</p>
           </div>
           <div class="flex flex-col items-center gap-1">
-            <span class="material-symbols-outlined text-primary">directions_bus</span>
+            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="35" height="35" viewBox="0 0 512 512" style="color: rgb(0, 57, 16); opacity: 1; transform: rotate(0deg);"><path fill="currentColor" d="M47 145c-10 0-23 12.4-23 24.9v134.3l52.49 7.5C84.97 297 100.9 287 119 287c21 0 39 13.3 45.9 32h188.2c6.9-18.7 24.9-32 45.9-32s39 13.3 45.9 32H488v-77.2L456.5 145zm-9 14h405.6l25.6 82H296v64h-98v-64H38zm18 18v46h62v-46zm80 0v46h62v-46zm80 0v110h22V177zm40 0v110h22V177zm40 0v46h62v-46zm86.6 0v46h62.2l-14.4-46zM119 305c-17.2 0-31 13.8-31 31s13.8 31 31 31s31-13.8 31-31s-13.8-31-31-31m280 0c-17.2 0-31 13.8-31 31s13.8 31 31 31s31-13.8 31-31s-13.8-31-31-31m-280 23a8 8 0 0 1 8 8a8 8 0 0 1-8 8a8 8 0 0 1-8-8a8 8 0 0 1 8-8m280 0a8 8 0 0 1 8 8a8 8 0 0 1-8 8a8 8 0 0 1-8-8a8 8 0 0 1 8-8"></path></svg>
             <div class="h-[2px] w-12 bg-surface-container-highest"></div>
           </div>
           <div class="flex-1 text-right">
@@ -168,13 +179,13 @@ $partyQrData = $partyTicket?->qr_code ?? $partyBooking->reference_id;
         @if($ticket)
         <a href="{{ route('tickets.show', $ticket->qr_code) }}"
           class="px-5 py-3 rounded-xl border border-primary text-primary font-bold text-sm hover:bg-primary/5 transition-colors flex items-center gap-2">
-          <span class="material-symbols-outlined text-sm">ticket</span>
+          <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="24" height="24" viewBox="0 0 48 48" style="color: rgb(0, 57, 16); opacity: 1; transform: rotate(315deg);"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="4"><path stroke-linejoin="round" d="M9 16L34 6l4 10M4 16h40v6c-3 0-6 2-6 5.5s3 6.5 6 6.5v6H4v-6c3 0 6-2 6-6s-3-6-6-6z"></path><path d="M17 25.385h6m-6 6h14"></path></g></svg>
           View Ticket
         </a>
         @endif
         <button onclick="window.print()"
           class="px-5 py-3 rounded-xl border border-outline-variant/30 text-on-surface-variant font-bold text-sm hover:bg-surface-container-low transition-colors flex items-center gap-2">
-          <span class="material-symbols-outlined text-sm">print</span>
+          <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="24" height="24" class="icon" viewBox="0 0 512 512" style="color: rgb(74, 85, 101); opacity: 1; transform: rotate(0deg);"><path fill="currentColor" d="M420 128.1V16H92v112.1A80.1 80.1 0 0 0 16 208v192h68v-32H48V208a48.054 48.054 0 0 1 48-48h320a48.054 48.054 0 0 1 48 48v160h-44v32h76V208a80.1 80.1 0 0 0-76-79.9m-32-.1H124V48h264Z"></path><path fill="currentColor" d="M396 200h32v32h-32zm-280 64H76v32h40v200h272V296h40v-32zm240 200H148V296h208Z"></path></svg>
           Print
         </button>
         <a href="{{ route('trips.search') }}"

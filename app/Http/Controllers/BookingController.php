@@ -57,9 +57,9 @@ class BookingController extends Controller
             'route_id' => 'required|exists:routes,id',
             'passengers' => 'required|array|min:1',
             'passengers.*.seat_number' => 'required|integer|min:1',
-            'passengers.*.passenger_name' => 'required|string|max:255',
-            'passengers.*.id_number' => 'required|string|max:50',
-            'passengers.*.phone' => 'required|string|max:20',
+            'passengers.*.passenger_name' => ['required', 'string', 'max:255', 'regex:/^[A-Za-z\s\'\-]+$/'],
+            'passengers.*.id_number' => ['required', 'string', 'max:50', 'regex:/^[0-9]{6}\/[0-9]{2}\/[0-9]{1}$/'],
+            'passengers.*.phone' => ['required', 'string', 'max:20', 'regex:/^(\+260|0)[0-9]{9}$/'],
         ]);
 
         $route = Route::with('bus')->findOrFail($validated['route_id']);

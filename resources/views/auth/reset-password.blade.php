@@ -67,6 +67,7 @@
             --color-error-container: #ffdad6;
             --color-primary-fixed: #99f89d;
             --color-secondary-container: #ff8921;
+            --color-secondary: #954a00;
         }
 
         .dark {
@@ -85,6 +86,7 @@
             --color-error-container: #93000a;
             --color-primary-fixed: #99f89d;
             --color-secondary-container: #713700;
+            --color-secondary: #ffb784;
         }
 
         .hero-gradient { background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-container) 100%); }
@@ -104,6 +106,18 @@
         }
         .theme-toggle:hover { background: rgba(255, 255, 255, 0.25); }
         .dark .theme-toggle { background: rgba(0, 0, 0, 0.4); border-color: rgba(255, 255, 255, 0.1); }
+
+        /* SVG icon color — theme-aware. SVGs using stroke="currentColor" or
+           fill="currentColor" inherit this automatically. */
+        .icon {
+            color: var(--color-on-surface);
+            transition: color 0.2s ease;
+        }
+        .icon-primary { color: var(--color-primary); }
+        .icon-secondary { color: var(--color-secondary); }
+        .icon-muted { color: var(--color-on-surface-variant); }
+        .icon-error { color: var(--color-error); }
+        .icon-on-primary { color: var(--color-on-primary); }
     </style>
 </head>
 

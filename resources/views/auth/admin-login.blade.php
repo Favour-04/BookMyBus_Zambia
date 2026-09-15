@@ -62,6 +62,7 @@
             --color-outline-variant: #bfcaba;
             --color-error: #ba1a1a;
             --color-error-container: #ffdad6;
+            --color-secondary: #954a00;
         }
 
         .dark {
@@ -78,6 +79,7 @@
             --color-outline-variant: #3f493e;
             --color-error: #ffb4ab;
             --color-error-container: #93000a;
+            --color-secondary: #ffb784;
         }
 
         /* Brand gradient — always dark, intentional */
@@ -125,6 +127,18 @@
             transition: background 0.2s ease;
         }
         .theme-toggle:hover { background: rgba(255, 255, 255, 0.25); }
+
+        /* SVG icon color — theme-aware. SVGs using stroke="currentColor" or
+           fill="currentColor" inherit this automatically. */
+        .icon {
+            color: var(--color-on-surface);
+            transition: color 0.2s ease;
+        }
+        .icon-primary { color: var(--color-primary); }
+        .icon-secondary { color: var(--color-secondary); }
+        .icon-muted { color: var(--color-on-surface-variant); }
+        .icon-error { color: var(--color-error); }
+        .icon-on-primary { color: var(--color-on-primary); }
     </style>
 </head>
 <body>

@@ -36,6 +36,20 @@
         width: 24px;
         stroke: var(--color-primary-container);
     }
+
+    /* SVG icon color — theme-aware. SVGs using stroke="currentColor" or
+        fill="currentColor" inherit this automatically. */
+    .icon, .search-icon {
+        height: 24px;
+        width: 24px;
+        color: var(--color-on-surface);
+        transition: color 0.2s ease;
+    }
+    .icon-primary { color: var(--color-primary); }
+    .icon-secondary { color: var(--color-secondary); }
+    .icon-muted { color: var(--color-on-surface-variant); }
+    .icon-error { color: var(--color-error); }
+    .icon-on-primary { color: var(--color-on-primary); }
 </style>
 @endpush
 
@@ -62,7 +76,7 @@
           <div class="city-field relative md:col-span-3 p-4 hover:bg-surface-container-low transition-colors rounded-lg cursor-pointer group">
             <label class="text-[10px] uppercase font-bold text-outline tracking-widest block mb-1">From</label>
             <div class="flex items-center gap-2">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="search-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="search-icon icon">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
                 <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
               </svg>
@@ -73,7 +87,7 @@
           <div class="city-field relative md:col-span-3 p-4 hover:bg-surface-container-low transition-colors rounded-lg cursor-pointer group">
             <label class="text-[10px] uppercase font-bold text-outline tracking-widest block mb-1">To</label>
             <div class="flex items-center gap-2">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="search-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="search-icon icon">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M9 6.75V15m6-6v8.25m.503 3.498 4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 0 0-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0Z" />
               </svg>
               <input id="destination-input" autocomplete="off" class="bg-transparent border-none p-0 text-on-surface font-semibold focus:ring-0 w-full placeholder:text-on-surface-variant" placeholder="Kitwe" required type="text" name="destination" value="{{ request('destination') }}" />
@@ -83,7 +97,7 @@
           <div class="relative md:col-span-2 p-4 hover:bg-surface-container-low transition-colors rounded-lg cursor-pointer group">
             <label class="text-[10px] uppercase font-bold text-outline tracking-widest block mb-1">Date</label>
             <div class="flex items-center gap-2">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="search-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="search-icon icon">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5m-9-6h.008v.008H12v-.008ZM12 15h.008v.008H12V15Zm0 2.25h.008v.008H12v-.008ZM9.75 15h.008v.008H9.75V15Zm0 2.25h.008v.008H9.75v-.008ZM7.5 15h.008v.008H7.5V15Zm0 2.25h.008v.008H7.5v-.008Zm6.75-4.5h.008v.008h-.008v-.008Zm0 2.25h.008v.008h-.008V15Zm0 2.25h.008v.008h-.008v-.008Zm2.25-4.5h.008v.008H16.5v-.008Zm0 2.25h.008v.008H16.5V15Z" />
               </svg>
               <input class="bg-transparent border-none p-0 text-on-surface font-semibold focus:ring-0 w-full placeholder:text-on-surface-variant" placeholder="{{\Carbon\Carbon::now()->format('Y-m-d')}}" type="date" required name="travel_date" value="{{ request('travel_date', \Carbon\Carbon::now()->format('Y-m-d'))}}" min="{{ \Carbon\Carbon::now()->format('Y-m-d')}}" max="{{ \Carbon\Carbon::now()->addDays(30)->format('Y-m-d')}}" />
@@ -94,7 +108,7 @@
             <label class="text-[10px] uppercase font-bold text-outline tracking-widest block mb-1">Passengers</label>
             <div class="flex items-center justify-between gap-1">
               <div class="flex items-center gap-2">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="search-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="search-icon icon">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
                 </svg>
                 <input id="passenger-count" class="bg-transparent border-none p-0 text-on-surface font-semibold focus:ring-0 w-9 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" type="number" name="passengers" value="{{ request('passengers', 1) }}" min="1" max="5" readonly />
@@ -114,7 +128,7 @@
           <div class="md:col-span-2 p-2">
             <button class="w-full h-full hero-gradient text-white font-headline font-extrabold rounded-lg hover:brightness-110 active:scale-95 transition-all flex items-center justify-center gap-2 py-4 md:py-0">
               <span>Find Trips</span>
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6" height="24px" width="24px">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 icon" height="24px" width="24px">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M17.25 8.25 21 12m0 0-3.75 3.75M21 12H3" />
               </svg>
             </button>
@@ -140,8 +154,9 @@
   </div>
   <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
     <div class="md:col-span-2 bg-surface-container-low rounded-2xl p-10 flex flex-col justify-between min-h-[320px]">
-      <div class="w-14 h-14 rounded-full bg-primary-container flex items-center justify-center mb-6">
-        <span class="material-symbols-outlined text-on-primary-container text-3xl">shield</span>
+      <div class="w-15 h-17 rounded-full bg-primary-container flex items-center justify-center mb-6">
+        {{-- <span class="material-symbols-outlined text-on-primary-container text-3xl">shield</span> --}}
+        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="100" height="100" viewBox="0 0 128 128" style="color: rgb(74, 85, 101); opacity: 1; transform: rotate(0deg);"><defs><path id="iconifyReact179" fill="#106ba4" d="M64 128C7.63 95 7.19 30 7.19 30L64 0l27.12 14.32L120.81 30s0 63.5-56.81 98"></path></defs><use href="#iconifyReact179"></use><use href="#iconifyReact179"></use><use href="#iconifyReact179"></use><use href="#iconifyReact179"></use><use href="#iconifyReact179"></use><use href="#iconifyReact179"></use><use href="#iconifyReact179"></use><use href="#iconifyReact179"></use><path fill="#fff" d="M63.93 117.36C25.61 92.12 18.04 49.99 16.55 35.23L64 10.18l47.47 25.07c-.59 5.96-2.17 16.44-6.47 28.44c-8.12 22.7-21.93 40.74-41.07 53.67"></path><path fill="#37bfe9" d="M64 117.36V10.18l47.51 25.07c-.59 5.96-2.15 16.44-6.45 28.44C96.93 86.39 83 104.43 64 117.36"></path></svg>
       </div>
       <div>
         <h3 class="font-headline text-2xl font-bold mb-3">
@@ -261,19 +276,19 @@
   </h2>
   <div class="flex flex-wrap justify-center items-center gap-12 md:gap-24 opacity-60 grayscale hover:grayscale-0 transition-all">
     <div class="flex items-center gap-2">
-      <span class="material-symbols-outlined text-4xl text-primary">directions_bus</span>
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="64" height="64" viewBox="0 0 24 24" style="color: rgb(74, 85, 101); opacity: 1; transform: rotate(0deg);" class="icon"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M4 17a2 2 0 1 0 4 0a2 2 0 1 0-4 0m12 0a2 2 0 1 0 4 0a2 2 0 1 0-4 0"></path><path d="M4 17H2V6a1 1 0 0 1 1-1h14a5 7 0 0 1 5 7v5h-2m-4 0H8"></path><path d="m16 5l1.5 7H22M2 10h15M7 5v5m5-5v5"></path></g></svg>
       <span class="font-headline font-black text-xl">EURO-TRANS</span>
     </div>
     <div class="flex items-center gap-2">
-      <span class="material-symbols-outlined text-4xl text-primary">commute</span>
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="64" height="64" viewBox="0 0 24 24" style="color: rgb(74, 85, 101); opacity: 1; transform: rotate(0deg);" class="icon"><path fill="currentColor" d="M10.673 19.312V13.77l1.362-3.89q.067-.12.16-.193t.29-.072h7.146q.17 0 .286.072t.164.194l1.361 3.889v5.541q0 .178-.12.299q-.121.12-.299.12h-.161q-.178 0-.299-.12q-.12-.121-.12-.299v-1.273h-8.77v1.273q0 .178-.12.299q-.122.12-.3.12h-.16q-.178 0-.299-.12q-.121-.121-.121-.299m1.23-6.35h8.309l-.854-2.461h-6.6zm1.232 3.347q.376 0 .63-.259q.254-.258.254-.626q0-.367-.254-.626q-.254-.258-.63-.258t-.63.258q-.255.259-.255.626q0 .368.254.626q.255.259.63.259m5.847 0q.376 0 .63-.259q.255-.258.255-.626q0-.367-.255-.626q-.254-.258-.63-.258t-.63.258t-.255.626t.255.626q.254.259.63.259M4.558 19.5v-.308L6.25 17.5q-1.404 0-2.548-.615Q2.558 16.269 2.558 15V6.5q0-1.016 1.494-1.508T8.558 4.5q3.046 0 4.523.487T14.558 6.5v1.346h-1V6.5h-10v7h5.346v6zm1.126-3.87q.258-.254.258-.63t-.258-.63t-.626-.254t-.626.254t-.259.63t.259.63t.626.254t.626-.254"></path></svg>
       <span class="font-headline font-black text-xl">POWER-TOOLS</span>
     </div>
     <div class="flex items-center gap-2">
-      <span class="material-symbols-outlined text-4xl text-primary">airport_shuttle</span>
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="64" height="64" class="icon" viewBox="0 0 24 24" style="color: rgb(74, 85, 101); opacity: 1; transform: rotate(0deg);"><path fill="currentColor" d="M3.875 18.125Q3 17.25 3 16q-.825 0-1.412-.587T1 14V7q0-.825.588-1.412T3 5h13.175q.4 0 .763.15t.637.425l4.85 4.85q.275.275.425.638t.15.762V14q0 .825-.587 1.413T21 16q0 1.25-.875 2.125T18 19t-2.125-.875T15 16H9q0 1.25-.875 2.125T6 19t-2.125-.875M15 10h4l-3-3h-1zm-6 0h4V7H9zm-6 0h4V7H3zm3.888 6.888q.362-.363.362-.888t-.363-.888T6 14.75t-.888.363T4.75 16t.363.888t.887.362t.888-.363m12 0q.362-.362.362-.887t-.363-.888T18 14.75t-.888.363t-.362.887t.363.888t.887.362t.888-.363M8.2 14h7.6q.425-.45.975-.725T18 13t1.225.275t.975.725h.8v-2H3v2h.8q.425-.45.975-.725T6 13t1.225.275T8.2 14M21 12H3z"></path></svg>
       <span class="font-headline font-black text-xl">MAZHANDU</span>
     </div>
     <div class="flex items-center gap-2">
-      <span class="material-symbols-outlined text-4xl text-primary">electric_bolt</span>
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="64" height="64" class="icon" viewBox="0 0 24 24" style="color: rgb(74, 85, 101); opacity: 1; transform: rotate(0deg);"><path fill="currentColor" d="M7.673 21.02L11.712 14L4 13.096L15.25 2.981h1.116l-4.135 7.038l7.769.885L8.75 21.019z"></path></svg>
       <span class="font-headline font-black text-xl">FM-TRAVELLER</span>
     </div>
   </div>

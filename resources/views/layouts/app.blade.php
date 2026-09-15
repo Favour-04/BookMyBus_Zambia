@@ -101,13 +101,31 @@
         .card-hover:hover {
             box-shadow: 0 10px 15px -3px var(--color-shadow), 0 4px 6px -4px var(--color-shadow);
         }
+
         .editorial-shadow {
             box-shadow: 0 24px 40px var(--color-shadow);
         }
+        /* SVG icon color — theme-aware. SVGs using stroke="currentColor" or
+           fill="currentColor" inherit this automatically. */
+        .icon {
+            color: var(--color-on-surface);
+            transition: color 0.2s ease;
+        }
+        .icon-primary { color: var(--color-primary); }
+        .icon-secondary { color: var(--color-secondary); }
+        .icon-muted { color: var(--color-on-surface-variant); }
+        .icon-error { color: var(--color-error); }
+        .icon-on-primary { color: var(--color-on-primary); }
+
         /* Print support — hide nav/footer and force white background when printing. */
         @media print {
-            .no-print { display: none !important; }
-            body { background: #fff !important; }
+            .no-print {
+                display: none !important;
+            }
+
+            body {
+                background: #fff !important;
+            }
         }
 
         /* ============================================================
@@ -212,7 +230,8 @@
 <body class="bg-surface font-body text-on-surface min-h-screen flex flex-col">
 
     <!-- Top Navigation Bar -->
-    <nav class="fixed top-0 w-full z-50 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md shadow-sm dark:shadow-none no-print">
+    <nav
+        class="fixed top-0 w-full z-50 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md shadow-sm dark:shadow-none no-print">
         <div class="flex justify-between items-center px-6 py-4 max-w-7xl mx-auto w-full">
             <a href="{{ route('home') }}"
                 class="text-xl font-extrabold text-green-900 dark:text-green-100 tracking-tighter font-headline">
@@ -222,7 +241,7 @@
             <!-- Navigation Links -->
             <div class="hidden md:flex items-center gap-8 font-headline tracking-tight font-bold text-sm">
                 <a href="{{ route('home') }}"
-                class="{{ request()->routeIs('home') || request()->routeIs('trips.search') || request()->routeIs('booking.seats') ? 'text-green-900 dark:text-green-100 border-b-2 border-orange-600 pb-1' : 'text-zinc-600 dark:text-zinc-400 hover:text-green-900 dark:hover:text-green-100 transition-colors' }}">
+                    class="{{ request()->routeIs('home') || request()->routeIs('trips.search') || request()->routeIs('booking.seats') ? 'text-green-900 dark:text-green-100 border-b-2 border-orange-600 pb-1' : 'text-zinc-600 dark:text-zinc-400 hover:text-green-900 dark:hover:text-green-100 transition-colors' }}">
                     Find Trips
                 </a>
                 <a href="{{ route('booking.lookup') }}"
@@ -250,8 +269,24 @@
                 @auth
                 <a href="{{ route('profile') }}"
                     class="text-green-800 dark:text-green-400 font-headline font-bold text-sm px-3 py-2 hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-colors rounded-lg flex items-center gap-1">
-                    <span class="material-symbols-outlined">account_circle</span>
+                    <!--<span class="material-symbols-outlined">account_circle</span> -->
                     <span class="hidden sm:inline">My Account</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+                        aria-hidden="true" role="img" width="24" height="24" viewBox="0 0 24 24"
+                        style="opacity: 1; transform: rotate(0deg);" class="icon">
+                        <g fill="none" stroke="currentColor" stroke-dasharray="28" stroke-linecap="round"
+                            stroke-linejoin="round" stroke-width="2">
+                            <path d="M4 21v-1c0 -3.31 2.69 -6 6 -6h4c3.31 0 6 2.69 6 6v1">
+                                <animate fill="freeze" attributeName="stroke-dashoffset" dur="0.4s" values="28;0">
+                                </animate>
+                            </path>
+                            <path stroke-dashoffset="28"
+                                d="M12 11c-2.21 0 -4 -1.79 -4 -4c0 -2.21 1.79 -4 4 -4c2.21 0 4 1.79 4 4c0 2.21 -1.79 4 -4 4Z">
+                                <animate fill="freeze" attributeName="stroke-dashoffset" begin="0.4s" dur="0.4s" to="0">
+                                </animate>
+                            </path>
+                        </g>
+                    </svg>
                 </a>
                 <form action="{{ route('logout') }}" method="POST" class="inline">
                     @csrf
@@ -264,7 +299,22 @@
                 <a href="{{ route('login') }}"
                     class="text-green-800 dark:text-green-400 font-headline font-bold text-sm px-4 py-2 hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-colors rounded-lg flex items-center gap-2">
                     <span>Sign In</span>
-                    <span class="material-symbols-outlined text-sm">account_circle</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+                        aria-hidden="true" role="img" width="24" height="24" viewBox="0 0 24 24"
+                        style="opacity: 1; transform: rotate(0deg);" class="icon">
+                        <g fill="none" stroke="currentColor" stroke-dasharray="28" stroke-linecap="round"
+                            stroke-linejoin="round" stroke-width="2">
+                            <path d="M4 21v-1c0 -3.31 2.69 -6 6 -6h4c3.31 0 6 2.69 6 6v1">
+                                <animate fill="freeze" attributeName="stroke-dashoffset" dur="0.4s" values="28;0">
+                                </animate>
+                            </path>
+                            <path stroke-dashoffset="28"
+                                d="M12 11c-2.21 0 -4 -1.79 -4 -4c0 -2.21 1.79 -4 4 -4c2.21 0 4 1.79 4 4c0 2.21 -1.79 4 -4 4Z">
+                                <animate fill="freeze" attributeName="stroke-dashoffset" begin="0.4s" dur="0.4s" to="0">
+                                </animate>
+                            </path>
+                        </g>
+                    </svg>
                 </a>
                 @endauth
             </div>
@@ -277,7 +327,8 @@
     </main>
 
     <!-- Global Footer -->
-    <footer class="w-full py-12 mt-auto bg-zinc-50 dark:bg-zinc-950 border-t border-zinc-200 dark:border-zinc-800 no-print">
+    <footer
+        class="w-full py-12 mt-auto bg-zinc-50 dark:bg-zinc-950 border-t border-zinc-200 dark:border-zinc-800 no-print">
         <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
             <div class="flex flex-col gap-2">
                 <span class="font-headline font-bold text-zinc-900 dark:text-zinc-100 text-lg">BookMyBus Zambia</span>
@@ -311,8 +362,24 @@
             var icon = document.getElementById('themeToggleIcon');
 
             function syncIcon() {
-                // Show the icon for the mode you'd switch TO
-                icon.textContent = root.classList.contains('dark') ? 'light_mode' : 'dark_mode';
+                // The Material Symbols ligature is fine when the toggle itself
+                // is still using Material Symbols. Remove this line if you also
+                // swap the toggle to an SVG.
+                if (icon) icon.textContent = root.classList.contains('dark') ? 'Light Mode' : 'Dark Mode';
+
+                // Sync every .icon SVG to the current theme color.
+                document.querySelectorAll('.icon').forEach(function (el) {
+                    var role = 'on-surface';
+                    if (el.classList.contains('icon-primary'))        role = 'primary';
+                    else if (el.classList.contains('icon-secondary'))  role = 'secondary';
+                    else if (el.classList.contains('icon-muted'))      role = 'on-surface-variant';
+                    else if (el.classList.contains('icon-error'))      role = 'error';
+                    else if (el.classList.contains('icon-on-primary')) role = 'on-primary';
+
+                    el.style.color = getComputedStyle(root)
+                        .getPropertyValue('--color-' + role)
+                        .trim();
+                });
             }
 
             toggle.addEventListener('click', function () {

@@ -17,8 +17,8 @@
                     @csrf
                     <button type="button" id="back-to-seats-btn"
                         class="flex items-center gap-1 text-sm font-bold text-primary hover:underline">
-                        <span class="material-symbols-outlined text-sm">arrow_back</span>
-                        Back to Seat Selection
+                        {{-- <span class="material-symbols-outlined text-sm">arrow_back</span> --}}
+                        &larr; Back to Seat Selection
                     </button>
                 </form>
             </div>
@@ -69,7 +69,8 @@
         <!-- Reservation Countdown Timer -->
         @if (!$expired && $held_until)
             <div class="bg-surface-container-low p-4 rounded-xl flex items-center gap-3" id="countdown-container">
-                <span class="material-symbols-outlined text-secondary">hourglass_top</span>
+                {{-- <span class="material-symbols-outlined text-secondary">hourglass_top</span> --}}
+                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="40" height="40" viewBox="0 0 24 24" style="color: rgb(74, 85, 101); opacity: 1; transform: rotate(0deg);"><g><path fill="currentColor" d="M7 3H17V7.2L12 12L7 7.2V3Z"><animate id="iconifyReact347" fill="freeze" attributeName="opacity" begin="0;iconifyReact348.end" dur="2s" from="1" to="0"></animate></path><path fill="currentColor" d="M17 21H7V16.8L12 12L17 16.8V21Z"><animate fill="freeze" attributeName="opacity" begin="0;iconifyReact348.end" dur="2s" from="0" to="1"></animate></path><path fill="currentColor" d="M6 2V8H6.01L6 8.01L10 12L6 16L6.01 16.01H6V22H18V16.01H17.99L18 16L14 12L18 8.01L17.99 8H18V2H6ZM16 16.5V20H8V16.5L12 12.5L16 16.5ZM12 11.5L8 7.5V4H16V7.5L12 11.5Z"></path><animateTransform id="iconifyReact348" attributeName="transform" attributeType="XML" begin="iconifyReact347.end" dur="0.5s" from="0 12 12" to="180 12 12" type="rotate"></animateTransform></g></svg>
                 <div class="flex-1">
                     <p class="text-xs font-bold uppercase tracking-wider text-on-surface-variant">Seat reserved until</p>
                     <p class="font-headline font-bold text-xl text-secondary" id="countdown-display">
@@ -106,7 +107,7 @@
                         <h3 class="font-headline font-bold text-lg">Airtel Money</h3>
                         <p class="text-xs text-on-surface-variant mb-4">Pay instantly using your Airtel number</p>
                         <span class="text-xs font-bold text-primary flex items-center gap-1">
-                            <span class="material-symbols-outlined text-sm">verified_user</span> Secure Network
+                            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="20" height="20" viewBox="0 0 24 24" style="color: rgb(0, 57, 16); opacity: 1; transform: rotate(0deg);"><path fill="currentColor" d="M10.95 14.858L15.908 9.9l-.714-.713l-4.244 4.244l-2.138-2.139l-.714.714zM12 20.96q-3.013-.894-5.007-3.65T5 11.1V5.692l7-2.615l7 2.615V11.1q0 3.454-1.993 6.21T12 20.963m0-1.062q2.6-.825 4.3-3.3t1.7-5.5V6.375l-6-2.23l-6 2.23V11.1q0 3.025 1.7 5.5t4.3 3.3m0-7.88"></path></svg> Secure Network
                         </span>
                     </div>
 
@@ -127,7 +128,8 @@
                         <h3 class="font-headline font-bold text-lg">MTN MoMo</h3>
                         <p class="text-xs text-on-surface-variant mb-4">Confirm on your phone via USSD prompt</p>
                         <span class="text-xs font-bold text-primary flex items-center gap-1">
-                            <span class="material-symbols-outlined text-sm">verified_user</span> Recommended
+                            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="20" height="20" viewBox="0 0 24 24" style="color: rgb(0, 57, 16); opacity: 1; transform: rotate(0deg);"><path fill="currentColor" d="M10.95 14.858L15.908 9.9l-.714-.713l-4.244 4.244l-2.138-2.139l-.714.714zM12 20.96q-3.013-.894-5.007-3.65T5 11.1V5.692l7-2.615l7 2.615V11.1q0 3.454-1.993 6.21T12 20.963m0-1.062q2.6-.825 4.3-3.3t1.7-5.5V6.375l-6-2.23l-6 2.23V11.1q0 3.025 1.7 5.5t4.3 3.3m0-7.88"></path></svg>
+                            Recommended
                         </span>
                     </div>
                 </div>
@@ -135,7 +137,8 @@
 
             <section class="bg-surface-container-low p-8 rounded-xl space-y-6">
                 <div class="flex items-center gap-4">
-                    <span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">phone_iphone</span>
+                    {{-- <span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">phone_iphone</span> --}}
+                    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="64" height="64" viewBox="0 0 24 24" style="color: var(--color-primary); opacity: 1; transform: rotate(0deg);"><path fill="none" stroke="currentColor" stroke-dasharray="62" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 3c0.5 0 2.5 4.5 2.5 5c0 1 -1.5 2 -2 3c-0.5 1 0.5 2 1.5 3c0.39 0.39 2 2 3 1.5c1 -0.5 2 -2 3 -2c0.5 0 5 2 5 2.5c0 2 -1.5 3.5 -3 4c-1.5 0.5 -2.5 0.5 -4.5 0c-2 -0.5 -3.5 -1 -6 -3.5c-2.5 -2.5 -3 -4 -3.5 -6c-0.5 -2 -0.5 -3 0 -4.5c0.5 -1.5 2 -3 4 -3Z"><animate fill="freeze" attributeName="stroke-dashoffset" dur="0.6s" values="62;0"></animate></path></svg>
                     <div class="flex-1">
                         <label id="phone-label" class="block text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-1">MTN Phone Number</label>
                         <input
@@ -231,7 +234,7 @@
                                 <p class="text-xs font-medium text-on-surface-variant">{{ $origin }}</p>
                             </div>
                             <div class="flex flex-col items-center gap-1">
-                                <span class="material-symbols-outlined text-primary">directions_bus</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="35" height="35" viewBox="0 0 512 512" style="color: rgb(0, 57, 16); opacity: 1; transform: rotate(0deg);"><path fill="currentColor" d="M47 145c-10 0-23 12.4-23 24.9v134.3l52.49 7.5C84.97 297 100.9 287 119 287c21 0 39 13.3 45.9 32h188.2c6.9-18.7 24.9-32 45.9-32s39 13.3 45.9 32H488v-77.2L456.5 145zm-9 14h405.6l25.6 82H296v64h-98v-64H38zm18 18v46h62v-46zm80 0v46h62v-46zm80 0v110h22V177zm40 0v110h22V177zm40 0v46h62v-46zm86.6 0v46h62.2l-14.4-46zM119 305c-17.2 0-31 13.8-31 31s13.8 31 31 31s31-13.8 31-31s-13.8-31-31-31m280 0c-17.2 0-31 13.8-31 31s13.8 31 31 31s31-13.8 31-31s-13.8-31-31-31m-280 23a8 8 0 0 1 8 8a8 8 0 0 1-8 8a8 8 0 0 1-8-8a8 8 0 0 1 8-8m280 0a8 8 0 0 1 8 8a8 8 0 0 1-8 8a8 8 0 0 1-8-8a8 8 0 0 1 8-8"></path></svg>
                                 <div class="h-[2px] w-12 bg-surface-container-highest"></div>
                             </div>
                             <div class="flex-1 text-right">
@@ -314,7 +317,7 @@
 
             <!-- Trust Indicators -->
             <div class="bg-surface-container-low p-6 rounded-xl flex items-center gap-4">
-                <span class="material-symbols-outlined text-primary text-3xl">shield_lock</span>
+                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="50" height="50" class="icon" viewBox="0 0 24 24" style="color: rgb(74, 85, 101); opacity: 1; transform: rotate(0deg);"><path fill="currentColor" d="M6 22q-.825 0-1.412-.587T4 20V10q0-.825.588-1.412T6 8h1V6q0-2.075 1.463-3.537T12 1t3.538 1.463T17 6v2h1q.825 0 1.413.588T20 10v10q0 .825-.587 1.413T18 22zm7.413-5.587Q14 15.825 14 15t-.587-1.412T12 13t-1.412.588T10 15t.588 1.413T12 17t1.413-.587M9 8h6V6q0-1.25-.875-2.125T12 3t-2.125.875T9 6z"></path></svg>
                 <div>
                     <p class="font-bold text-sm">Bank-Grade Security</p>
                     <p class="text-xs text-on-surface-variant">Your transaction is encrypted and secured by Zambia's leading payment gateways.</p>

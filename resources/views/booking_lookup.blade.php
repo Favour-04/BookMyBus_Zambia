@@ -27,7 +27,7 @@
               <div class="flex items-center justify-between px-6 py-5 border-b border-outline-variant/10 last:border-0 hover:bg-surface-container-low transition-colors">
                 <div class="flex items-center gap-4">
                     <div class="h-11 w-11 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
-                        <span class="material-symbols-outlined text-primary">directions_bus</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="35" height="35" viewBox="0 0 512 512" style="color: rgb(0, 57, 16); opacity: 1; transform: rotate(0deg);"><path fill="currentColor" d="M47 145c-10 0-23 12.4-23 24.9v134.3l52.49 7.5C84.97 297 100.9 287 119 287c21 0 39 13.3 45.9 32h188.2c6.9-18.7 24.9-32 45.9-32s39 13.3 45.9 32H488v-77.2L456.5 145zm-9 14h405.6l25.6 82H296v64h-98v-64H38zm18 18v46h62v-46zm80 0v46h62v-46zm80 0v110h22V177zm40 0v110h22V177zm40 0v46h62v-46zm86.6 0v46h62.2l-14.4-46zM119 305c-17.2 0-31 13.8-31 31s13.8 31 31 31s31-13.8 31-31s-13.8-31-31-31m280 0c-17.2 0-31 13.8-31 31s13.8 31 31 31s31-13.8 31-31s-13.8-31-31-31m-280 23a8 8 0 0 1 8 8a8 8 0 0 1-8 8a8 8 0 0 1-8-8a8 8 0 0 1 8-8m280 0a8 8 0 0 1 8 8a8 8 0 0 1-8 8a8 8 0 0 1-8-8a8 8 0 0 1 8-8"></path></svg>
                     </div>
                     <div>
                         <p class="font-headline font-bold text-on-surface">
@@ -88,7 +88,7 @@
          reasoning. --}}
     <div>
         <div class="text-center mb-8">
-            <span class="material-symbols-outlined text-5xl text-primary/30 block mb-3">confirmation_number</span>
+            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="64" height="64" class="icon" viewBox="0 0 24 24" style="opacity: 1; transform: rotate(0deg); margin: 0 auto;"><path fill="currentColor" d="M12 16.308q.214 0 .357-.144t.143-.357t-.144-.356t-.357-.143t-.356.144t-.143.356q0 .213.144.357t.357.143m0-3.808q.213 0 .356-.144t.143-.357t-.144-.356t-.357-.143t-.356.144t-.143.357t.144.356t.357.143m0-3.808q.213 0 .356-.144t.143-.356t-.144-.357t-.357-.143t-.356.144t-.143.357t.144.356t.357.143M19.385 19H4.615q-.666 0-1.14-.475T3 17.386v-2.577q.883-.327 1.441-1.088Q5 12.96 5 12t-.559-1.72T3 9.192V6.616q0-.667.475-1.141T4.615 5h14.77q.666 0 1.14.475T21 6.615v2.577q-.883.327-1.441 1.088Q19 11.04 19 12t.559 1.72T21 14.808v2.577q0 .666-.475 1.14t-1.14.475m0-1q.269 0 .442-.173t.173-.442V15.45q-.925-.55-1.463-1.462T18 12t.538-1.987T20 8.55V6.616q0-.27-.173-.443T19.385 6H4.615q-.269 0-.442.173T4 6.616V8.55q.925.55 1.463 1.463T6 12t-.537 1.988T4 15.45v1.935q0 .269.173.442t.443.173zM12 12"></path></svg>
             <h2 class="font-headline text-2xl font-extrabold text-on-surface">Look Up a Booking</h2>
             <p class="text-on-surface-variant mt-1 text-sm">
                 @auth
@@ -115,7 +115,7 @@
 
             <button type="submit"
                     class="w-full py-4 rounded-xl bg-primary text-on-primary font-headline font-bold text-lg shadow-lg hover:brightness-110 transition-all flex items-center justify-center gap-2">
-                <span class="material-symbols-outlined">search</span>
+                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="24" height="24" class="icon" viewBox="0 0 24 24" style="opacity: 1; transform: rotate(270deg);"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path stroke-dasharray="40" d="M10.76 13.24c-2.34 -2.34 -2.34 -6.14 0 -8.49c2.34 -2.34 6.14 -2.34 8.49 0c2.34 2.34 2.34 6.14 0 8.49c-2.34 2.34 -6.14 2.34 -8.49 0Z"><animate fill="freeze" attributeName="stroke-dashoffset" dur="0.5s" values="40;0"></animate></path><path stroke-dasharray="14" stroke-dashoffset="14" d="M10.5 13.5l-7.5 7.5"><animate fill="freeze" attributeName="stroke-dashoffset" begin="0.5s" dur="0.2s" to="0"></animate></path></g></svg>
                 Find Booking
             </button>
         </form>
