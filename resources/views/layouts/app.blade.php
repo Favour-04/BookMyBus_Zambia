@@ -223,15 +223,31 @@
             --color-on-background: #e3e2e6;
             --color-shadow: rgba(0, 0, 0, 0.45);
         }
+        /* Visible keyboard focus for interactive controls */
+        a:focus-visible, button:focus-visible, [tabindex]:focus-visible {
+            outline: 2px solid #00601f;
+            outline-offset: 2px;
+            border-radius: 0.5rem;
+        }
+        input:focus-visible, select:focus-visible, textarea:focus-visible {
+            outline: 2px solid #00601f;
+            outline-offset: 2px;
+        }
     </style>
     @stack('styles')
 </head>
 
 <body class="bg-surface font-body text-on-surface min-h-screen flex flex-col">
 
+    <!-- Skip to content link (keyboard / screen-reader users) -->
+    <a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[60] focus:px-4 focus:py-2 focus:rounded-lg focus:bg-primary focus:text-white focus:text-sm focus:font-bold">Skip to content</a>
+
+    <!-- Mobile menu backdrop -->
+    <div id="nav-backdrop" class="fixed inset-0 bg-black/40 z-40 md:hidden hidden" onclick="document.getElementById('nav-menu').classList.add('hidden'); this.classList.add('hidden');"></div>
+
     <!-- Top Navigation Bar -->
     <nav
-        class="fixed top-0 w-full z-50 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md shadow-sm dark:shadow-none no-print">
+        class="fixed top-0 w-full z-50 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md shadow-sm dark:shadow-none no-print" aria-label="Main navigation">
         <div class="flex justify-between items-center px-6 py-4 max-w-7xl mx-auto w-full">
             <a href="{{ route('home') }}"
                 class="text-xl font-extrabold text-green-900 dark:text-green-100 tracking-tighter font-headline">
@@ -317,12 +333,27 @@
                     </svg>
                 </a>
                 @endauth
+                <!-- Mobile hamburger toggle -->
+                <button type="button" class="md:hidden flex items-center justify-center text-green-900 dark:text-green-100" aria-label="Open menu" aria-controls="nav-menu" aria-expanded="false" onclick="const m=document.getElementById('nav-menu');const bd=document.getElementById('nav-backdrop');const open=m.classList.contains('hidden');m.classList.toggle('hidden',!open);bd.classList.toggle('hidden',!open);this.setAttribute('aria-expanded',open);">
+                    <span class="material-symbols-outlined">menu</span>
+                </button>
             </div>
+        </div>
+        <!-- Mobile nav menu (slide-down) -->
+        <div id="nav-menu" class="hidden md:hidden bg-white dark:bg-zinc-950 border-t border-zinc-200 dark:border-zinc-800 px-4 py-4 space-y-3 font-headline tracking-tight font-bold text-sm">
+            <a class="block text-zinc-600 dark:text-zinc-400 hover:text-green-900 dark:hover:text-green-100 transition-colors py-2"
+                href="{{ route('home') }}">Find Trips</a>
+            <a class="block text-green-900 dark:text-green-100 py-2"
+                href="{{ route('booking.lookup') }}">My Bookings</a>
+            <a class="block text-zinc-600 dark:text-zinc-400 hover:text-green-900 dark:hover:text-green-100 transition-colors py-2"
+                href="{{ route('operator.login') }}">Operator Portal</a>
+            <a class="block text-zinc-600 dark:text-zinc-400 hover:text-green-900 dark:hover:text-green-100 transition-colors py-2"
+                href="{{ route('support.page') }}">Support</a>
         </div>
     </nav>
 
     <!-- Main Dynamic Content -->
-    <main class="flex-1 pt-24 @yield('main-class', 'pb-16 max-w-7xl mx-auto px-6 w-full')">
+    <main id="main-content" class="flex-1 pt-24 @yield('main-class', 'pb-16 max-w-7xl mx-auto px-6 w-full')">
         @yield('content')
     </main>
 

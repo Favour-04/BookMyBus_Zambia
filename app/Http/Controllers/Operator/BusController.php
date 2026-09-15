@@ -294,25 +294,6 @@ class BusController extends Controller
             $operator = Operator::find(session('operator_id'));
             if ($operator) return $operator;
         }
-        $operator = Operator::find(1);
-        if (!$operator) {
-            try {
-                $operator = Operator::create([
-                    'id' => 1, 'company_name' => 'Default Operator', 'email' => 'default@operator.com',
-                    'phone_number' => '0977123456', 'password' => bcrypt('password'),
-                    'is_verified' => true, 'verified_at' => now(), 'address' => 'Lusaka, Zambia',
-                ]);
-            } catch (\Exception $e) {
-                $operator = Operator::withTrashed()->find(1);
-                if ($operator) { $operator->restore(); $operator->update(['is_verified' => true, 'verified_at' => now()]); }
-                else { $operator = Operator::first() ?? Operator::create([
-                    'company_name' => 'Fallback Operator', 'email' => 'fallback@operator.com',
-                    'phone_number' => '0977123456', 'password' => bcrypt('password'),
-                    'is_verified' => true, 'verified_at' => now(),
-                ]); }
-            }
-        }
-        session(['operator_id' => $operator->id]);
-        return $operator;
+        abort(403, 'Operator session expired. Please log in again.');
     }
 }

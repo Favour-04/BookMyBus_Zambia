@@ -26,14 +26,15 @@
 
     <!-- Filters + Search -->
     <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
-        <div class="inline-flex rounded-xl border border-outline-variant/20 bg-surface-container-lowest p-1">
+        <div class="inline-flex rounded-xl border border-outline-variant/20 bg-surface-container-lowest p-1" role="group" aria-label="Filter travelers by status">
             <a href="{{ route('admin.users.index') }}" class="px-4 py-2 rounded-lg text-sm font-bold {{ $status === 'all' ? 'bg-primary text-white' : 'text-on-surface-variant hover:bg-surface-container-high' }}">All</a>
             <a href="{{ route('admin.users.index', ['status' => 'active']) }}" class="px-4 py-2 rounded-lg text-sm font-bold {{ $status === 'active' ? 'bg-primary text-white' : 'text-on-surface-variant hover:bg-surface-container-high' }}">Active</a>
             <a href="{{ route('admin.users.index', ['status' => 'suspended']) }}" class="px-4 py-2 rounded-lg text-sm font-bold {{ $status === 'suspended' ? 'bg-primary text-white' : 'text-on-surface-variant hover:bg-surface-container-high' }}">Suspended</a>
         </div>
-        <form method="GET" class="flex gap-2">
+        <form method="GET" class="flex gap-2" role="search">
             <input type="hidden" name="status" value="{{ $status }}">
-            <input type="text" name="search" value="{{ $search }}" placeholder="Search name, email, phone..."
+            <label for="user-search" class="sr-only">Search travelers by name, email, or phone</label>
+            <input id="user-search" type="text" name="search" value="{{ $search }}" placeholder="Search name, email, phone..."
                 class="rounded-xl border border-outline-variant/30 bg-surface-container-lowest px-4 py-2 text-sm focus:outline-none focus:border-primary">
             <button type="submit" class="flex items-center gap-1 px-4 py-2 rounded-xl bg-primary text-white text-sm font-bold">
                 <span class="material-symbols-outlined text-base">search</span>Search
@@ -108,8 +109,9 @@
                 </tbody>
             </table>
         </div>
-        @if($users->hasPages())
-            <div class="p-4 border-t border-outline-variant/15">{{ $users->links() }}</div>
-        @endif
+        <div class="px-4 py-3 border-t border-outline-variant/15 flex flex-wrap items-center justify-between gap-2">
+            <span class="text-sm text-on-surface-variant">Showing {{ $users->firstItem() ?? 0 }}–{{ $users->lastItem() ?? 0 }} of {{ $users->total() }}</span>
+            {{ $users->links() }}
+        </div>
     </div>
 @endsection

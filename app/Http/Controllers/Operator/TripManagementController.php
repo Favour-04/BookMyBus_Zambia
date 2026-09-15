@@ -152,7 +152,11 @@ class TripManagementController extends Controller
             session(['operator_id' => $operator->id]);
             return $operator;
         }
-        return Operator::find(session('operator_id'));
+        if (session('operator_id')) {
+            $operator = Operator::find(session('operator_id'));
+            if ($operator) return $operator;
+        }
+        abort(403, 'Operator session expired. Please log in again.');
     }
 
     private function getOperatorTrips($operator, $request)

@@ -29,7 +29,7 @@
                 <p class="text-[10px] font-bold uppercase text-on-surface-variant tracking-wider">Revenue</p>
                 <span class="material-symbols-outlined text-primary text-2xl">payments</span>
             </div>
-            <p class="font-headline font-extrabold text-2xl leading-tight">ZMW {{ number_format($stats['total_revenue']) }}</p>
+            <p class="font-headline font-extrabold text-2xl leading-tight">ZMW {{ number_format($stats['total_revenue'], 2) }}</p>
             <p class="text-xs font-bold mt-1 {{ str_starts_with($stats['revenue_trend'], '+') ? 'text-primary' : 'text-tertiary' }}">{{ $stats['revenue_trend'] }} mo/mo</p>
         </div>
         <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/15 p-5">
@@ -45,7 +45,7 @@
                 <p class="text-[10px] font-bold uppercase text-on-surface-variant tracking-wider">Avg. Booking</p>
                 <span class="material-symbols-outlined text-primary text-2xl">receipt_long</span>
             </div>
-            <p class="font-headline font-extrabold text-2xl leading-tight">ZMW {{ number_format($stats['avg_booking_value']) }}</p>
+            <p class="font-headline font-extrabold text-2xl leading-tight">ZMW {{ number_format($stats['avg_booking_value'], 2) }}</p>
             <p class="text-xs font-bold mt-1 text-on-surface-variant">{{ number_format($stats['confirmed_bookings']) }} confirmed</p>
         </div>
         <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/15 p-5">
@@ -61,16 +61,40 @@
     <div class="grid grid-cols-1 xl:grid-cols-3 gap-6 mb-8">
         <div class="xl:col-span-2 bg-surface-container-lowest rounded-2xl border border-outline-variant/15 p-6">
             <h3 class="font-headline font-bold text-lg mb-4">Revenue — Last 30 Days</h3>
-            <canvas id="revenueChart" height="100"></canvas>
+            <canvas id="revenueChart" height="100" role="img" aria-label="Bar chart of confirmed booking revenue in ZMW for each of the last 30 days. Total over the period: ZMW {{ number_format(array_sum($revenueChartData), 2) }}."></canvas>
+            <details class="sr-only">
+                <summary>Revenue data table (last 30 days)</summary>
+                <table>
+                    <caption>Confirmed booking revenue by day (ZMW)</caption>
+                    <thead><tr><th>Date</th><th>Revenue (ZMW)</th></tr></thead>
+                    <tbody>
+                        @foreach($chartLabels as $i => $label)
+                            <tr><td>{{ $label }}</td><td>{{ number_format($revenueChartData[$i], 2) }}</td></tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </details>
         </div>
         <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/15 p-6">
             <h3 class="font-headline font-bold text-lg mb-4">Bookings — Last 30 Days</h3>
-            <canvas id="bookingsChart" height="100"></canvas>
+            <canvas id="bookingsChart" height="100" role="img" aria-label="Line chart of booking counts for each of the last 30 days. Total over the period: {{ number_format(array_sum($bookingsChartData)) }} bookings."></canvas>
+            <details class="sr-only">
+                <summary>Bookings data table (last 30 days)</summary>
+                <table>
+                    <caption>Bookings by day</caption>
+                    <thead><tr><th>Date</th><th>Bookings</th></tr></thead>
+                    <tbody>
+                        @foreach($chartLabels as $i => $label)
+                            <tr><td>{{ $label }}</td><td>{{ number_format($bookingsChartData[$i]) }}</td></tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </details>
         </div>
         <div class="xl:col-span-3 grid grid-cols-1 md:grid-cols-2 gap-6">
             <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/15 p-6">
                 <h3 class="font-headline font-bold text-lg mb-4">Booking Status</h3>
-                <canvas id="statusChart" height="90"></canvas>
+                <canvas id="statusChart" height="90" role="img" aria-label="Doughnut chart of booking status: {{ $status_breakdown[0]['count'] }} confirmed, {{ $status_breakdown[1]['count'] }} pending, {{ $status_breakdown[2]['count'] }} cancelled."></canvas>
             </div>
             <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/15 p-6">
                 <h3 class="font-headline font-bold text-lg mb-4">Payment Channels</h3>
@@ -95,7 +119,7 @@
         <div class="overflow-x-auto">
             <table class="w-full text-sm">
                 <thead>
-                    <tr class="border-b border-outline-variant/20">
+                    <tr class="border-b border-outline-variant/20 bg-surface-container-low">
                         <th class="text-left py-3 px-2 font-bold text-on-surface-variant text-[10px] uppercase tracking-wider">#</th>
                         <th class="text-left py-3 px-2 font-bold text-on-surface-variant text-[10px] uppercase tracking-wider">Company</th>
                         <th class="text-left py-3 px-2 font-bold text-on-surface-variant text-[10px] uppercase tracking-wider">Fleet</th>
@@ -133,7 +157,7 @@
         <div class="overflow-x-auto">
             <table class="w-full text-sm">
                 <thead>
-                    <tr class="border-b border-outline-variant/20">
+                    <tr class="border-b border-outline-variant/20 bg-surface-container-low">
                         <th class="text-left py-3 px-2 font-bold text-on-surface-variant text-[10px] uppercase tracking-wider">Company</th>
                         <th class="text-left py-3 px-2 font-bold text-on-surface-variant text-[10px] uppercase tracking-wider">Email</th>
                         <th class="text-left py-3 px-2 font-bold text-on-surface-variant text-[10px] uppercase tracking-wider">Status</th>
@@ -208,7 +232,7 @@
         <div class="overflow-x-auto">
             <table class="w-full text-sm">
                 <thead>
-                    <tr class="border-b border-outline-variant/20">
+                    <tr class="border-b border-outline-variant/20 bg-surface-container-low">
                         <th class="text-left py-3 px-2 font-bold text-on-surface-variant text-[10px] uppercase tracking-wider">Reference</th>
                         <th class="text-left py-3 px-2 font-bold text-on-surface-variant text-[10px] uppercase tracking-wider">Passenger</th>
                         <th class="text-left py-3 px-2 font-bold text-on-surface-variant text-[10px] uppercase tracking-wider">Route</th>

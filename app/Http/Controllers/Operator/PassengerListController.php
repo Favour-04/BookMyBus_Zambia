@@ -119,7 +119,7 @@ class PassengerListController extends Controller
             ->findOrFail($routeId);
 
         $bookings = Booking::where('route_id', $route->id)
-            ->orderByRaw("FIELD(status, 'confirmed', 'pending', 'cancelled')")
+            ->orderByRaw("CASE status WHEN 'confirmed' THEN 0 WHEN 'pending' THEN 1 WHEN 'cancelled' THEN 2 ELSE 3 END")
             ->orderBy('seat_number', 'asc')
             ->get();
 
@@ -241,6 +241,10 @@ class PassengerListController extends Controller
             session(['operator_id' => $operator->id]);
             return $operator;
         }
-        return Operator::find(session('operator_id'));
+        if (session('operator_id')) {
+            $operator = Operator::find(session('operator_id'));
+            if ($operator) return $operator;
+        }
+        abort(403, 'Operator session expired. Please log in again.');
     }
 }

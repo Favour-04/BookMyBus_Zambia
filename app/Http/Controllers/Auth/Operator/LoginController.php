@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth\Operator;
 
 use App\Http\Controllers\Controller;
+use App\Models\Operator;
 use App\Models\OperatorAuditLog;
 use App\Services\OperatorAuditService;
 use Illuminate\Http\Request;
@@ -29,8 +30,17 @@ class LoginController extends Controller
             'password' => 'required',
         ]);
 
+        // Normalize the email (lowercase + trim) so copy/paste or Caps Lock
+        // can't silently break a valid login.
+        $email = strtolower(trim($request->input('email')));
+
+        // Pre-fetch for the cross-portal hint below (no password involved).
+        $matchingOperator = Operator::withoutGlobalScopes()
+            ->where('email', $email)
+            ->first(['id', 'email', 'is_verified', 'deleted_at']);
+
         if (Auth::guard('operator')->attempt(
-            $request->only('email', 'password'),
+            ['email' => $email, 'password' => $request->input('password')],
             $request->filled('remember')
         )) {
             $operator = Auth::guard('operator')->user();
@@ -48,6 +58,16 @@ class LoginController extends Controller
             OperatorAuditService::log('login', 'Operator logged in', $operator);
 
             return redirect()->intended(route('operator.dashboard'));
+        }
+
+        // If the email belongs to a traveler/admin account instead, point the
+        // user at the right portal rather than a bare "invalid" message.
+        if (! $matchingOperator) {
+            if (\App\Models\User::where('email', $email)->exists()) {
+                throw ValidationException::withMessages([
+                    'email' => 'This email belongs to a traveler/admin account. Please sign in on the Traveler Sign In page instead.',
+                ]);
+            }
         }
 
         throw ValidationException::withMessages([

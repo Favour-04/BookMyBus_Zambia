@@ -26,21 +26,25 @@
 
     <!-- Filters -->
     <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/15 p-4 mb-6">
-        <form method="GET" class="grid grid-cols-2 md:grid-cols-5 gap-3">
-            <select name="operator_id" class="rounded-xl border border-outline-variant/30 px-3 py-2 text-sm focus:outline-none focus:border-primary">
+        <form method="GET" class="grid grid-cols-2 md:grid-cols-5 gap-3" role="search" aria-label="Filter trips">
+            <label for="trip-operator" class="sr-only">Filter by operator</label>
+            <select id="trip-operator" name="operator_id" class="rounded-xl border border-outline-variant/30 px-3 py-2 text-sm focus:outline-none focus:border-primary">
                 <option value="">All operators</option>
                 @foreach($operators as $operator)
                     <option value="{{ $operator->id }}" {{ request('operator_id') == $operator->id ? 'selected' : '' }}>{{ $operator->company_name }}</option>
                 @endforeach
             </select>
-            <input type="date" name="date" value="{{ request('date') }}" class="rounded-xl border border-outline-variant/30 px-3 py-2 text-sm focus:outline-none focus:border-primary">
-            <select name="status" class="rounded-xl border border-outline-variant/30 px-3 py-2 text-sm focus:outline-none focus:border-primary">
+            <label for="trip-date" class="sr-only">Filter by travel date</label>
+            <input id="trip-date" type="date" name="date" value="{{ request('date') }}" class="rounded-xl border border-outline-variant/30 px-3 py-2 text-sm focus:outline-none focus:border-primary">
+            <label for="trip-status" class="sr-only">Filter by trip status</label>
+            <select id="trip-status" name="status" class="rounded-xl border border-outline-variant/30 px-3 py-2 text-sm focus:outline-none focus:border-primary">
                 <option value="">All statuses</option>
                 @foreach(['scheduled', 'delayed', 'departed', 'arrived', 'inactive'] as $st)
                     <option value="{{ $st }}" {{ request('status') === $st ? 'selected' : '' }}>{{ ucfirst($st) }}</option>
                 @endforeach
             </select>
-            <input type="text" name="search" value="{{ request('search') }}" placeholder="Origin / destination..."
+            <label for="trip-search" class="sr-only">Search trips by origin or destination</label>
+            <input id="trip-search" type="text" name="search" value="{{ request('search') }}" placeholder="Origin / destination..."
                 class="rounded-xl border border-outline-variant/30 px-3 py-2 text-sm focus:outline-none focus:border-primary">
             <div class="flex gap-2 col-span-2 md:col-span-1">
                 <button type="submit" class="flex-1 flex items-center justify-center gap-1 px-4 py-2 rounded-xl bg-primary text-white text-sm font-bold">

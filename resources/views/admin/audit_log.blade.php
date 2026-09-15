@@ -26,16 +26,20 @@
 
     <!-- Filters -->
     <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/15 p-4 mb-6">
-        <form method="GET" class="grid grid-cols-2 md:grid-cols-5 gap-3">
-            <select name="event" class="rounded-xl border border-outline-variant/30 px-3 py-2 text-sm focus:outline-none focus:border-primary">
+        <form method="GET" class="grid grid-cols-2 md:grid-cols-5 gap-3" role="search" aria-label="Filter audit log entries">
+            <label for="audit-event" class="sr-only">Filter by event type</label>
+            <select id="audit-event" name="event" class="rounded-xl border border-outline-variant/30 px-3 py-2 text-sm focus:outline-none focus:border-primary">
                 <option value="">All events</option>
                 @foreach($eventTypes as $type)
                     <option value="{{ $type }}" {{ request('event') === $type ? 'selected' : '' }}>{{ $type }}</option>
                 @endforeach
             </select>
-            <input type="date" name="from" value="{{ request('from') }}" class="rounded-xl border border-outline-variant/30 px-3 py-2 text-sm focus:outline-none focus:border-primary">
-            <input type="date" name="to" value="{{ request('to') }}" class="rounded-xl border border-outline-variant/30 px-3 py-2 text-sm focus:outline-none focus:border-primary">
-            <input type="text" name="search" value="{{ request('search') }}" placeholder="Search description..."
+            <label for="audit-from" class="sr-only">Filter from date</label>
+            <input id="audit-from" type="date" name="from" value="{{ request('from') }}" class="rounded-xl border border-outline-variant/30 px-3 py-2 text-sm focus:outline-none focus:border-primary">
+            <label for="audit-to" class="sr-only">Filter to date</label>
+            <input id="audit-to" type="date" name="to" value="{{ request('to') }}" class="rounded-xl border border-outline-variant/30 px-3 py-2 text-sm focus:outline-none focus:border-primary">
+            <label for="audit-search" class="sr-only">Search audit log descriptions</label>
+            <input id="audit-search" type="text" name="search" value="{{ request('search') }}" placeholder="Search description..."
                    class="rounded-xl border border-outline-variant/30 px-3 py-2 text-sm focus:outline-none focus:border-primary">
             <div class="flex gap-2">
                 <button type="submit" class="flex-1 flex items-center justify-center gap-1 px-4 py-2 rounded-xl bg-primary text-white text-sm font-bold">
@@ -84,8 +88,9 @@
                 </tbody>
             </table>
         </div>
-        @if($logs->hasPages())
-            <div class="p-4 border-t border-outline-variant/15">{{ $logs->links() }}</div>
-        @endif
+        <div class="px-4 py-3 border-t border-outline-variant/15 flex flex-wrap items-center justify-between gap-2">
+            <span class="text-sm text-on-surface-variant">Showing {{ $logs->firstItem() ?? 0 }}–{{ $logs->lastItem() ?? 0 }} of {{ $logs->total() }}</span>
+            {{ $logs->links() }}
+        </div>
     </div>
 @endsection

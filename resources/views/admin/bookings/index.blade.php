@@ -24,32 +24,35 @@
         </div>
         <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/15 p-5">
             <p class="text-[10px] font-bold uppercase text-on-surface-variant tracking-wider">Revenue</p>
-            <p class="font-headline font-extrabold text-2xl mt-2 leading-tight">ZMW {{ number_format($stats['revenue']) }}</p>
+            <p class="font-headline font-extrabold text-2xl mt-2 leading-tight">ZMW {{ number_format($stats['revenue'], 2) }}</p>
         </div>
     </div>
 
     <!-- Filters -->
     <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6">
-        <div class="inline-flex rounded-xl border border-outline-variant/20 bg-surface-container-lowest p-1 flex-wrap">
+        <div class="inline-flex rounded-xl border border-outline-variant/20 bg-surface-container-lowest p-1 flex-wrap" role="group" aria-label="Filter bookings by status">
             <a href="{{ route('admin.bookings.index') }}" class="px-4 py-2 rounded-lg text-sm font-bold {{ request('status', 'all') === 'all' ? 'bg-primary text-white' : 'text-on-surface-variant hover:bg-surface-container-high' }}">All</a>
             <a href="{{ route('admin.bookings.index', ['status' => 'confirmed']) }}" class="px-4 py-2 rounded-lg text-sm font-bold {{ request('status') === 'confirmed' ? 'bg-primary text-white' : 'text-on-surface-variant hover:bg-surface-container-high' }}">Confirmed</a>
             <a href="{{ route('admin.bookings.index', ['status' => 'pending']) }}" class="px-4 py-2 rounded-lg text-sm font-bold {{ request('status') === 'pending' ? 'bg-primary text-white' : 'text-on-surface-variant hover:bg-surface-container-high' }}">Pending</a>
             <a href="{{ route('admin.bookings.index', ['status' => 'cancelled']) }}" class="px-4 py-2 rounded-lg text-sm font-bold {{ request('status') === 'cancelled' ? 'bg-primary text-white' : 'text-on-surface-variant hover:bg-surface-container-high' }}">Cancelled</a>
         </div>
-        <form method="GET" class="grid grid-cols-1 sm:grid-cols-2 lg:flex gap-2">
-            <select name="operator_id" class="rounded-xl border border-outline-variant/30 bg-surface-container-lowest px-3 py-2 text-sm focus:outline-none focus:border-primary">
+        <form method="GET" class="grid grid-cols-1 sm:grid-cols-2 lg:flex gap-2" role="search" aria-label="Filter bookings">
+            <label for="bk-operator" class="sr-only">Filter by operator</label>
+            <select id="bk-operator" name="operator_id" class="rounded-xl border border-outline-variant/30 bg-surface-container-lowest px-3 py-2 text-sm focus:outline-none focus:border-primary">
                 <option value="">All operators</option>
                 @foreach($operators as $operator)
                     <option value="{{ $operator->id }}" {{ request('operator_id') == $operator->id ? 'selected' : '' }}>{{ $operator->company_name }}</option>
                 @endforeach
             </select>
-            <select name="date" class="rounded-xl border border-outline-variant/30 bg-surface-container-lowest px-3 py-2 text-sm focus:outline-none focus:border-primary">
+            <label for="bk-date" class="sr-only">Filter by date range</label>
+            <select id="bk-date" name="date" class="rounded-xl border border-outline-variant/30 bg-surface-container-lowest px-3 py-2 text-sm focus:outline-none focus:border-primary">
                 <option value="">Any date</option>
                 <option value="today" {{ request('date') === 'today' ? 'selected' : '' }}>Today</option>
                 <option value="week" {{ request('date') === 'week' ? 'selected' : '' }}>This week</option>
                 <option value="month" {{ request('date') === 'month' ? 'selected' : '' }}>This month</option>
             </select>
-            <input type="text" name="search" value="{{ request('search') }}" placeholder="Reference, passenger, seat..."
+            <label for="bk-search" class="sr-only">Search bookings by reference, passenger, or seat</label>
+            <input id="bk-search" type="text" name="search" value="{{ request('search') }}" placeholder="Reference, passenger, seat..."
                 class="rounded-xl border border-outline-variant/30 bg-surface-container-lowest px-4 py-2 text-sm focus:outline-none focus:border-primary">
             <button type="submit" class="flex items-center gap-1 px-4 py-2 rounded-xl bg-primary text-white text-sm font-bold">
                 <span class="material-symbols-outlined text-base">filter_alt</span>Filter
