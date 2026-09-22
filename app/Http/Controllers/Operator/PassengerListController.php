@@ -6,9 +6,12 @@ use App\Http\Controllers\Controller;
 use App\Models\Booking;
 use App\Models\Operator;
 use App\Models\Route;
+use App\Models\Ticket;
+use App\Services\OperatorAuditService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class PassengerListController extends Controller
 {
@@ -216,6 +219,71 @@ class PassengerListController extends Controller
         }
 
         return back()->with('status', "{$count} passenger(s) checked in successfully.");
+    }
+
+    /**
+     * Check in a single passenger by scanning/typing their ticket QR code.
+     *
+     * The ticket QR (e.g. "BMZ-QR-<uuid>") is the boarding credential shown
+     * on the traveler's ticket page. Looked up globally, but ownership is
+     * enforced: only tickets whose booking belongs to the authenticated
+     * operator can be checked in. Marks the booking boarded AND flips the
+     * ticket to "used" in one transaction so a printed ticket can't be
+     * presented twice.
+     */
+    public function checkInByQr(Request $request)
+    {
+        $operator = $this->getOperator();
+
+        $validated = $request->validate([
+            'qr_code' => 'required|string|max:100',
+        ]);
+
+        $qrCode = strtoupper(trim($validated['qr_code']));
+
+        $ticket = Ticket::with(['booking.route', 'booking.ticket'])
+            ->where('qr_code', $qrCode)
+            ->first();
+
+        if (!$ticket) {
+            return back()->withErrors([
+                'qr' => "No ticket found for code \"{$qrCode}\". Check the code and try again.",
+            ]);
+        }
+
+        $booking = $ticket->booking()->with('route')->first();
+
+        if (!$booking || !$booking->route || $booking->route->operator_id !== $operator->id) {
+            return back()->withErrors([
+                'qr' => 'This ticket does not belong to your company.',
+            ]);
+        }
+
+        if ($booking->status !== 'confirmed') {
+            return back()->withErrors([
+                'qr' => "Booking {$booking->reference_id} is {$booking->status}, not confirmed — payment may still be pending. Boarding refused.",
+            ]);
+        }
+
+        if ($booking->isBoarded() || $ticket->status === 'used') {
+            return back()->withErrors([
+                'qr' => "{$booking->passenger_name} ({$booking->reference_id}) was already boarded at "
+                    . optional($booking->boarded_at)->format('H:i') . '.',
+            ]);
+        }
+
+        DB::transaction(function () use ($booking, $ticket, $operator) {
+            $booking->markBoarded($operator->company_name ?? 'Operator');
+            $ticket->markAsUsed();
+        });
+
+        OperatorAuditService::log(
+            'booking.qr_checkin',
+            "Checked in booking {$booking->reference_id} via ticket QR scan",
+            $booking
+        );
+
+        return back()->with('status', "{$booking->passenger_name} (seat {$booking->seat_number}) checked in. Welcome aboard!");
     }
 
     private function getPassengerStats($operator)

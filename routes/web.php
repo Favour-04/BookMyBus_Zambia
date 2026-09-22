@@ -218,6 +218,7 @@ Route::prefix('operator')->name('operator.')->middleware('auth:operator')->group
     Route::get('/passengers/manifest/{routeId}', [App\Http\Controllers\Operator\PassengerListController::class, 'manifest'])->name('passengers.manifest');
     Route::get('/passengers/export/{routeId}', [App\Http\Controllers\Operator\PassengerListController::class, 'export'])->name('passengers.export');
     Route::post('/passengers/bulk-checkin', [App\Http\Controllers\Operator\PassengerListController::class, 'bulkCheckin'])->name('passengers.bulk-checkin');
+    Route::post('/passengers/checkin-qr', [App\Http\Controllers\Operator\PassengerListController::class, 'checkInByQr'])->name('passengers.checkin-qr');
 
     // Drivers
     Route::get('/drivers', [App\Http\Controllers\Operator\DriverController::class, 'index'])->name('drivers.index');
