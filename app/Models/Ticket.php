@@ -30,9 +30,14 @@ class Ticket extends Model
     {
         parent::boot();
 
-        // function to auto generate a unique QR code string on creation
+        // Auto generate the QR code string on creation. It's built from the
+        // booking's own reference_id (rather than an unrelated random UUID)
+        // so the value encoded in the QR image always matches the Booking ID
+        // printed on the ticket next to it.
         static::creating(function ($ticket) {
-            $ticket->qr_code   = 'BMZ-QR-' . strtoupper(Str::uuid());
+            $booking = $ticket->booking_id ? Booking::find($ticket->booking_id) : null;
+
+            $ticket->qr_code   = 'BMZ-QR-' . ($booking->reference_id ?? strtoupper(Str::uuid()));
             $ticket->issued_at = now();
         });
     }

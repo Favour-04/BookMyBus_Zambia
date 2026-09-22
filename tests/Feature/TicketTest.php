@@ -85,7 +85,7 @@ class TicketTest extends TestCase
         $this->assertNotNull($ticket, 'A ticket should be issued after successful payment.');
         $this->assertSame('issued', $ticket->status);
         $this->assertSame($booking->user_id, $ticket->user_id);
-        $this->assertStringStartsWith('BMZ-QR-', $ticket->qr_code);
+        $this->assertSame('BMZ-QR-' . $booking->fresh()->reference_id, $ticket->qr_code);
     }
 
     public function test_ticket_issuance_is_idempotent(): void

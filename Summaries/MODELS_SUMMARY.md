@@ -350,7 +350,7 @@ A single purchase covering multiple passengers/seats creates one `Booking` row p
 
 ### Auto-Generated Attributes
 
-- `qr_code`: Generated as `BMZ-QR-` plus an uppercase UUID during creation.
+- `qr_code`: Generated as `BMZ-QR-` plus the parent booking's `reference_id` during creation, so the QR image always encodes the same Booking ID printed on the ticket.
 - `issued_at`: Set to the current time during creation.
 
 ### Relationships
