@@ -81,16 +81,19 @@ class BookingLookupTest extends TestCase
         $response->assertSee($booking->reference_id);
     }
 
-    public function test_booking_lookup_by_passenger_phone(): void
+    public function test_booking_lookup_by_passenger_phone_is_rejected(): void
     {
+        // Phone number is deliberately NOT a search field: it's too easy to
+        // guess or enumerate (see BookingController::customerLookup). A
+        // phone-only submission must fail validation, not leak bookings.
         $booking = $this->createBooking();
 
-        $response = $this->actingAs($booking->user)->post('/my-booking/lookup', [
+        $response = $this->from('/my-booking')->actingAs($booking->user)->post('/my-booking/lookup', [
             'phone_number' => '0977000000',
         ]);
 
-        $response->assertStatus(200);
-        $response->assertSee($booking->reference_id);
+        $response->assertRedirect('/my-booking');
+        $response->assertSessionHasErrors('reference_id');
     }
 
     public function test_booking_lookup_returns_error_when_not_found(): void
@@ -104,7 +107,7 @@ class BookingLookupTest extends TestCase
         ]);
 
         $response = $this->actingAs($user)->post('/my-booking/lookup', [
-            'phone_number' => '0999999999',
+            'reference_id' => 'BMZ-NOPE0',
         ]);
 
         $response->assertStatus(200);

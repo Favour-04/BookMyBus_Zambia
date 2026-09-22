@@ -35,4 +35,11 @@ return [
         ],
     ],
 
+    // Shared secret used to verify HMAC signatures on mobile-money payment
+    // gateway callbacks (see Api\PaymentController@callback). Must match the
+    // value configured on the gateway side.
+    'payment_callback' => [
+        'secret' => env('PAYMENT_CALLBACK_SECRET'),
+    ],
+
 ];
