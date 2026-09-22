@@ -28,7 +28,7 @@ class LandingController extends Controller
      */
     public function index()
     {
-        //$userPosition = Location::get(request()->ip()); this is the actual code to be in the code base
+        // $userPosition = Location::get(request()->ip()); // this is the actual code to be in the code base
         $userPosition = Location::get('165.56.66.198'); // this is for testing purposes only, will need to be removed
         $detectedCity = $userPosition ? $userPosition->cityName  : null;
 

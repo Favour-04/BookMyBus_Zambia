@@ -61,7 +61,9 @@
     <div class="grid grid-cols-1 xl:grid-cols-3 gap-6 mb-8">
         <div class="xl:col-span-2 bg-surface-container-lowest rounded-2xl border border-outline-variant/15 p-6">
             <h3 class="font-headline font-bold text-lg mb-4">Revenue — Last 30 Days</h3>
-            <canvas id="revenueChart" height="100" role="img" aria-label="Bar chart of confirmed booking revenue in ZMW for each of the last 30 days. Total over the period: ZMW {{ number_format(array_sum($revenueChartData), 2) }}."></canvas>
+            <div class="relative h-[280px]">
+                <canvas id="revenueChart" role="img" aria-label="Bar chart of confirmed booking revenue in ZMW for each of the last 30 days. Total over the period: ZMW {{ number_format(array_sum($revenueChartData), 2) }}."></canvas>
+            </div>
             <details class="sr-only">
                 <summary>Revenue data table (last 30 days)</summary>
                 <table>
@@ -77,7 +79,9 @@
         </div>
         <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/15 p-6">
             <h3 class="font-headline font-bold text-lg mb-4">Bookings — Last 30 Days</h3>
-            <canvas id="bookingsChart" height="100" role="img" aria-label="Line chart of booking counts for each of the last 30 days. Total over the period: {{ number_format(array_sum($bookingsChartData)) }} bookings."></canvas>
+            <div class="relative h-[280px]">
+                <canvas id="bookingsChart" role="img" aria-label="Line chart of booking counts for each of the last 30 days. Total over the period: {{ number_format(array_sum($bookingsChartData)) }} bookings."></canvas>
+            </div>
             <details class="sr-only">
                 <summary>Bookings data table (last 30 days)</summary>
                 <table>
@@ -94,7 +98,9 @@
         <div class="xl:col-span-3 grid grid-cols-1 md:grid-cols-2 gap-6">
             <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/15 p-6">
                 <h3 class="font-headline font-bold text-lg mb-4">Booking Status</h3>
-                <canvas id="statusChart" height="90" role="img" aria-label="Doughnut chart of booking status: {{ $status_breakdown[0]['count'] }} confirmed, {{ $status_breakdown[1]['count'] }} pending, {{ $status_breakdown[2]['count'] }} cancelled."></canvas>
+                <div class="relative h-[260px]">
+                    <canvas id="statusChart" role="img" aria-label="Doughnut chart of booking status: {{ $status_breakdown[0]['count'] }} confirmed, {{ $status_breakdown[1]['count'] }} pending, {{ $status_breakdown[2]['count'] }} cancelled."></canvas>
+                </div>
             </div>
             <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/15 p-6">
                 <h3 class="font-headline font-bold text-lg mb-4">Payment Channels</h3>

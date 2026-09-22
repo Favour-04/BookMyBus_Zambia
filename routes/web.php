@@ -111,7 +111,7 @@ Route::middleware('auth')->group(function () {
     // Cancel a booking (traveler self-cancellation with refund calculation)
     Route::post('/bookings/{booking}/cancel', [BookingController::class, 'cancel'])->name('bookings.cancel');
     Route::post('/bookings/{booking}/release', [BookingController::class, 'releaseHold'])
-        ->name('bookings.release-hold');
+    ->name('bookings.release-hold');
 
     // Promo Code Validation (AJAX)
     Route::post('/booking/validate-promo', [BookingController::class, 'validatePromoCode'])->name('booking.validate-promo');
