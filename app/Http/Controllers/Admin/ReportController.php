@@ -12,40 +12,28 @@ use Illuminate\Support\Facades\DB;
 class ReportController extends Controller
 {
     /**
-     * Analytics overview (revenue & bookings trends, reports).
+     * Analytics overview (revenue & bookings trends, reports), optionally
+     * scoped to a date range and/or operator via GET filters.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $data = $this->buildReportData(null, null, null);
+        $filters = $this->validatedFilters($request);
+
+        $data = $this->buildReportData($filters['from'] ?? null, $filters['to'] ?? null, $filters['operator_id'] ?? null);
         $operators = \App\Models\Operator::orderBy('company_name')->pluck('company_name', 'id');
 
-        return view('admin.reports.index', array_merge($data, ['operators' => $operators]));
+        return view('admin.reports.index', array_merge($data, ['operators' => $operators, 'filters' => $filters]));
     }
 
     /**
-     * JSON endpoint consumed by the reports dashboard for live filtering.
-     * Returns the same datasets as index(), scoped to the requested range/operator.
+     * Export revenue-by-operator report as CSV, honouring the same
+     * date-range/operator filters as the reports dashboard.
      */
-    public function data(Request $request)
+    public function export(Request $request)
     {
-        $data = $request->validate([
-            'from'        => ['nullable', 'date'],
-            'to'          => ['nullable', 'date'],
-            'operator_id' => ['nullable', 'integer', 'exists:operators,id'],
-        ]);
+        $filters = $this->validatedFilters($request);
+        [$from, $to] = $this->normaliseRange($filters['from'] ?? null, $filters['to'] ?? null);
 
-        return response()->json($this->buildReportData(
-            $data['from'] ?? null,
-            $data['to'] ?? null,
-            $data['operator_id'] ?? null,
-        ));
-    }
-
-    /**
-     * Export revenue-by-operator report as CSV.
-     */
-    public function export()
-    {
         $rows = DB::table('payments')
             ->join('bookings', 'bookings.id', '=', 'payments.booking_id')
             ->join('routes', 'routes.id', '=', 'bookings.route_id')
@@ -53,6 +41,9 @@ class ReportController extends Controller
             ->where('payments.status', 'successful')
             ->whereNull('bookings.deleted_at')
             ->whereNull('routes.deleted_at')
+            ->when($from, fn ($q) => $q->where('payments.paid_at', '>=', $from))
+            ->when($to, fn ($q) => $q->where('payments.paid_at', '<=', $to))
+            ->when($filters['operator_id'] ?? null, fn ($q, $id) => $q->where('routes.operator_id', $id))
             ->groupBy(['operators.id', 'operators.company_name'])
             ->select(
                 'operators.company_name',
@@ -76,6 +67,18 @@ class ReportController extends Controller
         return response($csv, 200, [
             'Content-Type'        => 'text/csv',
             'Content-Disposition' => "attachment; filename=\"{$filename}\"",
+        ]);
+    }
+
+    /**
+     * Validate the from/to/operator_id filters shared by index() and export().
+     */
+    private function validatedFilters(Request $request): array
+    {
+        return $request->validate([
+            'from'        => ['nullable', 'date'],
+            'to'          => ['nullable', 'date'],
+            'operator_id' => ['nullable', 'integer', 'exists:operators,id'],
         ]);
     }
 

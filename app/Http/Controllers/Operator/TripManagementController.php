@@ -431,6 +431,29 @@ class TripManagementController extends Controller
             ->values();
     }
 
+    /**
+     * Whether the given bus already has an active trip on that date within
+     * 2 hours of the given departure time. Compared as minutes-since-midnight
+     * with wraparound (rather than a SQL BETWEEN on the raw "H:i" strings)
+     * so a departure time close to midnight doesn't produce a low bound
+     * that's numerically greater than the high bound.
+     */
+    private function hasBusScheduleConflict($busId, string $travelDate, string $departureTime, ?int $excludeRouteId = null): bool
+    {
+        $newTime = Carbon::parse($departureTime);
+
+        return Route::where('bus_id', $busId)
+            ->where('travel_date', $travelDate)
+            ->where('is_active', true)
+            ->when($excludeRouteId, fn($q) => $q->where('id', '!=', $excludeRouteId))
+            ->get(['departure_time'])
+            ->contains(function ($route) use ($newTime) {
+                $existingTime = Carbon::parse($route->departure_time);
+                $diff = $newTime->diffInMinutes($existingTime);
+                return min($diff, 1440 - $diff) < 120;
+            });
+    }
+
     private function getStatusStyles()
     {
         return [
@@ -542,20 +565,18 @@ class TripManagementController extends Controller
         $existingRoute = Route::where('bus_id', $bus->id)->where('travel_date', $validated['travel_date'])
             ->where('departure_time', $validated['departure_time'])->where('is_active', true)->exists();
         if ($existingRoute) return back()->withErrors(['bus_id' => 'This bus is already scheduled for the selected date and time.'])->withInput();
-        $overlappingRoute = Route::where('bus_id', $bus->id)->where('travel_date', $validated['travel_date'])
-            ->where('is_active', true)->where(function ($q) use ($validated) {
-                $time = $validated['departure_time'];
-                $q->whereBetween('departure_time', [Carbon::parse($time)->subHours(2)->format('H:i'), Carbon::parse($time)->addHours(2)->format('H:i')]);
-            })->exists();
-        if ($overlappingRoute) return back()->withErrors(['departure_time' => 'This bus has another trip within 2 hours of the selected departure time.'])->withInput();
+        if ($this->hasBusScheduleConflict($bus->id, $validated['travel_date'], $validated['departure_time'])) {
+            return back()->withErrors(['departure_time' => 'This bus has another trip within 2 hours of the selected departure time.'])->withInput();
+        }
+
+        // Verify driver belongs to this operator if provided
+        if ($request->filled('driver_id')) {
+            $driver = Driver::where('id', $validated['driver_id'])->where('operator_id', $operator->id)->first();
+            if (!$driver) return back()->withErrors(['driver_id' => 'The selected driver does not belong to your fleet.']);
+        }
 
         try {
             DB::beginTransaction();
-            // Verify driver belongs to this operator if provided
-            if ($request->filled('driver_id')) {
-                $driver = Driver::where('id', $validated['driver_id'])->where('operator_id', $operator->id)->first();
-                if (!$driver) return back()->withErrors(['driver_id' => 'The selected driver does not belong to your fleet.']);
-            }
 
             $route = Route::create([
                 'operator_id' => $operator->id, 'bus_id' => $validated['bus_id'], 'origin' => $validated['origin'],
@@ -581,6 +602,9 @@ class TripManagementController extends Controller
         if (!$operator) return redirect()->route('operator.login')->with('error', 'Please log in to update trips.');
         $route = Route::where('operator_id', $operator->id)->findOrFail($tripId);
         $hasConfirmedBookings = $route->bookings()->where('status', 'confirmed')->exists();
+        if ($hasConfirmedBookings && ($request->filled('bus_id') || $request->filled('travel_date') || $request->filled('departure_time'))) {
+            return back()->withErrors(['trip' => 'Cannot change the bus, date, or departure time for a trip with confirmed bookings. Cancel the trip with passenger notification instead, or contact affected passengers directly.']);
+        }
         $validated = $request->validate([
             'fare' => 'nullable|numeric|min:0', 'departure_time' => 'nullable|date_format:H:i',
             'travel_date' => 'nullable|date|after_or_equal:today', 'bus_id' => 'nullable|exists:buses,id',

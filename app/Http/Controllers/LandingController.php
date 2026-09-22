@@ -4,10 +4,21 @@ namespace App\Http\Controllers;
 
 use App\Models\Route;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Stevebauman\Location\Facades\Location;
 
 class LandingController extends Controller
 {
+    /**
+     * How long a resolved (or failed) IP-to-city lookup is cached for.
+     * The geolocation lookup is a live third-party HTTP call with no
+     * built-in caching of its own, so without this every visitor request
+     * re-triggers it — and real traffic quickly burns through ip-api.com's
+     * free-tier rate limit, falling back through several slower providers
+     * per request once that happens.
+     */
+    private const GEO_CACHE_TTL_HOURS = 6;
+
     /**
      * Flat, deduped, sorted list of every town/city defined in
      * config/zambia_cities.php. Shared by index() (autocomplete data) and
@@ -28,9 +39,7 @@ class LandingController extends Controller
      */
     public function index()
     {
-        // $userPosition = Location::get(request()->ip()); // this is the actual code to be in the code base
-        $userPosition = Location::get('165.56.66.198'); // this is for testing purposes only, will need to be removed
-        $detectedCity = $userPosition ? $userPosition->cityName  : null;
+        $detectedCity = $this->detectCityFromIp(request()->ip());
 
         if ($detectedCity) {
             $cityExistsInDB = Route::where('is_active', true)
@@ -85,6 +94,39 @@ class LandingController extends Controller
         $cities = $this->allCities();
 
         return view('landing_search', compact('routes', 'detectedCity', 'cities'));
+    }
+
+    /**
+     * Resolve the city name for an IP via the geolocation service, cached
+     * per IP so repeat visits (and the multiple requests a single page load
+     * can trigger) don't re-hit the live lookup.
+     *
+     * Private/reserved addresses (localhost, LAN ranges, etc.) are skipped
+     * entirely rather than sent to the lookup: they can't be geolocated
+     * anyway, and previously caused every configured driver + fallback to
+     * be tried and fail in sequence — several seconds of unnecessary
+     * outbound HTTP calls on every affected request.
+     */
+    private function detectCityFromIp(?string $ip): ?string
+    {
+        if (! $ip || filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE) === false) {
+            return null;
+        }
+
+        // Cache::remember treats a cached null as a miss and would retry the
+        // lookup every time, so "no city found" is cached as '' and
+        // translated back to null below.
+        $city = Cache::remember(
+            "geo-city:{$ip}",
+            now()->addHours(self::GEO_CACHE_TTL_HOURS),
+            function () use ($ip) {
+                $position = Location::get($ip);
+
+                return $position ? (string) $position->cityName : '';
+            }
+        );
+
+        return $city !== '' ? $city : null;
     }
 
     /*

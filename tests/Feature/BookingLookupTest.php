@@ -81,7 +81,15 @@ class BookingLookupTest extends TestCase
         $response->assertSee($booking->reference_id);
     }
 
-    public function test_booking_lookup_by_passenger_phone(): void
+    /**
+     * Phone-number lookup was deliberately removed (see
+     * BookingController::customerLookup's docblock): a phone number is far
+     * easier to guess/enumerate than a random reference code, so it would
+     * let a searcher pull up a stranger's booking. reference_id is now the
+     * only accepted field, so a phone-only submission must fail validation
+     * rather than silently ignore the field and search anyway.
+     */
+    public function test_booking_lookup_by_phone_number_alone_is_rejected(): void
     {
         $booking = $this->createBooking();
 
@@ -89,8 +97,7 @@ class BookingLookupTest extends TestCase
             'phone_number' => '0977000000',
         ]);
 
-        $response->assertStatus(200);
-        $response->assertSee($booking->reference_id);
+        $response->assertSessionHasErrors('reference_id');
     }
 
     public function test_booking_lookup_returns_error_when_not_found(): void
@@ -104,7 +111,25 @@ class BookingLookupTest extends TestCase
         ]);
 
         $response = $this->actingAs($user)->post('/my-booking/lookup', [
-            'phone_number' => '0999999999',
+            'reference_id' => 'BMZ-NOTREAL',
+        ]);
+
+        $response->assertStatus(200);
+        $response->assertSee('No booking found');
+    }
+
+    /**
+     * The reference-ID match is exact, not a partial/LIKE match (also part
+     * of the same hardening) — a substring of a real reference code must
+     * not find the booking.
+     */
+    public function test_booking_lookup_does_not_partial_match_reference_id(): void
+    {
+        $booking = $this->createBooking();
+        $partial = substr($booking->reference_id, 0, 5);
+
+        $response = $this->actingAs($booking->user)->post('/my-booking/lookup', [
+            'reference_id' => $partial,
         ]);
 
         $response->assertStatus(200);

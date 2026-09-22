@@ -78,6 +78,15 @@ class AuditLogController extends Controller
 
     private function getOperator()
     {
-        return Auth::guard('operator')->user();
+        $operator = Auth::guard('operator')->user();
+        if ($operator) {
+            session(['operator_id' => $operator->id]);
+            return $operator;
+        }
+        if (session('operator_id')) {
+            $operator = Operator::find(session('operator_id'));
+            if ($operator) return $operator;
+        }
+        abort(403, 'Operator session expired. Please log in again.');
     }
 }

@@ -33,24 +33,30 @@ class ProfileController extends Controller
             ->count();
 
         // Average occupancy across all trips
-        $routes = Route::with('bus')->where('operator_id', $operatorId)->get();
-        $totalCapacity = 0;
-        $totalBooked = 0;
-        foreach ($routes as $route) {
-            $capacity = $route->bus->seat_capacity ?? 40;
-            $booked = count($route->bookedSeats() ?? []);
-            $totalCapacity += $capacity;
-            $totalBooked += $booked;
-        }
+        $totalCapacity = Route::where('routes.operator_id', $operatorId)
+            ->join('buses', 'buses.id', '=', 'routes.bus_id')
+            ->sum('buses.seat_capacity');
+        $totalBooked = Booking::whereHas('route', function ($query) use ($operatorId) {
+            $query->where('operator_id', $operatorId);
+        })
+            ->where(function ($query) {
+                $query->where('status', 'confirmed')
+                    ->orWhere(function ($query) {
+                        $query->where('status', 'pending')->where('held_until', '>', now());
+                    });
+            })
+            ->count();
         $avg_occupancy = $totalCapacity > 0 ? round(($totalBooked / $totalCapacity) * 100) : 0;
 
-        // On-time rate (based on trips that departed as scheduled)
+        // On-time rate: active (non-cancelled) trips in the last 30 days
+        // that were never marked delayed.
         $total_trips_counted = Route::where('operator_id', $operatorId)
             ->where('travel_date', '>=', Carbon::now()->subDays(30))
             ->count();
         $on_time_trips = Route::where('operator_id', $operatorId)
             ->where('travel_date', '>=', Carbon::now()->subDays(30))
             ->where('is_active', true)
+            ->whereNull('delayed_at')
             ->count();
         $on_time_rate = $total_trips_counted > 0 ? round(($on_time_trips / $total_trips_counted) * 100) : 0;
 

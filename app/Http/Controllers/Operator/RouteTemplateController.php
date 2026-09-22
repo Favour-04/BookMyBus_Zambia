@@ -153,14 +153,8 @@ class RouteTemplateController extends Controller
         }
 
         // Check for scheduling conflicts
-        $conflict = Route::where('bus_id', $bus->id)
-            ->where('travel_date', $validated['travel_date'])
-            ->where('departure_time', $validated['departure_time'])
-            ->where('is_active', true)
-            ->exists();
-
-        if ($conflict) {
-            return back()->withErrors(['bus_id' => 'This bus is already scheduled for the selected date and time.']);
+        if ($this->hasBusScheduleConflict($bus->id, $validated['travel_date'], $validated['departure_time'])) {
+            return back()->withErrors(['bus_id' => 'This bus is already scheduled within 2 hours of the selected date and time.']);
         }
 
         $fare = $validated['fare'] ?? $template->base_fare;
@@ -230,14 +224,8 @@ class RouteTemplateController extends Controller
             }
 
             // Check for conflicts
-            $conflict = Route::where('bus_id', $bus->id)
-                ->where('travel_date', $date->toDateString())
-                ->where('departure_time', $validated['departure_time'])
-                ->where('is_active', true)
-                ->exists();
-
-            if ($conflict) {
-                $errors[] = "Conflict on {$date->format('D d M')} - bus already scheduled.";
+            if ($this->hasBusScheduleConflict($bus->id, $date->toDateString(), $validated['departure_time'])) {
+                $errors[] = "Conflict on {$date->format('D d M')} - bus already scheduled within 2 hours.";
                 continue;
             }
 
@@ -273,6 +261,26 @@ class RouteTemplateController extends Controller
         }
 
         return redirect()->route('operator.trips.index')->with('success', $message);
+    }
+
+    /**
+     * Whether the given bus already has an active trip on that date within
+     * 2 hours of the given departure time (minutes-since-midnight distance
+     * with wraparound, matching TripManagementController's check).
+     */
+    private function hasBusScheduleConflict($busId, string $travelDate, string $departureTime): bool
+    {
+        $newTime = Carbon::parse($departureTime);
+
+        return Route::where('bus_id', $busId)
+            ->where('travel_date', $travelDate)
+            ->where('is_active', true)
+            ->get(['departure_time'])
+            ->contains(function ($route) use ($newTime) {
+                $existingTime = Carbon::parse($route->departure_time);
+                $diff = $newTime->diffInMinutes($existingTime);
+                return min($diff, 1440 - $diff) < 120;
+            });
     }
 
     /**

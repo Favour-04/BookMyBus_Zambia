@@ -98,7 +98,7 @@
                             @else —
                             @endif
                         </td>
-                        <td class="py-3 px-4 text-xs">{{ $payment->booking->route->operator->company_name ?? 'N/A' }}</td>
+                        <td class="py-3 px-4 text-xs">{{ $payment->booking?->route?->operator?->company_name ?? 'N/A' }}</td>
                         <td class="py-3 px-4 capitalize">{{ $payment->payment_method ? ucwords(str_replace('_', ' ', $payment->payment_method)) : '—' }}</td>
                         <td class="py-3 px-4 font-bold">{{ $payment->currency ?? 'ZMW' }} {{ number_format($payment->amount, 2) }}</td>
                         <td class="py-3 px-4"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold {{ $statusClass }}">{{ ucfirst($payment->status) }}</span></td>

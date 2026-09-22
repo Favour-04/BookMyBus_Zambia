@@ -7,15 +7,52 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 @endpush
 
+@php
+    $exportParams = array_filter([
+        'from' => $filters['from'] ?? null,
+        'to' => $filters['to'] ?? null,
+        'operator_id' => $filters['operator_id'] ?? null,
+    ]);
+    $filtersActive = count($exportParams) > 0;
+@endphp
+
 @section('content')
+    <!-- Filters -->
+    <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/15 p-4 mb-6">
+        <form method="GET" class="grid grid-cols-2 md:grid-cols-4 gap-3" role="search" aria-label="Filter reports">
+            <label for="report-operator" class="sr-only">Filter by operator</label>
+            <select id="report-operator" name="operator_id" class="rounded-xl border border-outline-variant/30 px-3 py-2 text-sm focus:outline-none focus:border-primary">
+                <option value="">All operators</option>
+                @foreach($operators as $id => $companyName)
+                    <option value="{{ $id }}" {{ (string) ($filters['operator_id'] ?? '') === (string) $id ? 'selected' : '' }}>{{ $companyName }}</option>
+                @endforeach
+            </select>
+            <label for="report-from" class="sr-only">Filter from date</label>
+            <input id="report-from" type="date" name="from" value="{{ $filters['from'] ?? '' }}" class="rounded-xl border border-outline-variant/30 px-3 py-2 text-sm focus:outline-none focus:border-primary">
+            <label for="report-to" class="sr-only">Filter to date</label>
+            <input id="report-to" type="date" name="to" value="{{ $filters['to'] ?? '' }}" class="rounded-xl border border-outline-variant/30 px-3 py-2 text-sm focus:outline-none focus:border-primary">
+            <div class="flex gap-2">
+                <button type="submit" class="flex-1 flex items-center justify-center gap-1 px-4 py-2 rounded-xl bg-primary text-white text-sm font-bold">
+                    <span class="material-symbols-outlined text-base">filter_alt</span>Filter
+                </button>
+                @if($filtersActive)
+                    <a href="{{ route('admin.reports.index') }}" class="flex items-center px-3 py-2 rounded-xl border border-outline-variant/30 text-sm font-bold text-on-surface-variant">Clear</a>
+                @endif
+            </div>
+        </form>
+        @if($filtersActive)
+            <p class="text-xs text-on-surface-variant mt-3">Revenue, routes and status figures below are scoped to this filter. The trend charts always show the trailing 12 months.</p>
+        @endif
+    </div>
+
     <!-- KPI -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/15 p-5">
-            <p class="text-[10px] font-bold uppercase text-on-surface-variant tracking-wider">Total Collected Revenue</p>
+            <p class="text-[10px] font-bold uppercase text-on-surface-variant tracking-wider">{{ $filtersActive ? 'Filtered Revenue' : 'Total Collected Revenue' }}</p>
             <p class="font-headline font-extrabold text-3xl mt-2">ZMW {{ number_format($totals['revenue'], 2) }}</p>
         </div>
         <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/15 p-5">
-            <p class="text-[10px] font-bold uppercase text-on-surface-variant tracking-wider">Total Bookings</p>
+            <p class="text-[10px] font-bold uppercase text-on-surface-variant tracking-wider">{{ $filtersActive ? 'Filtered Bookings' : 'Total Bookings' }}</p>
             <p class="font-headline font-extrabold text-3xl mt-2">{{ number_format($totals['bookings']) }}</p>
         </div>
         <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/15 p-5">
@@ -29,7 +66,7 @@
         <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/15 p-6">
             <div class="flex items-center justify-between mb-4">
                 <h3 class="font-headline font-bold text-lg">Revenue — Last 12 Months</h3>
-                <a href="{{ route('admin.reports.export') }}" class="flex items-center gap-1 text-sm font-bold text-primary hover:underline">
+                <a href="{{ route('admin.reports.export', $exportParams) }}" class="flex items-center gap-1 text-sm font-bold text-primary hover:underline">
                     <span class="material-symbols-outlined text-base">download</span>Export CSV
                 </a>
             </div>

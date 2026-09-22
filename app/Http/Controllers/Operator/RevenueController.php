@@ -142,20 +142,24 @@ class RevenueController extends Controller
         // --- Daily Revenue for Current Month (chart data) ---
         $chartStart = Carbon::parse($dateFrom);
         $chartEnd = Carbon::parse($dateTo);
+
+        // One aggregate query for the whole range instead of one per day.
+        $dailyTotals = Booking::join('routes', 'routes.id', '=', 'bookings.route_id')
+            ->where('routes.operator_id', $operatorId)
+            ->whereBetween('routes.travel_date', [$chartStart->toDateString(), $chartEnd->toDateString()])
+            ->where('bookings.status', 'confirmed')
+            ->selectRaw('routes.travel_date as travel_date, SUM(bookings.amount) as total')
+            ->groupBy('routes.travel_date')
+            ->get()
+            ->keyBy(fn($row) => Carbon::parse($row->travel_date)->toDateString());
+
         $dailyRevenue = collect();
         $current = $chartStart->copy();
 
         while ($current->lte($chartEnd)) {
-            $dayTotal = Booking::whereHas('route', function ($q) use ($operatorId, $current) {
-                    $q->where('operator_id', $operatorId)
-                      ->where('travel_date', $current->toDateString());
-                })
-                ->where('status', 'confirmed')
-                ->sum('amount');
-
             $dailyRevenue->push([
                 'date'  => $current->format('d M'),
-                'total' => $dayTotal,
+                'total' => (float) ($dailyTotals[$current->toDateString()]->total ?? 0),
                 'day'   => $current->format('D'),
             ]);
 

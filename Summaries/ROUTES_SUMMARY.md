@@ -243,4 +243,4 @@ Registers console commands for the application.
 
 ## Notes
 
-- `routes/web.php` imports `App\Http\Controllers\Admin\PanelController`, but that class does not exist anywhere in `app/Http/Controllers/Admin` and the import is never referenced in the file — a dead/broken `use` statement (harmless unless something tries to instantiate it) that's worth cleaning up.
+- `App\Http\Controllers\Admin\PanelController` exists (a full traveler-facing search/booking/payment/profile flow, ~289 lines across 8 methods) but no route in `routes/web.php` ever points at it, and its own views call route names (`admin.booking`, `admin.booking.hold`, `admin.payment.process`, `admin.support.submit`) that aren't registered anywhere — so wiring it up as-is would immediately throw `RouteNotFoundException`. It duplicates functionality already live under `LandingController`/`BookingController`/`ProfileController`. Flagged during the Admin Portal audit for removal; left in place pending an explicit delete since these are irreversible file removals.

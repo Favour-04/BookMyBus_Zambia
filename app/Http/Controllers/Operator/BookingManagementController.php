@@ -189,14 +189,17 @@ class BookingManagementController extends Controller
                 'min:1',
                 'max:' . ($booking->route->bus->seat_capacity ?? 100),
                 function ($attribute, $value, $fail) use ($booking) {
-                    // Check seat is not already taken by another booking on this route
+                    // bookings has a DB-level unique(route_id, seat_number) that
+                    // isn't scoped by status, so a cancelled booking still
+                    // occupies its seat slot — check against any booking on
+                    // this route (not just pending/confirmed) to match that
+                    // constraint and avoid a 500 on save.
                     $existing = Booking::where('route_id', $booking->route_id)
                         ->where('seat_number', $value)
                         ->where('id', '!=', $booking->id)
-                        ->whereIn('status', ['pending', 'confirmed'])
                         ->exists();
                     if ($existing) {
-                        $fail('This seat is already booked by another passenger.');
+                        $fail('This seat is already taken by another booking on this trip.');
                     }
                 },
             ],
@@ -377,36 +380,6 @@ class BookingManagementController extends Controller
             ->findOrFail($bookingId);
 
         return view('operator.booking_receipt', compact('operator', 'booking'));
-    }
-
-    /**
-     * Customer lookup page — search by reference ID or phone number.
-     */
-    public function customerLookup(Request $request)
-    {
-        $booking = null;
-        $error = null;
-
-        if ($request->filled('reference_id') || $request->filled('phone_number')) {
-            $query = Booking::with(['route.bus', 'route.operator']);
-
-            if ($request->filled('reference_id')) {
-                $query->where('reference_id', 'like', '%' . $request->reference_id . '%');
-            }
-
-            if ($request->filled('phone_number')) {
-                $phone = preg_replace('/[^0-9]/', '', $request->phone_number);
-                $query->where('passenger_phone', 'like', '%' . $phone . '%');
-            }
-
-            $booking = $query->first();
-
-            if (!$booking) {
-                $error = 'No booking found with the provided details. Please check and try again.';
-            }
-        }
-
-        return view('booking_lookup', compact('booking', 'error'));
     }
 
     /**

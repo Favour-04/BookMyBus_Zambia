@@ -124,10 +124,18 @@ class BookingController extends Controller
      */
     public function paymentTicket($bookingId)
     {
-        $booking = Booking::with(['route.bus', 'route.operator', 'promoCode'])
+        $booking = Booking::with(['route.bus', 'route.operator', 'promoCode', 'ticket'])
             ->where('id', $bookingId)
             ->where('user_id', Auth::id())
             ->firstOrFail();
+
+        // A booking that's already paid has a real, stored ticket QR waiting
+        // on the success page — send the traveler there instead of re-showing
+        // the checkout screen (whose QR is only a reference_id preview, not
+        // the issued ticket).
+        if ($booking->isConfirmed()) {
+            return redirect()->route('booking.success', $booking->id);
+        }
 
         // For a multi-seat purchase, pull in the sibling bookings sharing this
         // group_reference so the payment page can show/charge for the whole party.

@@ -8,6 +8,7 @@ use App\Models\PromoCode;
 use App\Services\OperatorAuditService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 
 class PromoCodeController extends Controller
 {
@@ -53,7 +54,10 @@ class PromoCodeController extends Controller
         }
 
         $validated = $request->validate([
-            'code' => 'required|string|max:20|unique:promo_codes,code',
+            'code' => [
+                'required', 'string', 'max:20',
+                Rule::unique('promo_codes', 'code')->where('operator_id', $operator->id),
+            ],
             'discount_type' => 'required|in:percentage,fixed',
             'discount_value' => 'required|numeric|min:0',
             'min_booking_amount' => 'nullable|numeric|min:0',
@@ -91,7 +95,10 @@ class PromoCodeController extends Controller
         $promoCode = PromoCode::where('operator_id', $operator->id)->findOrFail($id);
 
         $validated = $request->validate([
-            'code' => 'required|string|max:20|unique:promo_codes,code,' . $id,
+            'code' => [
+                'required', 'string', 'max:20',
+                Rule::unique('promo_codes', 'code')->where('operator_id', $operator->id)->ignore($promoCode->id),
+            ],
             'discount_type' => 'required|in:percentage,fixed',
             'discount_value' => 'required|numeric|min:0',
             'min_booking_amount' => 'nullable|numeric|min:0',

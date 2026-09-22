@@ -55,7 +55,7 @@ class UserController extends Controller
      */
     public function show($id)
     {
-        $user = User::withCount('bookings')->findOrFail($id);
+        $user = User::withCount('bookings')->where('role', 'traveler')->findOrFail($id);
 
         $stats = [
             'total_bookings' => Booking::where('user_id', $user->id)->count(),
@@ -89,7 +89,12 @@ class UserController extends Controller
     }
 
     /**
-     * Store a newly created user (traveler or admin).
+     * Store a newly created traveler account.
+     *
+     * Scoped to travelers only: show()/suspend()/activate()/destroy() on
+     * this controller only ever look up role=traveler accounts, so a user
+     * created here with any other role would 404 on the very next redirect.
+     * Admin accounts are provisioned outside this flow.
      */
     public function store(Request $request)
     {
@@ -98,7 +103,6 @@ class UserController extends Controller
             'email'         => 'required|email|unique:users,email',
             'phone_number'  => 'required|string|unique:users,phone_number',
             'password'      => 'required|string|min:8|confirmed',
-            'role'          => 'required|in:traveler,admin',
             'preferred_language' => 'nullable|string|max:10',
         ]);
 
@@ -107,7 +111,7 @@ class UserController extends Controller
             'email'              => $validated['email'],
             'phone_number'       => $validated['phone_number'],
             'password'           => $validated['password'],
-            'role'               => $validated['role'],
+            'role'               => 'traveler',
             'preferred_language' => $validated['preferred_language'] ?? 'en',
             'is_active'          => true,
         ]);
@@ -130,7 +134,7 @@ class UserController extends Controller
      */
     public function suspend(Request $request, $id)
     {
-        $user = User::findOrFail($id);
+        $user = User::where('role', 'traveler')->findOrFail($id);
 
         if (!$user->isActive()) {
             return back()->with('warning', "{$user->full_name}'s account is already suspended.");
@@ -158,7 +162,7 @@ class UserController extends Controller
      */
     public function activate(Request $request, $id)
     {
-        $user = User::findOrFail($id);
+        $user = User::where('role', 'traveler')->findOrFail($id);
 
         if ($user->isActive()) {
             return back()->with('warning', "{$user->full_name}'s account is already active.");
@@ -183,7 +187,7 @@ class UserController extends Controller
      */
     public function destroy(Request $request, $id)
     {
-        $user = User::findOrFail($id);
+        $user = User::where('role', 'traveler')->findOrFail($id);
 
         if ((int) Auth::guard('admin')->id() === (int) $user->id) {
             return back()->with('error', 'You cannot remove your own admin account.');

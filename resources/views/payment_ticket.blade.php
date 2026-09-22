@@ -268,12 +268,12 @@
                         <!-- QR Code Area -->
                         <div class="flex flex-col items-center pt-8">
                             <div class="p-4 bg-surface-container-low rounded-xl">
-                                <div class="w-32 h-32 bg-white flex items-center justify-center border-4 border-white">
-                                    <img alt="Ticket QR Code" class="w-full h-full" loading="lazy"
-                                        src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={{ urlencode($booking_id) }}" />
+                                <div class="w-32 h-32 bg-white flex flex-col items-center justify-center border-4 border-white text-center gap-1 px-2">
+                                    <span class="material-symbols-outlined text-on-surface-variant/60 text-2xl">qr_code_2</span>
+                                    <p class="text-[9px] font-bold text-on-surface-variant/60 uppercase leading-tight">Generated after payment</p>
                                 </div>
                             </div>
-                            <p class="mt-4 text-[10px] font-bold text-on-surface-variant uppercase tracking-[0.2em]">Scan at boarding</p>
+                            <p class="mt-4 text-[10px] font-bold text-on-surface-variant uppercase tracking-[0.2em]">Your boarding QR appears once payment is confirmed</p>
                         </div>
                     </div>
                     <!-- Bottom Notch -->
