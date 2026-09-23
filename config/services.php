@@ -42,4 +42,16 @@ return [
         'secret' => env('PAYMENT_CALLBACK_SECRET'),
     ],
 
+    // MTN MoMo Collections API credentials (see Services\MobileMoney\MtnMomoGateway)
+    'momo' => [
+        'base_url' => env('MOMO_BASE_URL', 'https://sandbox.momodeveloper.mtn.com'),
+        'subscription_key' => env('MOMO_SUBSCRIPTION_KEY'),
+        'api_user' => env('MOMO_API_USER'),
+        'api_key' => env('MOMO_API_KEY'),
+        'callback_host' => env('MOMO_CALLBACK_HOST'),
+        'target_environment' => env('MOMO_TARGET_ENV', 'sandbox'),
+        // Sandbox settles in EUR; set to ZMW for production Zambia.
+        'currency' => env('MOMO_CURRENCY', 'EUR'),
+    ],
+
 ];

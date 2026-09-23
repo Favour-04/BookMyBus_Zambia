@@ -7,6 +7,7 @@ use App\Models\Payment;
 use App\Models\Ticket;
 use App\Notifications\TicketIssued;
 use App\Services\MobileMoney\GatewayInterface;
+use App\Services\MobileMoney\MtnMomoGateway;
 use App\Services\MobileMoney\SimulatedGateway;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -227,12 +228,18 @@ class PaymentService
     /**
      * Resolve the payment gateway for the given provider.
      *
-     * Extracted as a protected seam so tests can substitute a deterministic
-     * gateway without exercising the real SimulatedGateway (which relies on
-     * rand + usleep and would make tests slow and flaky).
+     * Uses the real MTN MoMo API when its credentials are configured
+     * (MOMO_SUBSCRIPTION_KEY / MOMO_API_USER / MOMO_API_KEY); otherwise falls
+     * back to the SimulatedGateway so fresh clones and tests keep working
+     * without any external setup. Extracted as a protected seam so tests can
+     * substitute a deterministic gateway.
      */
     protected function resolveGateway(string $provider): GatewayInterface
     {
+        if ($provider === 'mtn' && MtnMomoGateway::isConfigured()) {
+            return new MtnMomoGateway();
+        }
+
         return SimulatedGateway::forProvider($provider);
     }
 }
