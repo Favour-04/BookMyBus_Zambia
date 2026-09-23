@@ -9,14 +9,14 @@ class SimulatedGateway implements GatewayInterface
      */
     protected array $providers = [
         'mtn' => [
-            'prefixes'    => ['096', '076'],
-            'name'        => 'MTN MoMo',
-            'label'       => 'mtn_money',
+            'prefixes' => ['096', '076'],
+            'name' => 'MTN MoMo',
+            'label' => 'mtn_money',
         ],
         'airtel' => [
-            'prefixes'    => ['097', '077'],
-            'name'        => 'Airtel Money',
-            'label'       => 'airtel_money',
+            'prefixes' => ['097', '077'],
+            'name' => 'Airtel Money',
+            'label' => 'airtel_money',
         ],
     ];
 
@@ -33,69 +33,75 @@ class SimulatedGateway implements GatewayInterface
     /**
      * Simulate charging a mobile money wallet.
      *
-     * Has a ~90% success rate. 10% of transactions will "fail" for realistic testing.
-     * Delays 1-3 seconds to simulate network latency.
+     * In local dev: realistic behavior — 1-3s latency and a ~10% random
+     * decline for testing edge cases. Outside local (staging/production):
+     * deterministic success with no delay, so real users are never randomly
+     * declined by a coin flip while Airtel integration is pending.
      */
     public function charge(string $phoneNumber, float $amount, string $reference): array
     {
-        // Simulate network latency (1-3 seconds)
-        usleep(rand(1_000_000, 3_000_000));
+        $isLocal = app()->environment('local');
+
+        if ($isLocal) {
+            // Simulate network latency (1-3 seconds)
+            usleep(rand(1_000_000, 3_000_000));
+        }
 
         // Validate the phone number for this provider
-        if (!$this->validatePhoneNumber($phoneNumber)) {
+        if (! $this->validatePhoneNumber($phoneNumber)) {
             return [
-                'success'              => false,
+                'success' => false,
                 'transaction_reference' => null,
-                'message'              => "Invalid phone number for {$this->getProviderName()}. Please use a valid number.",
-                'gateway_response'     => [
-                    'provider'    => $this->getProviderName(),
-                    'phone'       => $phoneNumber,
-                    'error_code'  => 'INVALID_PHONE',
-                    'reference'   => $reference,
-                    'timestamp'   => now()->toIso8601String(),
+                'message' => "Invalid phone number for {$this->getProviderName()}. Please use a valid number.",
+                'gateway_response' => [
+                    'provider' => $this->getProviderName(),
+                    'phone' => $phoneNumber,
+                    'error_code' => 'INVALID_PHONE',
+                    'reference' => $reference,
+                    'timestamp' => now()->toIso8601String(),
                 ],
             ];
         }
 
-        // Simulate ~90% success rate
-        $isSuccess = rand(1, 100) <= 90;
+        // Random ~10% decline only in local dev; otherwise always succeed.
+        $isSuccess = ! $isLocal || rand(1, 100) <= 90;
 
         if ($isSuccess) {
-            $txnRef = 'TXN-' . strtoupper(substr(md5(uniqid()), 0, 12));
+            $txnRef = 'TXN-'.strtoupper(substr(md5(uniqid()), 0, 12));
 
             return [
-                'success'              => true,
+                'success' => true,
                 'transaction_reference' => $txnRef,
-                'message'              => "Payment of ZMW {$amount} via {$this->getProviderName()} was successful.",
-                'gateway_response'     => [
-                    'provider'            => $this->getProviderName(),
-                    'phone'               => $phoneNumber,
-                    'amount'              => $amount,
-                    'currency'            => 'ZMW',
-                    'transaction_id'      => $txnRef,
-                    'reference'           => $reference,
-                    'status'              => 'completed',
-                    'timestamp'           => now()->toIso8601String(),
-                    'simulated'           => true,
+                'message' => "Payment of ZMW {$amount} via {$this->getProviderName()} was successful.",
+                'gateway_response' => [
+                    'provider' => $this->getProviderName(),
+                    'phone' => $phoneNumber,
+                    'amount' => $amount,
+                    'currency' => 'ZMW',
+                    'transaction_id' => $txnRef,
+                    'reference' => $reference,
+                    'status' => 'completed',
+                    'timestamp' => now()->toIso8601String(),
+                    'simulated' => true,
                 ],
             ];
         }
 
         return [
-            'success'              => false,
+            'success' => false,
             'transaction_reference' => null,
-            'message'              => "{$this->getProviderName()} payment declined. Please try again or use a different payment method.",
-            'gateway_response'     => [
-                'provider'    => $this->getProviderName(),
-                'phone'       => $phoneNumber,
-                'amount'      => $amount,
-                'currency'    => 'ZMW',
-                'reference'   => $reference,
-                'status'      => 'failed',
-                'error_code'  => 'TRANSACTION_DECLINED',
+            'message' => "{$this->getProviderName()} payment declined. Please try again or use a different payment method.",
+            'gateway_response' => [
+                'provider' => $this->getProviderName(),
+                'phone' => $phoneNumber,
+                'amount' => $amount,
+                'currency' => 'ZMW',
+                'reference' => $reference,
+                'status' => 'failed',
+                'error_code' => 'TRANSACTION_DECLINED',
                 'error_detail' => 'Insufficient funds or transaction declined by provider.',
-                'timestamp'  => now()->toIso8601String(),
-                'simulated'  => true,
+                'timestamp' => now()->toIso8601String(),
+                'simulated' => true,
             ],
         ];
     }
@@ -135,7 +141,7 @@ class SimulatedGateway implements GatewayInterface
      */
     public static function forProvider(string $providerKey): self
     {
-        if (!in_array($providerKey, ['mtn', 'airtel'])) {
+        if (! in_array($providerKey, ['mtn', 'airtel'])) {
             throw new \InvalidArgumentException("Unsupported payment provider: {$providerKey}");
         }
 

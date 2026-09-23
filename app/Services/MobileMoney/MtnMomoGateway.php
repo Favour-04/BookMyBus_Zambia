@@ -28,15 +28,22 @@ use Throwable;
 class MtnMomoGateway implements GatewayInterface
 {
     private string $baseUrl;
+
     private string $subscriptionKey;
+
     private string $apiUser;
+
     private string $apiKey;
+
     private string $callbackHost;
+
     private string $targetEnvironment;
+
     private string $currency;
 
     /** Poll attempts and delay (seconds) while waiting for wallet approval. */
     private int $pollAttempts = 8;
+
     private int $pollDelaySeconds = 2;
 
     public function __construct(?array $config = null)
@@ -105,11 +112,11 @@ class MtnMomoGateway implements GatewayInterface
 
         try {
             $response = Http::withHeaders([
-                'Authorization' => 'Bearer ' . $token,
+                'Authorization' => 'Bearer '.$token,
                 'X-Reference-Id' => $transactionId,
                 'X-Target-Environment' => $this->targetEnvironment,
                 'Ocp-Apim-Subscription-Key' => $this->subscriptionKey,
-                'X-Callback-Url' => $this->callbackHost !== '' ? $this->callbackHost : null,
+                'X-Callback-Url' => $this->buildCallbackUrl(),
             ])->post("{$this->baseUrl}/collection/v1_0/requesttopay", [
                 'amount' => number_format($amount, 2, '.', ''),
                 'currency' => $this->currency,
@@ -134,7 +141,7 @@ class MtnMomoGateway implements GatewayInterface
             ]);
 
             return $this->failure(
-                'MTN MoMo rejected the payment request (' . $response->status() . '). Please try again or use another payment method.',
+                'MTN MoMo rejected the payment request ('.$response->status().'). Please try again or use another payment method.',
                 $response->json() ?? ['raw' => $response->body()]
             );
         }
@@ -201,7 +208,7 @@ class MtnMomoGateway implements GatewayInterface
     {
         try {
             $response = Http::withHeaders([
-                'Authorization' => 'Bearer ' . $token,
+                'Authorization' => 'Bearer '.$token,
                 'X-Target-Environment' => $this->targetEnvironment,
                 'Ocp-Apim-Subscription-Key' => $this->subscriptionKey,
             ])->get("{$this->baseUrl}/collection/v1_0/requesttopay/{$transactionId}");
@@ -225,7 +232,7 @@ class MtnMomoGateway implements GatewayInterface
      */
     private function getAccessToken(): string
     {
-        $cacheKey = 'momo_token_' . md5($this->apiUser . $this->baseUrl);
+        $cacheKey = 'momo_token_'.md5($this->apiUser.$this->baseUrl);
 
         $cached = Cache::get($cacheKey);
 
@@ -244,7 +251,7 @@ class MtnMomoGateway implements GatewayInterface
 
         if ($response->status() !== 200) {
             throw new \RuntimeException(
-                "MTN MoMo token request returned HTTP {$response->status()}: " . $response->body()
+                "MTN MoMo token request returned HTTP {$response->status()}: ".$response->body()
             );
         }
 
@@ -273,12 +280,12 @@ class MtnMomoGateway implements GatewayInterface
         }
 
         if (str_starts_with($digits, '0')) {
-            return '260' . substr($digits, 1);
+            return '260'.substr($digits, 1);
         }
 
         // 9-digit local form, e.g. 961234567
         if (strlen($digits) === 9) {
-            return '260' . $digits;
+            return '260'.$digits;
         }
 
         return $digits;
@@ -292,5 +299,24 @@ class MtnMomoGateway implements GatewayInterface
             'message' => $message,
             'gateway_response' => $gatewayResponse,
         ];
+    }
+
+    /**
+     * MTN expects a full URL (scheme + host + path). MOMO_CALLBACK_HOST may be
+     * just a hostname (e.g. "example.com" or an ngrok host) — build the full
+     * callback endpoint from it, or use it as-is when already a complete URL
+     * pointing at our secured callback endpoint.
+     */
+    private function buildCallbackUrl(): ?string
+    {
+        if ($this->callbackHost === '') {
+            return null;
+        }
+
+        if (str_starts_with($this->callbackHost, 'http')) {
+            return $this->callbackHost;
+        }
+
+        return 'https://'.ltrim($this->callbackHost, '/').'/api/payments/callback';
     }
 }
