@@ -89,6 +89,27 @@
                 </form>
             </div>
 
+            <!-- QR / Ticket Code Check-in -->
+            <form method="POST" action="{{ route('operator.passengers.checkin-qr') }}" class="mb-4">
+                @csrf
+                <div class="flex flex-wrap items-center gap-3 bg-surface-container-lowest rounded-xl border border-outline-variant/15 p-3">
+                    <span class="material-symbols-outlined text-primary">qr_code_scanner</span>
+                    <span class="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Ticket Check-in:</span>
+                    <input type="text" name="qr_code" value="{{ old('qr_code') }}"
+                           placeholder="Scan or type ticket code (BMZ-QR-...)" autocomplete="off"
+                           class="px-4 py-1.5 bg-surface-container-lowest border border-outline-variant/15 rounded-lg text-sm flex-1 min-w-48 focus:ring-2 focus:ring-primary transition-all">
+                    <button type="submit"
+                        class="px-4 py-1.5 bg-primary text-on-primary rounded-lg text-xs font-bold hover:bg-primary/90 transition-colors">
+                        Check In
+                    </button>
+                </div>
+                @error('qr')
+                    <p class="mt-2 text-xs font-semibold text-error flex items-center gap-1">
+                        <span class="material-symbols-outlined text-sm">error</span> {{ $message }}
+                    </p>
+                @enderror
+            </form>
+
             <!-- Bulk Check-in Bar -->
             <form id="bulk-checkin-form" method="POST" action="{{ route('operator.passengers.bulk-checkin') }}" class="mb-4">
                 @csrf

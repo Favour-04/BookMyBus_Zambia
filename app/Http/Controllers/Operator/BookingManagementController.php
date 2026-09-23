@@ -246,7 +246,15 @@ class BookingManagementController extends Controller
             ]);
         }
 
-        $booking->markBoarded($operator->company_name ?? 'Operator');
+        // Keep the ticket lifecycle in sync with manual boarding: the ticket
+        // flips to "used" so a QR presented later can't double-board.
+        DB::transaction(function () use ($booking, $operator) {
+            $booking->markBoarded($operator->company_name ?? 'Operator');
+
+            if ($ticket = $booking->ticket) {
+                $ticket->markAsUsed();
+            }
+        });
 
         OperatorAuditService::log('booking.marked_boarded', "Marked booking {$booking->reference_id} as boarded", $booking);
 
@@ -273,6 +281,12 @@ class BookingManagementController extends Controller
         }
 
         $booking->undoBoarded();
+
+        // Re-activate the ticket so it can be presented again after an
+        // erroneous check-in is undone.
+        if ($ticket = $booking->ticket) {
+            $ticket->update(['status' => 'issued', 'used_at' => null]);
+        }
 
         OperatorAuditService::log('booking.undo_boarded', "Undid boarded status for booking {$booking->reference_id}", $booking);
 

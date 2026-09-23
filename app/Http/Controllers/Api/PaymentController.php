@@ -63,8 +63,29 @@ class PaymentController extends Controller
 
     // Callback endpoint hit by the payment gateway after transaction.
     // Confirms or fails the payment and issues a ticket on success.
+    //
+    // Security: the request must carry an HMAC-SHA256 signature of the raw
+    // request body in the X-Gateway-Signature header, keyed with the shared
+    // PAYMENT_CALLBACK_SECRET. Without a valid signature the callback is
+    // rejected before any database lookup, so a caller who merely knows a
+    // payment_id cannot confirm their own payment and receive a free ticket.
     public function callback(Request $request): JsonResponse
     {
+        $secret = config('services.payment_callback.secret');
+
+        if (! $secret) {
+            // Misconfiguration: never silently accept unsigned callbacks.
+            return response()->json(['message' => 'Payment gateway callback is not configured.'], 503);
+        }
+
+        $signature = $request->header('X-Gateway-Signature', '');
+
+        $expected = hash_hmac('sha256', $request->getContent(), $secret);
+
+        if (! is_string($signature) || ! hash_equals($expected, $signature)) {
+            return response()->json(['message' => 'Invalid or missing gateway signature.'], 401);
+        }
+
         $data = $request->validate([
             'payment_id'            => 'required|exists:payments,id',
             'transaction_reference' => 'required|string',
